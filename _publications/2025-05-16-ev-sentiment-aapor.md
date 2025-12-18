@@ -47,4 +47,4 @@ This study has significant implications for:
 - **AI researchers** developing more accurate and unbiased sentiment analysis tools
 - **Climate communication** strategists understanding public EV perception
 
-[📄 View Conference Abstract](https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714){:target="_blank"}
+[View Conference Abstract](https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714){:target="_blank"}

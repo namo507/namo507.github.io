@@ -17,14 +17,26 @@ redirect_from:
   border-radius: 10px;
   margin-bottom: 2rem;
   text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.cv-header a { color: white; }
+.cv-header:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+.cv-header a { color: white; transition: opacity 0.2s ease; }
+.cv-header a:hover { opacity: 0.8; }
 .exp-card {
   background: #f8f9fa;
   border-left: 4px solid #667eea;
   padding: 1.2rem;
   margin-bottom: 1.2rem;
   border-radius: 0 8px 8px 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-left-width 0.3s ease;
+}
+.exp-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-left-width: 6px;
 }
 .exp-card h4 { color: #667eea; margin: 0 0 0.3rem 0; }
 .exp-meta { color: #666; font-size: 0.9rem; margin-bottom: 0.8rem; }
@@ -36,6 +48,12 @@ redirect_from:
   border-radius: 15px;
   font-size: 0.8rem;
   margin: 0.15rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+.skill-tag:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
 }
 .gpa-badge {
   background: #28a745;
@@ -43,6 +61,10 @@ redirect_from:
   padding: 0.2rem 0.5rem;
   border-radius: 8px;
   font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+.gpa-badge:hover {
+  transform: scale(1.1);
 }
 .award-badge {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -50,6 +72,10 @@ redirect_from:
   padding: 0.2rem 0.5rem;
   border-radius: 8px;
   font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+.award-badge:hover {
+  transform: scale(1.1);
 }
 </style>
 
@@ -73,14 +99,14 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 ## Education
 
 <div class="exp-card">
-  <h4>🎓 University of Maryland, College Park</h4>
+  <h4>University of Maryland, College Park</h4>
   <div class="exp-meta"><strong>M.S. in Survey & Data Science</strong> (Data Science Track) | Aug 2024 – May 2026</div>
-  <p><span class="gpa-badge">GPA: 3.792/4.0</span> <span class="award-badge">🏆 Dean's Fellowship AY 2025-26</span></p>
+  <p><span class="gpa-badge">GPA: 3.792/4.0</span> <span class="award-badge">Dean's Fellowship AY 2025-26</span></p>
   <p><strong>Coursework:</strong> Statistical Modeling & Machine Learning, Fundamentals of Data Collection, Experimental Design & Causal Inference, Long-Context Language Models, Machine Learning for Social Science, Applied Sampling</p>
 </div>
 
 <div class="exp-card">
-  <h4>🎓 BITS Pilani, India</h4>
+  <h4>BITS Pilani, India</h4>
   <div class="exp-meta"><strong>B.E. (Hons) in Civil Engineering</strong> (Minor: Data Science) | Nov 2020 – Jul 2024</div>
   <p><span class="gpa-badge">GPA: 3.327/4.0</span></p>
   <p><strong>Coursework:</strong> Foundations of Data Science, Machine Learning, Artificial Intelligence, Applied Statistical Methods, Data Mining, Data Visualization, Probability & Statistics, Object Oriented Programming</p>
@@ -91,7 +117,7 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 ## Professional Experience
 
 <div class="exp-card">
-  <h4>🔬 Research Assistant</h4>
+  <h4>Research Assistant</h4>
   <div class="exp-meta">Institute for Social Research, University of Michigan | May 2025 – Present | Ann Arbor, MI</div>
   <ul>
     <li>Architected production-scale geospatial data integration pipeline processing <strong>129,572 U.S. census tracts</strong> across 3 RUCA strata, achieving <strong>100% broadband data completeness</strong> through multi-source fusion (FCC, ACS, CDC)</li>
@@ -101,7 +127,7 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 </div>
 
 <div class="exp-card">
-  <h4>👨‍🏫 Teaching & Graduate Assistant</h4>
+  <h4>Teaching & Graduate Assistant</h4>
   <div class="exp-meta">University of Maryland, JPSM | Feb 2025 – Jul 2025 | College Park, MD</div>
   <ul>
     <li>Assisted Dr. Jörg Drechsler (IAB) in teaching SURV735, guiding <strong>23 students</strong> in data privacy and confidentiality principles</li>
@@ -110,7 +136,7 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 </div>
 
 <div class="exp-card">
-  <h4>🤖 Machine Learning Engineer</h4>
+  <h4>Machine Learning Engineer</h4>
   <div class="exp-meta">Legistify Services Private Limited | Jan 2024 – Jun 2024 | Gurugram, India</div>
   <ul>
     <li>Engineered scalable logo similarity detection system processing <strong>2.4 million images</strong> for IP infringement analysis using perceptual hashing, SIFT, and Faiss, achieving <strong>92% precision</strong> and reducing manual review time by <strong>70%</strong></li>
@@ -120,7 +146,7 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 </div>
 
 <div class="exp-card">
-  <h4>🔒 Advanced Application Engineering Analyst</h4>
+  <h4>Advanced Application Engineering Analyst</h4>
   <div class="exp-meta">Accenture | Jun 2023 – Aug 2023 | Bangalore, India</div>
   <ul>
     <li>Monitored enterprise security infrastructure analyzing threat intelligence (MITRE ATT&CK, AlienVault OTX), achieving <strong>89% accuracy</strong> in threat classification</li>
@@ -130,7 +156,7 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 </div>
 
 <div class="exp-card">
-  <h4>🌐 Web Developer</h4>
+  <h4>Web Developer</h4>
   <div class="exp-meta">Indian Red Cross Society | May 2022 – Jul 2022 | Bangalore, India</div>
   <ul>
     <li>Designed Drupal-based CMS for volunteer registry and donor database, reducing manual data entry by <strong>50%</strong></li>
@@ -221,16 +247,16 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 - Deep Learning & Machine Learning (Smartknower, Internshala)
 
 **Achievements:**
-- <span class="award-badge">🥇 1st Rank</span> Human Resource Development (180 students, BITS Pilani)
-- <span class="award-badge">🎯 Top 10</span> Water & Wastewater Treatment (98 students, BITS Pilani)
-- <span class="award-badge">🏆 Dean's Fellowship</span> JPSM Award AY 2025-26
+- <span class="award-badge">1st Rank</span> Human Resource Development (180 students, BITS Pilani)
+- <span class="award-badge">Top 10</span> Water & Wastewater Treatment (98 students, BITS Pilani)
+- <span class="award-badge">Dean's Fellowship</span> JPSM Award AY 2025-26
 
 ---
 
 ## Leadership & Service
 
 <div class="exp-card">
-  <h4>🌟 Terrapin Leadership Institute, University of Maryland</h4>
+  <h4>Terrapin Leadership Institute, University of Maryland</h4>
   <div class="exp-meta">Member | Aug 2024 – May 2025</div>
   <ul>
     <li>Achieved 100% participation in workshops on leadership, ethics, inclusion, and resilience</li>
@@ -238,7 +264,7 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 </div>
 
 <div class="exp-card">
-  <h4>🩸 National Service Scheme (NSS), BITS Pilani</h4>
+  <h4>National Service Scheme (NSS), BITS Pilani</h4>
   <div class="exp-meta">Executive Committee & Blood Donation Camp Core Team | Mar 2022 – Dec 2023</div>
   <ul>
     <li>Planned 10+ activities to improve English skills in villages around campus</li>
@@ -247,7 +273,7 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 </div>
 
 <div class="exp-card">
-  <h4>🤝 Peer Mentorship Program (PMP), BITS Pilani</h4>
+  <h4>Peer Mentorship Program (PMP), BITS Pilani</h4>
   <div class="exp-meta">Mentor | Aug 2021 – Dec 2023</div>
   <ul>
     <li>Assisted juniors with advice and materials for smooth transition into college life</li>

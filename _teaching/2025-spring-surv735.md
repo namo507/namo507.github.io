@@ -8,11 +8,11 @@ date: 2025-02-01
 location: "College Park, MD"
 ---
 
-## 📚 Course Overview
+## Course Overview
 
 Served as **Teaching Assistant** for SURV735: Data Privacy and Confidentiality under **Dr. Jörg Drechsler** from the Institute for Employment Research (IAB), Germany.
 
-## 👨‍🏫 Responsibilities
+## Responsibilities
 
 - Guided **23 graduate students** in understanding data privacy and confidentiality principles
 - Assisted with course materials on statistical disclosure control and privacy-preserving methods
@@ -20,7 +20,7 @@ Served as **Teaching Assistant** for SURV735: Data Privacy and Confidentiality u
 - Facilitated discussions on differential privacy, synthetic data generation, and secure computation
 - Graded assignments and provided detailed feedback on technical implementations
 
-## 📖 Topics Covered
+## Topics Covered
 
 | Topic | Description |
 |-------|-------------|
@@ -31,7 +31,7 @@ Served as **Teaching Assistant** for SURV735: Data Privacy and Confidentiality u
 | Privacy Regulations | GDPR, CCPA, and federal statistical agency policies |
 | De-identification Techniques | Anonymization methods and their limitations |
 
-## 💡 Teaching Impact
+## Teaching Impact
 
 This teaching experience strengthened my understanding of:
 - **Privacy-preserving survey methodology** and its practical applications
@@ -39,7 +39,7 @@ This teaching experience strengthened my understanding of:
 - **Modern privacy technologies** including differential privacy implementations
 - **Regulatory frameworks** governing statistical data protection
 
-## 🎓 Course Details
+## Course Details
 
 - **Instructor**: Dr. Jörg Drechsler (IAB, Germany)
 - **Program**: Joint Program in Survey Methodology (JPSM)

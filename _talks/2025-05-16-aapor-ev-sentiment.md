@@ -8,15 +8,15 @@ date: 2025-05-16
 location: "St. Louis, MO, USA"
 ---
 
-## 🎤 Presentation Overview
+## Presentation Overview
 
 Presented research on public sentiment analysis toward electric vehicles (EVs) at the prestigious **American Association for Public Opinion Research (AAPOR)** annual conference—the premier venue for survey methodology and public opinion research.
 
-## 📋 Abstract
+## Abstract
 
 This study examines public sentiment toward electric vehicles (EVs) across social media and traditional news platforms from 2020-2024. We engineered a multi-source sentiment analysis pipeline processing 1.1M+ posts from Reddit and New York Times, implementing DistilBERT transformers achieving 91.6% accuracy. Our comparative evaluation of 10 LLM variants revealed systematic positive bias (+0.57) in AI-generated sentiment assessments, with critical implications for AI-assisted survey research.
 
-## 🎯 Key Topics Covered
+## Key Topics Covered
 
 ### 1. Multi-Source Data Collection
 - Reddit API integration across 5 EV-focused communities (550K+ comments)
@@ -34,7 +34,7 @@ This study examines public sentiment toward electric vehicles (EVs) across socia
 - Statistical validation: F(2,549)=28.43, p<0.001
 - Implications for AI-assisted survey research methodology
 
-## 📊 Key Findings
+## Key Findings
 
 | Finding | Details |
 |---------|---------|
@@ -43,7 +43,7 @@ This study examines public sentiment toward electric vehicles (EVs) across socia
 | LLM Bias | +0.57 systematic positive bias vs. actual Reddit data |
 | Best LLM | Llama-3.2-90b-vision-preview closest to human patterns |
 
-## 🏛️ Conference Details
+## Conference Details
 
 - **Conference**: 80th Annual Conference of the American Association for Public Opinion Research
 - **Dates**: May 15-17, 2025
@@ -51,11 +51,11 @@ This study examines public sentiment toward electric vehicles (EVs) across socia
 - **Session**: Survey Methodology & AI Integration
 - **Co-author**: Snigdha Chakravarty
 
-## 🔗 Resources
+## Resources
 
-[📄 View Conference Abstract](https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714){:target="_blank"}
+[View Conference Abstract](https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714){:target="_blank"}
 
-## 💡 Implications
+## Implications
 
 This research has significant implications for:
 - **Survey Methodologists**: Understanding LLM limitations in sentiment analysis

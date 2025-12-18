@@ -8,11 +8,11 @@ date: 2025-02-01
 location: "College Park, MD"
 ---
 
-## 🖥️ Role Overview
+## Role Overview
 
 Served as **Graduate Assistant** supporting the Joint Program in Survey Methodology (JPSM) through comprehensive Canvas LMS administration and course infrastructure development.
 
-## 🎯 Key Achievements
+## Key Achievements
 
 ### Canvas LMS Redesign
 - Redesigned and standardized Canvas LMS infrastructure for **10+ JPSM instructors**
@@ -29,7 +29,7 @@ Served as **Graduate Assistant** supporting the Joint Program in Survey Methodol
 | Accessibility Compliance | **100%** across materials |
 | Template Adoption | **10+ instructors** |
 
-## 🛠️ Technical Contributions
+## Technical Contributions
 
 - **Course Templates**: Developed accessibility-compliant, reusable course templates
 - **Automated Workflows**: Implemented assignment distribution and deadline management
@@ -37,7 +37,7 @@ Served as **Graduate Assistant** supporting the Joint Program in Survey Methodol
 - **Third-Party Integration**: Connected external tools for enhanced learning experiences
 - **Student Support**: Provided technical assistance for LMS navigation
 
-## 📈 Skills Developed
+## Skills Developed
 
 - Learning Management System administration
 - Instructional design and course organization
@@ -45,7 +45,7 @@ Served as **Graduate Assistant** supporting the Joint Program in Survey Methodol
 - Educational technology integration
 - Cross-functional stakeholder coordination
 
-## 🏢 Organization
+## Organization
 
 **Joint Program in Survey Methodology (JPSM)**  
 University of Maryland, College Park  

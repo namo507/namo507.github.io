@@ -41,4 +41,4 @@ This research provides actionable insights for:
 - **Policymakers** developing regulations for sustainable supply chain practices
 - **Researchers** investigating the intersection of Industry 4.0 and environmental sustainability
 
-[📄 Access Full Publication](https://www.springerprofessional.de/en/achieving-sustainability-in-supply-chain-during-disruption-times/26762004){:target="_blank"}
+[Access Full Publication](https://www.springerprofessional.de/en/achieving-sustainability-in-supply-chain-during-disruption-times/26762004){:target="_blank"}
