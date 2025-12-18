@@ -1,13 +1,30 @@
 ---
-title: "Paper Title Number 5, with math $$E=mc^2$$"
+title: "Analyzing Public Perceptions and Sentiment of Electric Vehicles in the Era of Sustainable Transformation"
 collection: publications
-category: conferences
-permalink: /publication/2024-02-17-paper-title-number-4
-excerpt: 'This paper is about a famous math equation, $$E=mc^2$$'
-date: 2024-02-17
-venue: 'GitHub Journal of Bugs'
-paperurl: 'https://academicpages.github.io/files/paper3.pdf'
-citation: 'Your Name, You. (2024). &quot;Paper Title Number 3.&quot; <i>GitHub Journal of Bugs</i>. 1(3).'
+permalink: /publication/2025-ev-sentiment
+excerpt: 'I engineered a multi-source sentiment analysis pipeline processing 1.1M+ social media posts, achieving 91.6% classification accuracy using DistilBERT transformers.'
+date: 2025-05-16
+venue: '80th Annual Conference of the American Association for Public Opinion Research (AAPOR)'
+citation: 'Chakravarty, S., & Shrivastava, N. (2025). Analyzing Public Perceptions and Sentiment of Electric Vehicles in the Era of Sustainable Transformation. 80th Annual AAPOR Conference.'
 ---
 
-Using [MathJax](https://www.mathjax.org/) in the description is supported - $$E=mc^2$$ - however, the use must be mindful that the default delimiters are `$$...$$` and `\\[...\\]` which differs from the `$...$` that is typically expected.
+This research examines how public sentiment toward electric vehicles has evolved from 2020-2024 across social media and traditional news platforms. I engineered a comprehensive sentiment analysis pipeline that processes over 1.1 million social media posts from 5 Reddit communities (550K comments) and 40 New York Times articles.
+
+## Methodology
+
+I implemented a DistilBERT transformer model achieving 91.6% classification accuracy on electric vehicle discourse. The research involved:
+
+- Multi-source data collection from Reddit and New York Times APIs
+- Comparative analysis of 10 Groq LLM variants (Llama 3.1/3.2 series, Mixtral)
+- Statistical analysis using R for temporal trend identification
+
+## Key Discoveries
+
+### LLM Bias Detection
+I discovered systematic bias in large language model sentiment prediction. LLMs exhibited +0.57 positive sentiment bias compared to actual Reddit data (M=-0.18, SD=0.52), with statistical significance (F(2,549)=28.43, p<.001).
+
+### Temporal Trends
+Identified 35% increase in negative EV sentiment on Reddit post-2022 despite rising adoption rates. NYT coverage remained consistently negative (M=-0.23) for core EV terms but positive for "Tesla" and "autonomous" keywords.
+
+### Model Performance
+Llama-3.2-90b-vision-preview best approximated human sentiment patterns among tested models.
