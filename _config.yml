@@ -26,8 +26,8 @@ author:
   avatar           : "profile.png"
   name             : "Namit Shrivastava"
   pronouns         : # example: "she/her"  
-  bio                  : "Graduate researcher combining survey methodology with AI and data science at University of Maryland"  location         : "Earth"
-  employer             : "University of Michigan"  uri              : # URL
+  bio                  : "Graduate researcher combining survey methodology with AI and data science at University of Maryland"
+  employer             : "University of Michigan" 
   email            : "none@example.org" 
 
   # Academic websites
