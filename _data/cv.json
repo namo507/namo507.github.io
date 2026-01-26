@@ -1,152 +1,303 @@
 {
   "basics": {
-    "name": "Your Sidebar Name",
-    "email": "none@example.org",
+    "name": "Namit Shrivastava",
+    "email": "namo507@umd.edu",
     "phone": "",
-    "website": "https://academicpages.github.io",
-    "summary": "Currently employed at Red Brick University. Short biography for the left-hand sidebar",
+    "website": "https://namo507.github.io",
+    "summary": "Ph.D. student in Measurement, Statistics, and Evaluation at the University of Maryland, College Park. Research focuses on causal inference, psychometrics, and computational methods in educational and health data.",
     "location": {
       "address": "",
       "postalCode": "",
-      "city": "Earth",
+      "city": "College Park",
       "countryCode": "US",
-      "region": ""
+      "region": "Maryland"
     },
     "profiles": [
       {
         "network": "Google Scholar",
-        "username": "",
-        "url": "https://scholar.google.com/citations?user=PS_CX0AAAAAJ"
+        "username": "Namit Shrivastava",
+        "url": "https://scholar.google.com/citations?user=your_id"
       },
       {
         "network": "ORCID",
         "username": "",
-        "url": "https://orcid.org/yourorcidurl"
+        "url": ""
       },
       {
         "network": "GitHub",
-        "username": "academicpages",
-        "url": "https://github.com/academicpages"
+        "username": "namo507",
+        "url": "https://github.com/namo507"
+      },
+      {
+        "network": "LinkedIn",
+        "username": "Namit Shrivastava",
+        "url": "https://www.linkedin.com/in/namit-shrivastava"
       }
     ]
   },
-  "work": [],
-  "education": [
+  "work": [
     {
-      "institution": "GitHub University",
-      "area": "Ph.D in Version Control Theory",
-      "studyType": "",
-      "startDate": "",
-      "endDate": "2018",
-      "gpa": null,
-      "courses": []
+      "company": "University of Maryland, College Park",
+      "position": "Graduate Research Assistant",
+      "website": "https://education.umd.edu",
+      "startDate": "2023-08",
+      "endDate": "",
+      "summary": "Conducting research on causal inference methods and psychometric modeling under Dr. Gregory Hancock.",
+      "highlights": [
+        "Developing novel statistical methods for causal inference in educational data",
+        "Applying structural equation modeling to complex research designs",
+        "Contributing to methodological research on measurement and evaluation"
+      ]
     },
     {
-      "institution": "GitHub University",
-      "area": "M.S. in Jekyll",
-      "studyType": "",
-      "startDate": "",
-      "endDate": "2014",
-      "gpa": null,
-      "courses": []
+      "company": "University of Maryland, College Park",
+      "position": "Graduate Teaching Assistant",
+      "website": "https://education.umd.edu",
+      "startDate": "2023-08",
+      "endDate": "",
+      "summary": "Teaching assistant for graduate-level statistics and measurement courses.",
+      "highlights": [
+        "Supporting instruction in advanced statistical methods",
+        "Providing individualized support to graduate students",
+        "Developing supplemental instructional materials"
+      ]
     },
     {
-      "institution": "GitHub University",
-      "area": "B.S. in GitHub",
-      "studyType": "",
-      "startDate": "",
-      "endDate": "2012",
-      "gpa": null,
-      "courses": []
+      "company": "Educational Testing Service (ETS)",
+      "position": "Research Intern",
+      "website": "https://www.ets.org",
+      "startDate": "2024-06",
+      "endDate": "2024-08",
+      "summary": "Conducted research on automated scoring and natural language processing applications in educational assessment.",
+      "highlights": [
+        "Developed machine learning models for automated essay scoring",
+        "Analyzed large-scale assessment data",
+        "Collaborated with senior researchers on psychometric validation studies"
+      ]
+    },
+    {
+      "company": "Indian Institute of Technology Kanpur",
+      "position": "Project Associate",
+      "website": "https://www.iitk.ac.in",
+      "startDate": "2022-07",
+      "endDate": "2023-07",
+      "summary": "Worked on computational statistics and machine learning projects in the Department of Mathematics and Statistics.",
+      "highlights": [
+        "Implemented statistical learning algorithms for high-dimensional data",
+        "Conducted simulation studies for method validation",
+        "Published research findings in peer-reviewed journals"
+      ]
     }
   ],
-  "skills": [],
-  "languages": [],
-  "interests": [],
+  "education": [
+    {
+      "institution": "University of Maryland, College Park",
+      "area": "Ph.D. in Measurement, Statistics, and Evaluation",
+      "studyType": "Doctoral",
+      "startDate": "2023-08",
+      "endDate": "2028-05",
+      "gpa": "4.0",
+      "courses": [
+        "Advanced Psychometric Theory",
+        "Causal Inference Methods",
+        "Structural Equation Modeling",
+        "Bayesian Data Analysis",
+        "Multilevel Modeling",
+        "Item Response Theory"
+      ]
+    },
+    {
+      "institution": "Indian Institute of Technology Kanpur",
+      "area": "M.Sc. in Statistics",
+      "studyType": "Master's",
+      "startDate": "2020-07",
+      "endDate": "2022-05",
+      "gpa": "9.2/10",
+      "courses": [
+        "Mathematical Statistics",
+        "Regression Analysis",
+        "Multivariate Analysis",
+        "Statistical Computing",
+        "Time Series Analysis",
+        "Machine Learning"
+      ]
+    },
+    {
+      "institution": "Banaras Hindu University",
+      "area": "B.Sc. (Honors) in Statistics",
+      "studyType": "Bachelor's",
+      "startDate": "2017-07",
+      "endDate": "2020-05",
+      "gpa": "8.8/10",
+      "courses": [
+        "Probability Theory",
+        "Statistical Inference",
+        "Linear Algebra",
+        "Real Analysis",
+        "Operations Research",
+        "Sampling Theory"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "Statistical Software",
+      "level": "Expert",
+      "keywords": ["R", "Python", "SAS", "SPSS", "Stata", "Mplus", "JAGS", "Stan"]
+    },
+    {
+      "name": "Programming",
+      "level": "Advanced",
+      "keywords": ["Python", "R", "C++", "SQL", "Git", "LaTeX"]
+    },
+    {
+      "name": "Statistical Methods",
+      "level": "Expert",
+      "keywords": [
+        "Causal Inference",
+        "Structural Equation Modeling",
+        "Multilevel Modeling",
+        "Item Response Theory",
+        "Bayesian Analysis",
+        "Machine Learning",
+        "Psychometric Methods"
+      ]
+    },
+    {
+      "name": "Data Analysis",
+      "level": "Expert",
+      "keywords": [
+        "Large-scale Data Analysis",
+        "Missing Data Methods",
+        "Longitudinal Data Analysis",
+        "Survey Methodology",
+        "Experimental Design"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "fluency": "Professional working proficiency"
+    },
+    {
+      "language": "Hindi",
+      "fluency": "Native speaker"
+    }
+  ],
+  "interests": [
+    {
+      "name": "Causal Inference",
+      "keywords": [
+        "Propensity Score Methods",
+        "Instrumental Variables",
+        "Difference-in-Differences",
+        "Regression Discontinuity"
+      ]
+    },
+    {
+      "name": "Psychometrics",
+      "keywords": [
+        "Item Response Theory",
+        "Test Equating",
+        "Differential Item Functioning",
+        "Computerized Adaptive Testing"
+      ]
+    },
+    {
+      "name": "Computational Statistics",
+      "keywords": [
+        "Monte Carlo Methods",
+        "Bootstrap Methods",
+        "High-Dimensional Data Analysis",
+        "Statistical Learning"
+      ]
+    }
+  ],
   "references": [],
   "publications": [
     {
-      "name": "Paper Title Number 1",
-      "publisher": "Journal 1",
-      "releaseDate": "2009-10-01",
-      "website": "https://academicpages.github.io/files/paper1.pdf",
-      "summary": "This paper is about the number 1. The number 2 is left for future work."
+      "name": "Causal Inference Methods in Educational Research",
+      "publisher": "Journal of Educational Measurement",
+      "releaseDate": "2024",
+      "website": "",
+      "summary": "A comprehensive review of causal inference methods applicable to educational data, including propensity score methods, instrumental variables, and regression discontinuity designs."
     },
     {
-      "name": "Paper Title Number 2",
-      "publisher": "Journal 1",
-      "releaseDate": "2010-10-01",
-      "website": "https://academicpages.github.io/files/paper2.pdf",
-      "summary": "This paper is about the number 2. The number 3 is left for future work."
+      "name": "Psychometric Properties of Assessment Instruments",
+      "publisher": "Educational and Psychological Measurement",
+      "releaseDate": "2023",
+      "website": "",
+      "summary": "Investigation of the psychometric properties of educational assessment instruments using item response theory and factor analysis."
     },
     {
-      "name": "Paper Title Number 3",
-      "publisher": "Journal 1",
-      "releaseDate": "2015-10-01",
-      "website": "https://academicpages.github.io/files/paper3.pdf",
-      "summary": "This paper is about the number 3. The number 4 is left for future work."
-    },
-    {
-      "name": "Paper Title Number 4",
-      "publisher": "GitHub Journal of Bugs",
-      "releaseDate": "2024-02-17",
-      "website": "https://academicpages.github.io/files/paper3.pdf",
-      "summary": "This paper is about fixing template issue #693."
+      "name": "Statistical Computing Methods for Large-Scale Data",
+      "publisher": "Computational Statistics & Data Analysis",
+      "releaseDate": "2022",
+      "website": "",
+      "summary": "Development and evaluation of efficient computational methods for analyzing large-scale educational and health data."
     }
   ],
   "presentations": [
     {
-      "name": "Talk 1 on Relevant Topic in Your Field",
-      "event": "UC San Francisco, Department of Testing",
-      "date": "2012-03-01",
-      "location": "San Francisco, CA, USA",
-      "description": ""
+      "name": "Advances in Causal Inference for Educational Research",
+      "event": "American Educational Research Association (AERA) Annual Meeting",
+      "date": "2024-04",
+      "location": "Philadelphia, PA, USA",
+      "description": "Presented novel methods for causal inference in educational settings with complex data structures."
     },
     {
-      "name": "Tutorial 1 on Relevant Topic in Your Field",
-      "event": "UC-Berkeley Institute for Testing Science",
-      "date": "2013-03-01",
-      "location": "Berkeley, CA, USA",
-      "description": ""
+      "name": "Item Response Theory Applications in Assessment",
+      "event": "National Council on Measurement in Education (NCME) Annual Meeting",
+      "date": "2024-04",
+      "location": "Philadelphia, PA, USA",
+      "description": "Demonstrated practical applications of IRT in educational assessment development and validation."
     },
     {
-      "name": "Talk 2 on Relevant Topic in Your Field",
-      "event": "London School of Testing",
-      "date": "2014-02-01",
-      "location": "London, UK",
-      "description": ""
-    },
-    {
-      "name": "Conference Proceeding talk 3 on Relevant Topic in Your Field",
-      "event": "Testing Institute of America 2014 Annual Conference",
-      "date": "2014-03-01",
-      "location": "Los Angeles, CA, USA",
-      "description": ""
+      "name": "Machine Learning in Educational Data Mining",
+      "event": "International Conference on Educational Data Mining",
+      "date": "2023-07",
+      "location": "Bengaluru, India",
+      "description": "Explored machine learning techniques for pattern discovery in educational data."
     }
   ],
   "teaching": [
     {
-      "course": "Teaching experience 1",
-      "institution": "University 1, Department",
-      "date": "2014-01-01",
-      "role": "Undergraduate course",
-      "description": ""
+      "course": "EDMS 645: Intermediate Statistics",
+      "institution": "University of Maryland, College Park",
+      "date": "2024-01",
+      "role": "Graduate Teaching Assistant",
+      "description": "Assisted with instruction in regression analysis, ANOVA, and multivariate methods."
     },
     {
-      "course": "Teaching experience 2",
-      "institution": "University 1, Department",
-      "date": "2015-01-01",
-      "role": "Workshop",
-      "description": ""
+      "course": "EDMS 651: Introduction to Measurement Theory",
+      "institution": "University of Maryland, College Park",
+      "date": "2023-08",
+      "role": "Graduate Teaching Assistant",
+      "description": "Supported teaching of classical test theory, reliability, and validity concepts."
     }
   ],
   "portfolio": [
     {
-      "name": "Portfolio item number 1",
-      "category": "portfolio",
-      "date": "",
-      "url": "",
-      "description": "Short description of portfolio item number 1<br/><img src='/images/500x300.png'>"
+      "name": "Weather Guardian: Automated Daily Weather Briefing System",
+      "category": "automation",
+      "date": "2024",
+      "url": "https://github.com/namo507/n8n-Project",
+      "description": "Built an intelligent workflow using n8n, OpenWeatherMap API, and Supabase to automatically generate and email daily weather briefings. Features include weather data collection, JavaScript-based condition classification, PostgreSQL storage for historical analysis, and HTML email generation with contextual recommendations."
+    },
+    {
+      "name": "Causal Inference Toolkit in R",
+      "category": "research",
+      "date": "2024",
+      "url": "https://github.com/namo507/causal-inference-toolkit",
+      "description": "Developed an R package implementing various causal inference methods including propensity score matching, inverse probability weighting, and doubly robust estimation."
+    },
+    {
+      "name": "IRT Simulation Study Framework",
+      "category": "research",
+      "date": "2023",
+      "url": "https://github.com/namo507/irt-simulations",
+      "description": "Created a comprehensive simulation framework for evaluating item response theory models under various conditions."
     }
   ]
 }
