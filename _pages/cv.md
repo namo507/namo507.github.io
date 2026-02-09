@@ -101,7 +101,7 @@ Graduate researcher with proven expertise in **survey methodology**, **causal in
 <div class="exp-card">
   <h4>University of Maryland, College Park</h4>
   <div class="exp-meta"><strong>M.S. in Survey & Data Science</strong> (Data Science Track) | Aug 2024 – May 2026</div>
-  <p><span class="gpa-badge">GPA: 3.792/4.0</span> <span class="award-badge">Dean's Fellowship AY 2025-26</span></p>
+  <p><span class="gpa-badge">GPA: 3.8142/4.0</span> <span class="award-badge">Dean's Fellowship AY 2025-26</span></p>
   <p><strong>Coursework:</strong> Statistical Modeling & Machine Learning, Fundamentals of Data Collection, Experimental Design & Causal Inference, Long-Context Language Models, Machine Learning for Social Science, Applied Sampling</p>
 </div>
 

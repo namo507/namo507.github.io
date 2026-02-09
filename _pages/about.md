@@ -165,7 +165,7 @@ My research agenda focuses on developing <strong>trustworthy data integration fr
 <div class="timeline-item">
   <strong>M.S. in Survey & Data Science</strong> (Data Science Track)<br>
   <em>University of Maryland, College Park</em> | Aug 2024 – May 2026<br>
-  <span class="badge">Dean's Fellow</span><span class="badge">GPA: 3.79</span>
+  <span class="badge">Dean's Fellow</span><span class="badge">GPA: 3.814</span>
 </div>
 
 <div class="timeline-item">
