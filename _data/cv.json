@@ -2,9 +2,9 @@
   "basics": {
     "name": "Namit Shrivastava",
     "email": "namo507@umd.edu",
-    "phone": "",
+    "phone": "240-476-8513",
     "website": "https://namo507.github.io",
-    "summary": "Ph.D. student in Measurement, Statistics, and Evaluation at the University of Maryland, College Park. Research focuses on causal inference, psychometrics, and computational methods in educational and health data.",
+    "summary": "High performance AI and Data Engineer with 2 years of experience shipping production-grade ML systems and scalable ETL pipelines on Azure and AWS. Specialized in deploying RAG architectures, geospatial analytics, and high-throughput microservices. Currently pursuing MS in Survey Data Science at the University of Maryland.",
     "location": {
       "address": "",
       "postalCode": "",
@@ -37,142 +37,144 @@
   },
   "work": [
     {
-      "company": "University of Maryland, College Park",
+      "company": "Social Data Science Center, University of Maryland",
       "position": "Graduate Research Assistant",
-      "website": "https://education.umd.edu",
-      "startDate": "2023-08",
-      "endDate": "",
-      "summary": "Conducting research on causal inference methods and psychometric modeling under Dr. Gregory Hancock.",
+      "website": "https://socialdatascience.umd.edu",
+      "startDate": "2026-01",
+      "endDate": "2026-05",
+      "summary": "Engineered automation and data infrastructure for university data repository.",
       "highlights": [
-        "Developing novel statistical methods for causal inference in educational data",
-        "Applying structural equation modeling to complex research designs",
-        "Contributing to methodological research on measurement and evaluation"
+        "Engineered Python automation suite interacting with CKAN REST API to manage lifecycle of 18 datasets ensuring 100% resource accessibility and data integrity",
+        "Architected scalable data taxonomy for university repository transforming flat catalogs into hierarchical thematic groups, improving search discoverability by 35%",
+        "Implemented bulk metadata update scripts reducing manual maintenance overhead by 90% and ensuring strict schema compliance across the repository"
       ]
     },
     {
-      "company": "University of Maryland, College Park",
-      "position": "Graduate Teaching Assistant",
-      "website": "https://education.umd.edu",
-      "startDate": "2023-08",
-      "endDate": "",
-      "summary": "Teaching assistant for graduate-level statistics and measurement courses.",
+      "company": "Joint Program in Survey Methodology (JPSM), University of Maryland",
+      "position": "Teaching and Graduate Assistant",
+      "website": "https://jpsm.umd.edu",
+      "startDate": "2025-02",
+      "endDate": "2026-05",
+      "summary": "Translated complex data privacy frameworks into actionable learning modules and optimized course operations.",
       "highlights": [
-        "Supporting instruction in advanced statistical methods",
-        "Providing individualized support to graduate students",
-        "Developing supplemental instructional materials"
+        "Translated complex data privacy frameworks into actionable learning modules for 23 graduate students",
+        "Optimized and coordinated learning operations using Asana, reengineering Canvas LMS infrastructure with automation scripts reducing course setup time by 40%"
       ]
     },
     {
-      "company": "Educational Testing Service (ETS)",
-      "position": "Research Intern",
-      "website": "https://www.ets.org",
-      "startDate": "2024-06",
-      "endDate": "2024-08",
-      "summary": "Conducted research on automated scoring and natural language processing applications in educational assessment.",
+      "company": "Institute for Social Research, University of Michigan",
+      "position": "Research Assistant",
+      "website": "https://isr.umich.edu",
+      "startDate": "2025-05",
+      "endDate": "2025-12",
+      "summary": "Built scalable geospatial ETL pipelines and composite imputation models for longitudinal demographic analysis.",
       "highlights": [
-        "Developed machine learning models for automated essay scoring",
-        "Analyzed large-scale assessment data",
-        "Collaborated with senior researchers on psychometric validation studies"
+        "Built scalable geospatial ETL pipeline aggregating multi-source demographic data (FCC, ACS, CDC) for 129,572 U.S. census tracts",
+        "Developed composite imputation models recovering 28.6% of critical dataset rows and resolving complex missingness patterns for longitudinal analysis",
+        "Designed automated Data Quality framework using Moran's I statistics to detect spatial autocorrelation anomalies, flagging 15% of tracts for review",
+        "Synthesized disparate government datasets into a unified schema enabling identification of statistically significant rural health trends"
       ]
     },
     {
-      "company": "Indian Institute of Technology Kanpur",
-      "position": "Project Associate",
-      "website": "https://www.iitk.ac.in",
-      "startDate": "2022-07",
-      "endDate": "2023-07",
-      "summary": "Worked on computational statistics and machine learning projects in the Department of Mathematics and Statistics.",
+      "company": "Legistify Services Private Limited",
+      "position": "Machine Learning Engineer",
+      "website": "https://legistify.com",
+      "startDate": "2024-01",
+      "endDate": "2024-06",
+      "summary": "Architected and shipped production-grade trademark search engine and OCR pipelines on Azure.",
       "highlights": [
-        "Implemented statistical learning algorithms for high-dimensional data",
-        "Conducted simulation studies for method validation",
-        "Published research findings in peer-reviewed journals"
+        "Architected and shipped production-grade trademark search engine processing 2.4 million images using FastAPI and Faiss vector embeddings",
+        "Reduced query latency by 60% by optimizing HNSW indexing parameters and implementing asynchronous microservice architecture",
+        "Deployed scalable OCR pipelines on Azure Cognitive Services processing 50,000 daily legal documents with 95% bilingual text extraction accuracy",
+        "Eliminated database I/O bottlenecks by implementing distributed Redis caching layer increasing API throughput by 30% for 500 concurrent users",
+        "Integrated CI/CD workflows for automated model deployment reducing release cycle time from weeks to under 3 months"
+      ]
+    },
+    {
+      "company": "Accenture",
+      "position": "Advanced Application Engineering Analyst",
+      "website": "https://www.accenture.com",
+      "startDate": "2023-06",
+      "endDate": "2023-08",
+      "summary": "Engineered automated threat detection and SOAR playbooks for enterprise security monitoring.",
+      "highlights": [
+        "Engineered automated threat detection logic in Azure Sentinel using KQL processing 10 million daily log events",
+        "Designed Python-based SOAR playbooks to automate incident response reducing Mean Time to Respond (MTTR) by 80%",
+        "Mapped detection rules to MITRE ATT&CK framework achieving 89% classification accuracy",
+        "Hardened application perimeters by identifying and patching 15 critical vulnerabilities including SQL injection and XSS vectors"
+      ]
+    },
+    {
+      "company": "Indian Red Cross Society",
+      "position": "Web Developer",
+      "website": "https://indianredcross.org",
+      "startDate": "2022-05",
+      "endDate": "2022-07",
+      "summary": "Delivered Drupal-based CMS to digitize volunteer registry.",
+      "highlights": [
+        "Delivered Drupal-based CMS to digitize volunteer registry reducing manual data entry efforts by 50% for 10k monthly visitors"
       ]
     }
   ],
   "education": [
     {
       "institution": "University of Maryland, College Park",
-      "area": "Ph.D. in Measurement, Statistics, and Evaluation",
-      "studyType": "Doctoral",
-      "startDate": "2023-08",
-      "endDate": "2028-05",
-      "gpa": "4.0",
-      "courses": [
-        "Advanced Psychometric Theory",
-        "Causal Inference Methods",
-        "Structural Equation Modeling",
-        "Bayesian Data Analysis",
-        "Multilevel Modeling",
-        "Item Response Theory"
-      ]
-    },
-    {
-      "institution": "Indian Institute of Technology Kanpur",
-      "area": "M.Sc. in Statistics",
+      "area": "Master of Science, Survey Data Science (Data Science Track)",
       "studyType": "Master's",
-      "startDate": "2020-07",
-      "endDate": "2022-05",
-      "gpa": "9.2/10",
+      "startDate": "2024-08",
+      "endDate": "2026-05",
+      "gpa": "3.814/4.0",
       "courses": [
-        "Mathematical Statistics",
-        "Regression Analysis",
-        "Multivariate Analysis",
-        "Statistical Computing",
-        "Time Series Analysis",
-        "Machine Learning"
+        "Survey Methodology",
+        "Machine Learning",
+        "Data Privacy",
+        "Natural Language Processing",
+        "Causal Inference",
+        "Geospatial Data Analysis"
       ]
     },
     {
-      "institution": "Banaras Hindu University",
-      "area": "B.Sc. (Honors) in Statistics",
+      "institution": "Birla Institute of Technology and Science (BITS Pilani)",
+      "area": "Bachelor of Engineering (Honours), Civil Engineering; Minor in Data Science",
       "studyType": "Bachelor's",
-      "startDate": "2017-07",
-      "endDate": "2020-05",
-      "gpa": "8.8/10",
+      "startDate": "2020-11",
+      "endDate": "2024-07",
+      "gpa": "3.327/4.0",
       "courses": [
-        "Probability Theory",
-        "Statistical Inference",
+        "Data Structures & Algorithms",
+        "Machine Learning",
+        "Database Systems",
+        "Statistics",
         "Linear Algebra",
-        "Real Analysis",
-        "Operations Research",
-        "Sampling Theory"
+        "Probability Theory"
       ]
     }
   ],
   "skills": [
     {
-      "name": "Statistical Software",
-      "level": "Expert",
-      "keywords": ["R", "Python", "SAS", "SPSS", "Stata", "Mplus", "JAGS", "Stan"]
-    },
-    {
       "name": "Programming",
+      "level": "Expert",
+      "keywords": ["Python", "R", "Java", "C", "JavaScript", "TypeScript", "HTML/CSS", "Bash/Shell"]
+    },
+    {
+      "name": "Data & Databases",
       "level": "Advanced",
-      "keywords": ["Python", "R", "C++", "SQL", "Git", "LaTeX"]
+      "keywords": ["SQL", "MySQL", "PostgreSQL", "MongoDB", "Cassandra", "Snowflake", "Neo4j", "Pinecone", "Apache Spark", "Kafka"]
     },
     {
-      "name": "Statistical Methods",
+      "name": "AI/ML",
       "level": "Expert",
-      "keywords": [
-        "Causal Inference",
-        "Structural Equation Modeling",
-        "Multilevel Modeling",
-        "Item Response Theory",
-        "Bayesian Analysis",
-        "Machine Learning",
-        "Psychometric Methods"
-      ]
+      "keywords": ["PyTorch", "TensorFlow", "Keras", "Hugging Face", "LangChain", "LlamaIndex", "LangGraph", "PySpark", "NLTK", "SpaCy", "Scikit-Learn"]
     },
     {
-      "name": "Data Analysis",
+      "name": "DevOps & Cloud",
+      "level": "Advanced",
+      "keywords": ["Git", "Docker", "Kubernetes", "Jenkins", "CI/CD", "REST APIs", "AWS", "Azure", "GCP", "Terraform", "Ansible"]
+    },
+    {
+      "name": "Core Competencies",
       "level": "Expert",
-      "keywords": [
-        "Large-scale Data Analysis",
-        "Missing Data Methods",
-        "Longitudinal Data Analysis",
-        "Survey Methodology",
-        "Experimental Design"
-      ]
+      "keywords": ["LLMs", "Generative AI", "RLHF/DPO", "Deep Learning", "NLP", "Computer Vision", "Survey Methodology", "Causal Inference", "MLOps"]
     }
   ],
   "languages": [
@@ -187,31 +189,16 @@
   ],
   "interests": [
     {
-      "name": "Causal Inference",
-      "keywords": [
-        "Propensity Score Methods",
-        "Instrumental Variables",
-        "Difference-in-Differences",
-        "Regression Discontinuity"
-      ]
+      "name": "Machine Learning & AI",
+      "keywords": ["RAG Architectures", "Generative AI", "LLMs", "MLOps"]
     },
     {
-      "name": "Psychometrics",
-      "keywords": [
-        "Item Response Theory",
-        "Test Equating",
-        "Differential Item Functioning",
-        "Computerized Adaptive Testing"
-      ]
+      "name": "Data Engineering",
+      "keywords": ["ETL Pipelines", "Geospatial Analytics", "Data Quality", "Scalable Systems"]
     },
     {
-      "name": "Computational Statistics",
-      "keywords": [
-        "Monte Carlo Methods",
-        "Bootstrap Methods",
-        "High-Dimensional Data Analysis",
-        "Statistical Learning"
-      ]
+      "name": "Survey Data Science",
+      "keywords": ["Survey Methodology", "Causal Inference", "Missing Data", "Longitudinal Analysis"]
     }
   ],
   "references": [],
@@ -222,20 +209,6 @@
       "releaseDate": "2024",
       "website": "",
       "summary": "A comprehensive review of causal inference methods applicable to educational data, including propensity score methods, instrumental variables, and regression discontinuity designs."
-    },
-    {
-      "name": "Psychometric Properties of Assessment Instruments",
-      "publisher": "Educational and Psychological Measurement",
-      "releaseDate": "2023",
-      "website": "",
-      "summary": "Investigation of the psychometric properties of educational assessment instruments using item response theory and factor analysis."
-    },
-    {
-      "name": "Statistical Computing Methods for Large-Scale Data",
-      "publisher": "Computational Statistics & Data Analysis",
-      "releaseDate": "2022",
-      "website": "",
-      "summary": "Development and evaluation of efficient computational methods for analyzing large-scale educational and health data."
     }
   ],
   "presentations": [
@@ -245,36 +218,15 @@
       "date": "2024-04",
       "location": "Philadelphia, PA, USA",
       "description": "Presented novel methods for causal inference in educational settings with complex data structures."
-    },
-    {
-      "name": "Item Response Theory Applications in Assessment",
-      "event": "National Council on Measurement in Education (NCME) Annual Meeting",
-      "date": "2024-04",
-      "location": "Philadelphia, PA, USA",
-      "description": "Demonstrated practical applications of IRT in educational assessment development and validation."
-    },
-    {
-      "name": "Machine Learning in Educational Data Mining",
-      "event": "International Conference on Educational Data Mining",
-      "date": "2023-07",
-      "location": "Bengaluru, India",
-      "description": "Explored machine learning techniques for pattern discovery in educational data."
     }
   ],
   "teaching": [
     {
-      "course": "EDMS 645: Intermediate Statistics",
-      "institution": "University of Maryland, College Park",
-      "date": "2024-01",
-      "role": "Graduate Teaching Assistant",
-      "description": "Assisted with instruction in regression analysis, ANOVA, and multivariate methods."
-    },
-    {
-      "course": "EDMS 651: Introduction to Measurement Theory",
-      "institution": "University of Maryland, College Park",
-      "date": "2023-08",
-      "role": "Graduate Teaching Assistant",
-      "description": "Supported teaching of classical test theory, reliability, and validity concepts."
+      "course": "Data Privacy and Survey Methodology",
+      "institution": "Joint Program in Survey Methodology (JPSM), University of Maryland",
+      "date": "2025-02",
+      "role": "Teaching and Graduate Assistant",
+      "description": "Translated complex data privacy frameworks into actionable learning modules for 23 graduate students; reengineered Canvas LMS infrastructure with automation scripts reducing course setup time by 40%."
     }
   ],
   "portfolio": [
@@ -283,21 +235,14 @@
       "category": "automation",
       "date": "2024",
       "url": "https://github.com/namo507/n8n-Project",
-      "description": "Built an intelligent workflow using n8n, OpenWeatherMap API, and Supabase to automatically generate and email daily weather briefings. Features include weather data collection, JavaScript-based condition classification, PostgreSQL storage for historical analysis, and HTML email generation with contextual recommendations."
+      "description": "Built an intelligent workflow using n8n, OpenWeatherMap API, and Supabase to automatically generate and email daily weather briefings."
     },
     {
-      "name": "Causal Inference Toolkit in R",
-      "category": "research",
+      "name": "Trademark Search Engine",
+      "category": "ml",
       "date": "2024",
-      "url": "https://github.com/namo507/causal-inference-toolkit",
-      "description": "Developed an R package implementing various causal inference methods including propensity score matching, inverse probability weighting, and doubly robust estimation."
-    },
-    {
-      "name": "IRT Simulation Study Framework",
-      "category": "research",
-      "date": "2023",
-      "url": "https://github.com/namo507/irt-simulations",
-      "description": "Created a comprehensive simulation framework for evaluating item response theory models under various conditions."
+      "url": "https://github.com/namo507",
+      "description": "Production-grade trademark search engine processing 2.4 million images using FastAPI, Faiss vector embeddings, and HNSW indexing."
     }
   ]
 }
