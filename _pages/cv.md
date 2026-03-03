@@ -76,13 +76,14 @@ redirect_from:
 </style>
 
 <div class="cv-header">
-
-## Namit Shrivastava
-
-College Park, MD | (240) 476-8513 | [namit507@gmail.com](mailto:namit507@gmail.com)
-
-[LinkedIn](https://linkedin.com/in/namit-shrivastava-baab47204) | [GitHub](https://github.com/namo507) | [Google Scholar](https://scholar.google.com/citations?user=7bvTB-sAAAAJ) | [ORCID](https://orcid.org/0009-0005-7920-8350)
-
+  <h2 style="color:white;margin-bottom:0.5rem;">Namit Shrivastava</h2>
+  <p>College Park, MD | (240) 476-8513 | <a href="mailto:namit507@gmail.com">namit507@gmail.com</a></p>
+  <p>
+    <a href="https://linkedin.com/in/namit-shrivastava-baab47204">LinkedIn</a> |
+    <a href="https://github.com/namo507">GitHub</a> |
+    <a href="https://scholar.google.com/citations?user=7bvTB-sAAAAJ">Google Scholar</a> |
+    <a href="https://orcid.org/0009-0005-7920-8350">ORCID</a>
+  </p>
 </div>
 
 ## Research Summary
