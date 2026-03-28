@@ -1,0 +1,299 @@
+\documentclass[11pt,letterpaper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{xcolor}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+% Section formatting
+\titleformat{\section}{\large\bfseries\uppercase}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{12pt}{6pt}
+
+% Custom commands
+\newcommand{\cvheader}[5]{
+    \begin{center}
+        {\LARGE\bfseries #1}\\[4pt]
+        #2 \textbar\ #3 \textbar\ \href{mailto:#4}{#4}\\[2pt]
+        \href{#5}{LinkedIn} \textbar\ \href{https://github.com/namo507/}{GitHub} \textbar\
+        \href{https://namo507.github.io/}{Website}
+    \end{center}
+}
+
+\newcommand{\cvsection}[1]{\section*{#1}}
+
+\newcommand{\cventry}[4]{
+    \noindent\textbf{#1} \hfill #2\\
+    \textit{#3} \hfill #4\\[4pt]
+}
+
+% No page numbers
+\pagestyle{empty}
+
+% Spacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\begin{document}
+
+% Header
+\cvheader{Namit Shrivastava}{College Park, MD, USA}{(240)-476-8513}{namit507@gmail.com}{https://www.linkedin.com/in/namit-shrivastava-baab47204/}
+
+\vspace{8pt}
+
+% Summary
+\cvsection{Research Summary}
+
+Graduate researcher with proven expertise in survey methodology, causal inference, and advanced statistical modeling. Conducted geospatial epidemiological research at the University of Michigan's Institute for Social Research by developing stratified analytical frameworks for large-scale census tract data with complex missing data patterns. Published survey research in peer-reviewed venues (Springer) and presented at AAPOR on transformer-based sentiment analysis methodologies. Academic background combines rigorous statistical training with practical survey research experience, achieving Dean's Fellowship recognition. Research agenda focuses on developing trustworthy data integration frameworks that fuse survey methodology principles with generative AI, deep learning architectures, and privacy-preserving computational methods to advance automated data collection, quality assurance, and responsible measurement at scale.
+
+% Education
+\cvsection{Education}
+
+\cventry{University of Maryland, College Park}{Aug 2024 - May 2026}{Master of Science, Survey \& Data Science (Data Science Track)}{College Park, MD, USA}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item \textbf{GPA: 3.814/4.0} \textbar\ Dean's Fellowship Award Winner AY 2025-26
+    \item Coursework: Statistical Modeling and Machine Learning (I and II), Fundamentals of Data Collection (I and II), Experimental Design and Causal Inference, Fundamentals of Computational Data Display, Long-Context Language Models, Machine Learning for Social Science, Applied Sampling, Applications of Statistical Modeling, Total Survey Error and Data Quality I, Fundamentals of Inference
+\end{itemize}
+
+\cventry{Birla Institute of Technology and Science (BITS) Pilani}{Nov 2020 - Jul 2024}{Bachelor of Engineering (Honours), Civil Engineering (Minor: Data Science)}{Pilani, RJ, India}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item \textbf{GPA: 3.327/4.0}
+    \item Coursework: Foundations Of Data Science, Object Oriented Programming, Applied Statistical Methods, Artificial Intelligence, Data Mining, Data Visualization, Human Resource Development, Technical Report Writing, Computer Programming, Principles of Management, Electrical Sciences, Machine Learning, Mathematics (I, II and III), Operating Systems, Probability and Statistics, Business Communication, Engineering Graphics, Fluid Mechanics, Construction Plan and Tech, Analysis of Structures
+\end{itemize}
+
+% Research Experience
+\cvsection{Professional Experience}
+
+\cventry{Social Data Science Center, University of Maryland}{Jan 2026 - May 2026}{Graduate Research Assistant}{College Park, MD, USA}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Engineered Python automation suite interacting with CKAN REST API to \textbf{manage lifecycle of 18 datasets} ensuring 100 percent resource accessibility and data integrity
+    
+    \item Architected scalable data taxonomy for university repository transforming flat catalogs into hierarchical thematic groups which \textbf{improved search discoverability by 35\%}
+    
+    \item Implemented bulk metadata update scripts \textbf{reducing manual maintenance overhead by 90\%} and ensuring strict schema compliance across the repository
+\end{itemize}
+
+\cventry{Institute for Social Research, University of Michigan}{May 2025 - Dec 2025}{Research Assistant}{Ann Arbor, MI, USA}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Architected and deployed a production-scale geospatial data integration pipeline processing \textbf{129,572 U.S. census tracts} across \textbf{3 RUCA} (Rural-Urban Commuting Area) strata, achieving \textbf{100\% broadband data completeness} through multi-source fusion (FCC, ACS, CDC) and reducing baseline missingness by \textbf{28.6\%} via composite measure imputation.
+    
+    \item Developed and validated a stratified epidemiological modeling framework analyzing COVID-19 incidence patterns across \textbf{2,788 census tracts} with \textbf{100\% social determinant coverage}, uncovering statistically significant non-linear rural inflections (\textbf{p < 0.01}) and heterogeneous broadband effects by urbanicity.
+    
+    \item Designed and implemented a multi-stage data quality assurance protocol integrating Moran's I spatial autocorrelation analysis (identifying \textbf{15\% spatial clustering violations}), temporal coverage validation (achieving \textbf{85\% of tracts with} \textbf{≥95\% completeness}), and RUCA-stratified missingness diagnostics.
+\end{itemize}
+
+\cventry{Joint Program in Survey Methodology (JPSM)}{Feb 2025 - May 2026}{Teaching and Graduate Assistant}{College Park, MD, USA}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Assisted Dr. Jörg Drechsler from Institute for Employment Research in teaching SURV735, effectively guiding \textbf{23 students} in understanding data privacy and confidentiality principles.
+    
+    \item Redesigned and standardized Canvas LMS infrastructure for \textbf{10+ JPSM instructors} supporting \textbf{125+ graduate students} by implementing modular course templates, automated grading workflows, and accessibility-compliant materials. This increased course satisfaction scores by \textbf{30\%} and reduced instructor setup time by \textbf{40\%}.
+\end{itemize}
+
+\cventry{Legistify Services Private Limited}{Jan 2024 - Jun 2024}{Machine Learning Engineer}{Gurugram, HR, India}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Engineered a scalable logo similarity detection system processing \textbf{2.4 million images} for intellectual property infringement analysis. Implemented perceptual hashing (imagehash), feature extraction (SIFT), and approximate nearest neighbor search (Faiss) via FastAPI microservice. Achieved \textbf{92\% precision} on trademark conflict identification and reduced manual review time by \textbf{70\%}.
+    
+    \item Deployed production Azure Cognitive Services API leveraging Vision Studio 4.0 for multi-modal document analysis (OCR, object detection, image captioning). Processed \textbf{50,000+ legal filings} with \textbf{95\% extraction accuracy} and enabled bilingual text recognition (English/Hindi) using EasyOCR. This system directly supports \textbf{150+ client cases monthly}.
+    
+    \item Developed phonetic trademark similarity algorithm using double metaphone and Jellyfish string matching to compare \textbf{50,000 new trademarks} against \textbf{300,000 existing database entries}. Achieved \textbf{92\% accuracy} in conflict detection while reducing computational overhead by \textbf{60\%} through intelligent pre-filtering and optimized SQL queries.
+    
+    \item Integrated and stress-tested Legistrak API ecosystem by executing \textbf{150+ REST API calls} via Postman with \textbf{95\% success rate}. Identified \textbf{12 critical bottlenecks} and implemented caching strategies that increased data retrieval efficiency by \textbf{30\%}. This improved platform responsiveness for \textbf{500+ daily active users}.
+\end{itemize}
+
+\cventry{Accenture}{Jun 2023 - Aug 2023}{Advanced Application Engineering Analyst}{Bangalore, KA, India}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Monitored enterprise security infrastructure by analyzing threat intelligence feeds from MITRE ATT\&CK, AlienVault OTX, and proprietary sources. Achieved \textbf{89\% accuracy} in threat classification and enabled proactive defense against \textbf{25+ emerging vulnerabilities}. This contributed to a \textbf{20\% reduction} in incident detection latency.
+    
+    \item Conducted penetration testing and vulnerability assessments on \textbf{50+ web applications}, networks, and cloud infrastructure using Burp Suite, Nmap, and Metasploit. Identified and documented \textbf{120+ security vulnerabilities} (\textbf{15 critical, 45 high-severity}) that directly informed remediation roadmaps for Fortune 500 clients.
+    
+    \item Supported incident response operations during \textbf{3 security breaches} by performing log analysis with Kusto Query Language (KQL) and Azure Sentinel. Assisted with containment and forensics while contributing to post-incident reports. This reduced mean time to recovery (MTTR) by \textbf{80\%} through automated runbook implementation.
+    
+    \item Developed Python automation scripts for log parsing, threat indicator extraction, and security metrics dashboarding. Processed \textbf{10M+ daily log events} and generated executive-level threat summary reports that enabled data-driven security decision-making for C-suite stakeholders.
+\end{itemize}
+
+\cventry{Indian Red Cross Society}{May 2022 - Jul 2022}{Web Developer}{Bangalore, KA, India}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Designed and deployed a Drupal-based content management system for volunteer registry and donor database management. Streamlined volunteer onboarding workflows and reduced manual data entry time by \textbf{50\%}.
+    
+    \item Localized IRCS main website by implementing multilingual support for Hindi and Kannada regional languages. Conducted comprehensive testing for functionality, performance, and security. Achieved \textbf{95\% bug-free} user experience across \textbf{10,000+ monthly visitors}.
+\end{itemize}
+
+% Publications and Projects
+\cvsection{Publications and Projects}
+
+\textbf{Achieving Sustainability in Supply Chain during Disruption Times: Role of Industry 4.0}\\
+\textit{Advances in Data-Driven Computing and Intelligent Systems (Springer)} \hfill Aug 2023 - Feb 2024\\
+BITS Goa, India \textbar\ \href{https://www.springerprofessional.de/en/achieving-sustainability-in-supply-chain-during-disruption-times/26762004}{[Publication Link]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Designed and executed a qualitative survey study with \textbf{200+ automotive supply chain experts} across India, employing fuzzy-set Analytical Hierarchy Process (FAHP) to rank \textbf{5 Industry 4.0 technologies} and \textbf{6 green supply chain practices}. Achieved consistency ratios below \textbf{0.10 threshold}, validating expert judgment reliability across all matrices.
+    
+    \item Developed a hierarchical Interpretive Structural Modeling (ISM) framework integrating MICMAC analysis to map causal relationships between digital technologies (IoT, Big Data Analytics, Cloud Computing) and sustainable practices. Identified government regulation and top management commitment as key drivers with highest driving power (score of \textbf{9 out of 9}).
+    
+    \item Established quantitative linkage between Industry 4.0 adoption and green supply chain performance through three-level hierarchical structure. Demonstrated that IoT, BDA, and cloud computing function as critical linkage factors (\textbf{driving power 7, dependence power 7}), enabling effective supplier-customer collaboration and circular economy practices.
+\end{itemize}
+
+\vspace{6pt}
+
+\textbf{Analyzing Public Sentiments of EVs in the Era of Sustainable Transformation}\\
+\textit{80th AAPOR Annual Conference} \hfill Nov 2024 - May 2025\\
+St. Louis, MO \textbar\ \href{https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714}{[Conference Paper]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Engineered a multi-source sentiment analysis pipeline processing \textbf{1.1M+ social media posts} from \textbf{5 Reddit communities} (\textbf{550K comments}) and \textbf{40 New York Times articles}. Implemented DistilBERT transformer model achieving \textbf{91.6\% classification accuracy} on electric vehicle discourse spanning 2020-2024.
+    
+    \item Discovered systematic bias in large language model sentiment prediction through comparative analysis of \textbf{10 Groq LLM variants} (Llama 3.1/3.2 series, Mixtral). Found LLMs exhibited \textbf{+0.57 positive sentiment bias} compared to actual Reddit data (\textbf{M=-0.18, SD=0.52}), with statistical significance (\textbf{F(2,549)=28.43}).
+    
+    \item Identified temporal trends showing \textbf{35\% increase in negative EV sentiment} on Reddit post-2022 despite rising adoption rates, while NYT coverage remained consistently negative (\textbf{M=-0.23}) for core EV terms but positive for Tesla and autonomous keywords. Demonstrated that Llama-3.2-90b-vision-preview best approximated human sentiment patterns.
+\end{itemize}
+
+
+
+\vspace{6pt}
+\textbf{Player Market Value Analysis in Elite European Football}\\
+\textit{Graduate Research Project} \hfill Sep 2025 -- Dec 2025\\
+University of Maryland, College Park, MD, USA \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Developed a cross-classified multilevel model analyzing \textbf{7,023} player-season observations from \textbf{2,159} elite European football players, explaining \textbf{78\%} player-level variance and showing squad-status playing time drives a \textbf{42\%} market valuation premium over traditional performance metrics.
+    \item Engineered a cubic polynomial time-series model capturing non-linear market dynamics (\textbf{23.7} quadratic contraction; \textbf{11} cubic correction), isolating COVID-19's structural impact on the \textbf{€38bn} transfer market and quantifying valuation gaps (\textbf{65\%} goalkeeper discount; \textbf{34\%} East Asian discount; \textbf{21\%} Latin American premium; \textbf{17\%} domestic-citizen discount).
+\end{itemize}
+
+
+\vspace{6pt}
+\textbf{English Premier League (1992--93 to 2021--22): Spending Analysis and 20-Year Forecasting}\\
+\textit{Course Project -- Sports Analytics} \hfill Jan 2025 -- Apr 2025\\
+University of Maryland, College Park, MD, USA \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Automated extraction, cleaning, and integration of \textbf{30} EPL seasons (1992--2021) into a unified dataset with \textbf{600+} club-season records to support advanced analytics and long-horizon forecasting.
+    \item Built and evaluated Random Forest, ARIMA, Prophet, LSTM, and SVR models, achieving \textbf{72.3\%} out-of-sample classification accuracy and generating \textbf{20-year} forecasts; quantified that higher average annual expenditure corresponds to finishing \textbf{2--4} places higher and visualized a \textbf{500\%} increase in average club expenditure since league inception.
+\end{itemize}
+
+\vspace{6pt}
+\textbf{Air Pollution Abatement and Modeling}\\
+\textit{Undergraduate Thesis Project} \hfill Aug 2023 -- Dec 2023\\
+Birla Institute of Technology and Science (BITS) Pilani, Pilani, Rajasthan, India \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Conducted an air quality monitoring study in Pilani using APM 460/APM 550 cyclone-based respirable dust samplers, processing \textbf{26} ambient air samples across \textbf{766} hours and estimating PM\textsubscript{10} mean \textbf{184.2} \textmu g/m\textsuperscript{3} with peaks \textbf{307.6} \textmu g/m\textsuperscript{3}; observed exceedance of national standards by \textbf{64.5\%}.
+    \item Developed ML forecasting models (Linear Regression, Decision Tree, Random Forest) and implemented a Gaussian plume dispersion model achieving \textbf{R\textsuperscript{2}=0.87} with RMSE \textbf{12.4} \textmu g/m\textsuperscript{3} for PM\textsubscript{10} (and \textbf{R\textsuperscript{2}=0.85}, RMSE \textbf{8.7} \textmu g/m\textsuperscript{3} for PM\textsubscript{2.5}), evaluating \textbf{4} emission-reduction scenarios with up to \textbf{24\%} projected pollution reduction.
+\end{itemize}
+
+\vspace{6pt}
+\textbf{Applications of ML/IoT in Concrete Technology and Structural Health Monitoring}\\
+\textit{Undergraduate Research Project} \hfill May 2023 -- Dec 2023\\
+Birla Institute of Technology and Science (BITS) Pilani, Pilani, Rajasthan, India \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Developed a multilabel CNN using ResNet50/ResNet101 on \textbf{42,520} road-surface images (1920$\times$1080) across \textbf{5} distress categories, achieving \textbf{86.67\%} accuracy, \textbf{88.19\%} F1-score (80/20 split) and reducing manual road inspection time by an estimated \textbf{90\%}.
+    \item Expanded training data from \textbf{52,009} to \textbf{245,735} labeled distress instances via augmentation and deployed a multilabel classifier using binary cross-entropy with sigmoid activation, supporting multi-distress images and enabling scalable road monitoring workflows.
+\end{itemize}
+
+\vspace{6pt}
+\textbf{LEXNet: Lightweight Explainable CNNs for Internet Traffic Classification}\\
+\textit{Undergraduate Research Project} \hfill Aug 2023 -- Dec 2023\\
+Birla Institute of Technology and Science (BITS) Pilani, Pilani, Rajasthan, India \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Architected LEXNet for real-time traffic classification across \textbf{1.5M} network flows and \textbf{200} application classes, matching ResNet-level accuracy while reducing model size by \textbf{97\%} (to \textbf{118,880} parameters) and cutting inference time by \textbf{93\%} for deployment on resource-constrained routers.
+    \item Engineered LERes and LProto components reducing backbone parameters by up to \textbf{19\%--36\%} and CPU inference time by up to \textbf{24\%--41\%}, while improving accuracy by \textbf{4\%} and providing faithful prototype-based explanations that outperform ProtoPNet and LSTM/ResNet baselines.
+\end{itemize}
+
+\vspace{6pt}
+\textbf{Madhav Gadgil vs. Kasturirangan Reports: Western Ghats Conservation Policy Analysis}\\
+\textit{Course Project} \hfill Apr 2023\\
+Birla Institute of Technology and Science (BITS) Pilani, Pilani, Rajasthan, India \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Conducted environmental policy analysis comparing two Western Ghats conservation frameworks across \textbf{6} states, \textbf{44} districts, and \textbf{142} taluks; quantified ESA coverage differences (Gadgil: \textbf{75\%} / \textbf{137,000} hectares vs. Kasturirangan: \textbf{37\%} / \textbf{60,000} hectares), a \textbf{50.7\%} reduction in protected coverage.
+    \item Analyzed governance and zoning approaches (Gadgil ESA-1/2/3 allocation: \textbf{60\%/15\%/25\%} vs. Kasturirangan emphasis on \textbf{90\%} natural landscape protection with \textbf{8\%} cultural-use allocation), highlighting a shift from bottom-up Gram Sabha governance to centralized working-group execution.
+\end{itemize}
+
+\vspace{6pt}
+\textbf{Active Learning for Forest Cover Classification}\\
+\textit{Course Project -- Machine Learning} \hfill Sep 2022 -- Dec 2022\\
+Birla Institute of Technology and Science (BITS) Pilani, Pilani, Rajasthan, India \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Implemented an active learning framework on a forest cover dataset of \textbf{581,012} observations with \textbf{54} features, achieving \textbf{85\%} accuracy using Entropy Sampling and outperforming random sampling by approximately \textbf{15} percentage points for \textbf{7} cover types.
+    \item Compared \textbf{5} active learning strategies and built a Query-by-Committee ensemble (Random Forest + Decision Trees), demonstrating uncertainty-based sampling reduces labeling needs by \textbf{60--70\%} while maintaining \textbf{82--85\%} model accuracy.
+\end{itemize}
+
+\vspace{6pt}
+\textbf{Automated Plagiarism Detector for Text and Images}\\
+\textit{Course Project -- Artificial Intelligence} \hfill Sep 2022 -- Dec 2022\\
+Birla Institute of Technology and Science (BITS) Pilani, Pilani, Rajasthan, India \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Developed an automated plagiarism detection system implementing the Winnowing algorithm with a dual-search architecture (local database + MSN Live Search), supporting essays, code, and podcast transcripts; achieved \textbf{68.1\%} accuracy with a LinearSVC classifier and enabled template fingerprint removal to reduce false positives.
+    \item Engineered an image plagiarism module using Average Hash (A-Hash) with 8$\times$8 grayscale hashing and automated Excel reporting with hash-difference visualization, reducing manual plagiarism review time by an estimated \textbf{95\%}.
+\end{itemize}
+
+\vspace{6pt}
+\textbf{Statistical Analysis and Forecasting of Solar Energy}\\
+\textit{Course Project -- Applied Statistical Methods} \hfill Sep 2022 -- Dec 2022\\
+Birla Institute of Technology and Science (BITS) Pilani, Pilani, Rajasthan, India \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Engineered a solar energy forecasting system on a \textbf{14-year} dataset (2000--2014) with \textbf{8} meteorological parameters, identifying correlations exceeding \textbf{0.80} for key GHI factors and selecting beta distributions via Kolmogorov--Smirnov testing.
+    \item Built AR/MA/ARMA/ARIMA/SARIMA models for solar radiation prediction, achieving \textbf{5.93\%} MAPE using SARIMA on \textbf{781} weekly observations and demonstrating strong accuracy with lower computational cost than ML baselines.
+\end{itemize}
+
+
+\vspace{6pt}
+\textbf{Voice Gender Recognition using Acoustic Features}\\
+\textit{Independent Data Science Project} \hfill Jul 2022\\
+Birla Institute of Technology and Science (BITS) Pilani, Pilani, Rajasthan, India \textbar\ \href{https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/}{[LinkedIn]}
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Developed a gender recognition model on \textbf{3,168} voice samples with \textbf{20} acoustic features, benchmarking \textbf{5} ML algorithms and achieving \textbf{98.3\%} classification accuracy using Random Forest (50 estimators).
+    \item Tuned a Random Forest classifier (entropy criterion; max\_depth=6; n\_estimators=50) achieving \textbf{98.6\%} training and \textbf{98.3\%} testing accuracy on a balanced dataset (\textbf{1,584} male / \textbf{1,584} female), with only \textbf{11} misclassifications.
+\end{itemize}
+
+
+
+
+
+% Technical Skills
+\cvsection{Technical Skills}
+
+\textbf{Programming:} Python, R, Java, C++, JavaScript, TypeScript, HTML/CSS, Bash/Shell\\
+\textbf{Data \& Databases:} SQL (MySQL, PostgreSQL), NoSQL (MongoDB, Cassandra), Snowflake, Neo4j, Pinecone, Apache Spark, Kafka\\
+\textbf{AI/ML:} PyTorch, TensorFlow, Keras, Hugging Face, LangChain, LlamaIndex, LangGraph, PySpark, NLTK, Spacy, SkLearn\\
+\textbf{DevOps:} Git, Docker, Kubernetes, Jenkins CI/CD, REST APIs, Django, Flask, Angular, React.js, Terraform, Ansible\\
+\textbf{Cloud:} AWS (EKS, S3, EC2, Lambda, Sagemaker), Azure, GCP, Tableau, Power BI, MLFlow, Qualtrics, STATA\\
+\textbf{Core:} LLMs, Generative AI, RLHF/DPO, Deep Learning, NLP, Computer Vision, Survey Methodology, Causal Inference, MLOps
+
+% Leadership & Service
+\cvsection{Leadership \& Service}
+
+\textbf{Terrapin Leadership Institute, University of Maryland} \hfill Aug 2024 - May 2025\\
+\textit{Member} \hfill College Park, MD
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Achieved \textbf{100\% participation} in workshops on leadership, ethics, inclusion, and resilience.
+    \item Enhanced group dialogue quality by contributing reflective insights in all sessions, fostering more inclusive and engaging
+discussions among peers.
+\end{itemize}
+
+\textbf{National Service Scheme (NSS), BITS Pilani} \hfill Mar 2022 - Dec 2023\\
+\textit{Executive Committee \& Blood Donation Camp Core Team Member} \hfill Pilani, RJ, India
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Planned \textbf{10+ activities} to improve English skills and confidence in villages around campus.
+    \item Organized blood donation camp coordinating \textbf{60+ volunteers}, managing data for \textbf{1,000+ donors}, achieving \textbf{844 successful donations} within 2 days.
+\end{itemize}
+
+\textbf{Peer Mentorship Program (PMP), BITS Pilani} \hfill Aug 2021 - Dec 2023\\
+\textit{Mentor} \hfill Pilani, RJ, India
+\begin{itemize}[leftmargin=16pt, noitemsep, topsep=2pt]
+    \item Assisted Juniors with advice and materials to ensure they have a smooth transition into college life and succeed academically.
+\end{itemize}
+
+% Certifications & Awards
+\cvsection{Certifications \& Achievements}
+
+\textbf{Certifications:} Microsoft Certified: Azure AI Fundamentals \textbar\ API-based Programming (Postman) \textbar\ AI For Everyone (Coursera) \textbar\ Deep Learning \& Machine Learning (Smartknower, Internshala)
+
+\textbf{Achievements:} \textbf{1st rank} in Human Resource Development (\textbf{180 students}, BITS Pilani) \textbar\ \textbf{Top 10} in Water \& Wastewater Treatment (\textbf{98 students}, BITS Pilani) \textbar\ JPSM Dean's Fellowship Award (AY 2025-26, UMD)
+
+\end{document}
