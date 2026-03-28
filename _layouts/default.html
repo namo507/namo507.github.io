@@ -5,13 +5,18 @@ layout: compress
 {% include base_path %}
 
 <!doctype html>
-<html lang="{{ site.locale | slice: 0,2 }}" class="no-js"{% if site.site_theme == "dark" %} data-theme="dark"{% endif %}>
+<html lang="{{ site.locale | slice: 0,2 }}" class="no-js" data-theme="dark">
   <head>
     {% include head.html %}
     {% include head/custom.html %}
   </head>
 
-  <body>
+  <body class="layout--{{ page.layout | default: 'default' }}{% if page.url == '/' %} page-home{% endif %}">
+    <div class="site-background" aria-hidden="true">
+      <span class="site-background__orb site-background__orb--one"></span>
+      <span class="site-background__orb site-background__orb--two"></span>
+      <span class="site-background__grid"></span>
+    </div>
 
     {% include browser-upgrade.html %}
     {% include masthead.html %}

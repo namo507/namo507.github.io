@@ -3,87 +3,23 @@ layout: archive
 title: "Curriculum Vitae"
 permalink: /cv/
 author_profile: true
+excerpt: "Experience, education, research output, and technical focus."
 redirect_from:
   - /resume
 ---
 
 {% include base_path %}
 
-<style>
-.cv-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  margin-bottom: 2rem;
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.cv-header:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-}
-.cv-header a { color: white; transition: opacity 0.2s ease; }
-.cv-header a:hover { opacity: 0.8; }
-.exp-card {
-  background: #f8f9fa;
-  border-left: 4px solid #667eea;
-  padding: 1.2rem;
-  margin-bottom: 1.2rem;
-  border-radius: 0 8px 8px 0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-left-width 0.3s ease;
-}
-.exp-card:hover {
-  transform: translateX(5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  border-left-width: 6px;
-}
-.exp-card h4 { color: #667eea; margin: 0 0 0.3rem 0; }
-.exp-meta { color: #666; font-size: 0.9rem; margin-bottom: 0.8rem; }
-.skill-tag {
-  display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.25rem 0.7rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  margin: 0.15rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: default;
-}
-.skill-tag:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
-}
-.gpa-badge {
-  background: #28a745;
-  color: white;
-  padding: 0.2rem 0.5rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  transition: transform 0.2s ease;
-}
-.gpa-badge:hover { transform: scale(1.1); }
-.award-badge {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-  padding: 0.2rem 0.5rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  transition: transform 0.2s ease;
-}
-.award-badge:hover { transform: scale(1.1); }
-</style>
-
-<div class="cv-header">
-  <h2 style="color:white;margin-bottom:0.5rem;">Namit Shrivastava</h2>
+<div class="page__panel page__panel--highlight page__panel--compact" data-reveal>
+  <p class="page__eyebrow">Curriculum Vitae</p>
+  <h2>Namit Shrivastava</h2>
   <p>College Park, MD | (240) 476-8513 | <a href="mailto:namit507@gmail.com">namit507@gmail.com</a></p>
-  <p>
-    <a href="https://linkedin.com/in/namit-shrivastava-baab47204">LinkedIn</a> |
-    <a href="https://github.com/namo507">GitHub</a> |
-    <a href="https://scholar.google.com/citations?user=7bvTB-sAAAAJ">Google Scholar</a> |
-    <a href="https://orcid.org/0009-0005-7920-8350">ORCID</a>
-  </p>
+  <div class="page__actions">
+    <a class="button-link button-link--primary" href="https://www.linkedin.com/in/namit-shrivastava-baab47204/">LinkedIn</a>
+    <a class="button-link" href="https://github.com/namo507">GitHub</a>
+    <a class="button-link" href="https://scholar.google.com/citations?user=7bvTB-sAAAAJ">Google Scholar</a>
+    <a class="button-link" href="https://orcid.org/0009-0005-7920-8350">ORCID</a>
+  </div>
 </div>
 
 ## Research Summary

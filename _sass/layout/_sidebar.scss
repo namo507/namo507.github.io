@@ -58,6 +58,14 @@
   img {
     width: 100%;
   }
+
+  > div[itemscope] {
+    padding: 1.1rem;
+    border: 1px solid var(--global-border-color);
+    border-radius: 1.3rem;
+    background: var(--global-card-bg-color);
+    box-shadow: 0 18px 40px var(--global-shadow-color);
+  }
 }
 
 .sidebar__right {
@@ -95,10 +103,11 @@
 
   img {
     max-width: 175px;
-    border-radius: 50%;
+    border-radius: 1.2rem;
+    box-shadow: 0 16px 32px var(--global-shadow-color);
 
     @include breakpoint($large) {
-      padding: 5px;
+      padding: 0;
       border: 1px solid var(--global-border-color);
     }
   }
@@ -129,7 +138,7 @@
 }
 .sidebar .author__name {
   font-family: $sans-serif;
-  font-size: $type-size-5;
+  font-size: 1.1rem;
 }
 
 .sidebar .author__desktop {
@@ -150,6 +159,7 @@
 
 .author__bio {
   margin: 0;
+  color: var(--global-text-color-light);
 
   @include breakpoint($large) {
     margin-top: 10px;
@@ -193,10 +203,10 @@
   padding: 10px;
   list-style-type: none;
   border: 1px solid var(--global-border-color);
-  border-radius: $border-radius;
-  background: var(--global-bg-color);
+  border-radius: 1rem;
+  background: var(--global-card-bg-strong);
   z-index: -1;
-  box-shadow: 0 0 10px rgba(#000, 0.25);
+  box-shadow: 0 20px 45px var(--global-shadow-color);
   cursor: default;
 
   @include breakpoint($large) {
@@ -258,7 +268,8 @@
     text-decoration: none;
 
     &:hover {
-      text-decoration: underline;
+      text-decoration: none;
+      color: var(--global-link-color);
     }
   }
 }

@@ -1,202 +1,150 @@
 ---
 permalink: /
-title: "Welcome"
-excerpt: "About me"
+title: "Home"
+excerpt: "Graduate researcher at the intersection of survey methodology, trustworthy AI, and computational social science."
 author_profile: true
+hide_title: true
+hide_excerpt: true
 redirect_from: 
   - /about/
   - /about.html
 ---
 
-<style>
-.hero-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0;
-}
-.stat-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1.2rem;
-  border-radius: 10px;
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: default;
-}
-.stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-}
-.stat-number { font-size: 1.8rem; font-weight: bold; }
-.stat-label { font-size: 0.85rem; opacity: 0.9; }
-.highlight-box {
-  background: #f0f4ff;
-  border-left: 4px solid #667eea;
-  padding: 1rem 1.5rem;
-  margin: 1.5rem 0;
-  border-radius: 0 8px 8px 0;
-  transition: border-left-width 0.3s ease, background 0.3s ease;
-}
-.highlight-box:hover {
-  border-left-width: 6px;
-  background: #e8efff;
-}
-.research-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 1rem 0;
-}
-.research-tag {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.4rem 0.9rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: default;
-}
-.research-tag:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-.timeline-item {
-  border-left: 3px solid #667eea;
-  padding-left: 1.2rem;
-  margin-bottom: 1.2rem;
-  position: relative;
-  transition: padding-left 0.3s ease;
-}
-.timeline-item:hover {
-  padding-left: 1.5rem;
-}
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -7px;
-  top: 5px;
-  width: 10px;
-  height: 10px;
-  background: #667eea;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-}
-.timeline-item:hover::before {
-  transform: scale(1.3);
-}
-.badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  margin-left: 0.5rem;
-  transition: transform 0.2s ease;
-}
-.badge:hover {
-  transform: scale(1.1);
-}
-.cta-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 25px;
-  text-decoration: none;
-  margin: 0.3rem;
-  display: inline-block;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.cta-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-  color: white;
-  text-decoration: none;
-}
-</style>
+<section class="home-hero" data-reveal>
+  <p class="page__eyebrow">Survey Methodology • Data Science • Responsible AI</p>
+  <h1 class="home-hero__title">Designing rigorous measurement systems for AI-enabled research.</h1>
+  <p class="home-hero__lead">I am Namit Shrivastava, a graduate researcher at the University of Maryland building data-intensive workflows that combine survey rigor, computational social science, geospatial analysis, and trustworthy machine learning.</p>
 
-## Hi, I'm Namit!
-
-I'm a **graduate researcher** at the **University of Maryland** specializing in **survey methodology and data science**. I bridge traditional survey research with cutting-edge AI technologies to advance automated data collection, quality assurance, and responsible measurement at scale.
-
-Currently, I serve as a **Research Assistant** at the **University of Michigan's Institute for Social Research**, where I conduct geospatial epidemiological research analyzing COVID-19 patterns across 129,000+ U.S. census tracts.
-
-<div class="hero-stats">
-  <div class="stat-card">
-    <div class="stat-number">129K+</div>
-    <div class="stat-label">Census Tracts Analyzed</div>
+  <div class="page__actions">
+    <a class="button-link button-link--primary" href="{{ '/cv/' | relative_url }}">View CV</a>
+    <a class="button-link" href="{{ '/publications/' | relative_url }}">Publications</a>
+    <a class="button-link" href="{{ '/portfolio/' | relative_url }}">Projects</a>
   </div>
-  <div class="stat-card">
-    <div class="stat-number">1.1M+</div>
-    <div class="stat-label">Social Posts Processed</div>
+
+  <div class="hero-metrics">
+    <article class="metric-card">
+      <span class="metric-card__value">129K+</span>
+      <span class="metric-card__label">Census tracts analyzed</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-card__value">1.1M+</span>
+      <span class="metric-card__label">Social posts processed</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-card__value">2.4M</span>
+      <span class="metric-card__label">Images in ML workflows</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-card__value">91.6%</span>
+      <span class="metric-card__label">Best model accuracy</span>
+    </article>
   </div>
-  <div class="stat-card">
-    <div class="stat-number">2.4M</div>
-    <div class="stat-label">Images in ML Pipeline</div>
+</section>
+
+<section class="page__section page__section--split" data-reveal>
+  <article class="page__panel page__panel--highlight">
+    <p class="page__eyebrow">Research Focus</p>
+    <h2>Turning complex data pipelines into reliable measurement systems.</h2>
+    <p>My work centers on building trustworthy data integration frameworks that connect survey methodology with modern AI systems, so automated collection, classification, and inference stay interpretable and empirically grounded.</p>
+    <ul class="detail-list">
+      <li>Survey-aware AI workflows for data collection and quality assurance.</li>
+      <li>Geospatial and epidemiological modeling over large-scale public datasets.</li>
+      <li>Privacy-preserving and responsible measurement in applied ML systems.</li>
+    </ul>
+  </article>
+
+  <article class="page__panel">
+    <p class="page__eyebrow">Current Roles</p>
+    <div class="timeline-stack">
+      <div class="timeline-card">
+        <h3>Research Assistant</h3>
+        <p>University of Michigan Institute for Social Research</p>
+        <span>Geospatial COVID-19 epidemiology across U.S. census tracts.</span>
+      </div>
+      <div class="timeline-card">
+        <h3>Teaching Assistant</h3>
+        <p>University of Maryland JPSM</p>
+        <span>Data privacy, confidentiality, and quantitative research practice.</span>
+      </div>
+      <div class="timeline-card">
+        <h3>Dean's Fellow</h3>
+        <p>University of Maryland</p>
+        <span>Graduate study in Survey and Data Science, Data Science track.</span>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section class="page__section" data-reveal>
+  <p class="page__eyebrow">Research Interests</p>
+  <div class="tag-cloud">
+    <span class="tag-chip">Survey Methodology</span>
+    <span class="tag-chip">Causal Inference</span>
+    <span class="tag-chip">Transformer NLP</span>
+    <span class="tag-chip">Geospatial Analysis</span>
+    <span class="tag-chip">Privacy-Preserving AI</span>
+    <span class="tag-chip">Statistical Modeling</span>
+    <span class="tag-chip">Deep Learning</span>
+    <span class="tag-chip">Sentiment Analysis</span>
   </div>
-  <div class="stat-card">
-    <div class="stat-number">91.6%</div>
-    <div class="stat-label">Model Accuracy</div>
+</section>
+
+<section class="page__section" data-reveal>
+  <p class="page__eyebrow">Explore</p>
+  <div class="link-grid">
+    <a class="stream-card" href="{{ '/publications/' | relative_url }}">
+      <span class="stream-card__meta">Research</span>
+      <strong>Publications</strong>
+      <span>Conference papers and scholarly work on sentiment analysis, responsible data systems, and applied AI.</span>
+    </a>
+    <a class="stream-card" href="{{ '/portfolio/' | relative_url }}">
+      <span class="stream-card__meta">Build</span>
+      <strong>Projects</strong>
+      <span>Selected technical projects spanning machine learning, forecasting, analytics, and engineering systems.</span>
+    </a>
+    <a class="stream-card" href="{{ '/talks/' | relative_url }}">
+      <span class="stream-card__meta">Present</span>
+      <strong>Talks</strong>
+      <span>Conference presentations and talks translating research into practical, communicable findings.</span>
+    </a>
+    <a class="stream-card" href="{{ '/teaching/' | relative_url }}">
+      <span class="stream-card__meta">Teach</span>
+      <strong>Teaching</strong>
+      <span>Courses and instructional work focused on privacy, methodology, and computational practice.</span>
+    </a>
   </div>
-</div>
+</section>
 
-## Research Summary
+<section class="page__section page__section--split" data-reveal>
+  <article class="page__panel">
+    <p class="page__eyebrow">Education</p>
+    <div class="timeline-stack">
+      <div class="timeline-card">
+        <h3>M.S. in Survey &amp; Data Science</h3>
+        <p>University of Maryland, College Park</p>
+        <span>Aug 2024 – May 2026 • Dean's Fellow • GPA 3.814</span>
+      </div>
+      <div class="timeline-card">
+        <h3>B.E. (Hons) in Civil Engineering</h3>
+        <p>BITS Pilani, India</p>
+        <span>Minor in Data Science • Nov 2020 – Jul 2024 • GPA 3.33</span>
+      </div>
+    </div>
+  </article>
 
-<div class="highlight-box">
-My research agenda focuses on developing <strong>trustworthy data integration frameworks</strong> that fuse survey methodology principles with generative AI, deep learning architectures, and privacy-preserving computational methods. I've published in <strong>Springer</strong> and presented at <strong>AAPOR 2025</strong> on transformer-based sentiment analysis.
-</div>
+  <article class="page__panel">
+    <p class="page__eyebrow">Highlights</p>
+    <ul class="detail-list detail-list--compact">
+      <li>Published in Springer's Advances in Data-Driven Computing and Intelligent Systems.</li>
+      <li>Presented at the 80th AAPOR Annual Conference on EV sentiment analysis.</li>
+      <li>Built ML pipelines processing 2.4M+ images for large-scale classification tasks.</li>
+      <li>Conducted geospatial analysis over 129,572 U.S. census tracts for epidemiological research.</li>
+    </ul>
+  </article>
+</section>
 
-## Research Interests
-
-<div class="research-tags">
-  <span class="research-tag">Survey Methodology</span>
-  <span class="research-tag">Causal Inference</span>
-  <span class="research-tag">Transformer NLP</span>
-  <span class="research-tag">Geospatial Analysis</span>
-  <span class="research-tag">Privacy-Preserving AI</span>
-  <span class="research-tag">Statistical Modeling</span>
-  <span class="research-tag">Deep Learning</span>
-  <span class="research-tag">Sentiment Analysis</span>
-</div>
-
-## Education
-
-<div class="timeline-item">
-  <strong>M.S. in Survey & Data Science</strong> (Data Science Track)<br>
-  <em>University of Maryland, College Park</em> | Aug 2024 – May 2026<br>
-  <span class="badge">Dean's Fellow</span><span class="badge">GPA: 3.814</span>
-</div>
-
-<div class="timeline-item">
-  <strong>B.E. (Hons) in Civil Engineering</strong> (Minor: Data Science)<br>
-  <em>BITS Pilani, India</em> | Nov 2020 – Jul 2024<br>
-  <span class="badge">GPA: 3.33</span>
-</div>
-
-## Current Positions
-
-| Role | Organization | Focus |
-|------|--------------|-------|
-| Research Assistant | UMich Institute for Social Research | Geospatial COVID-19 epidemiology |
-| Teaching Assistant | UMD JPSM | Data Privacy & Confidentiality |
-
-## Recent Highlights
-
-- **Published** in Springer's *Advances in Data-Driven Computing and Intelligent Systems*
-- **Presented** at the 80th AAPOR Annual Conference (May 2025) on EV sentiment analysis
-- **Awarded** JPSM Dean's Fellowship for Academic Year 2025-26
-- **Processing** 129,572 U.S. census tracts for COVID-19 geospatial analysis
-- **Built** ML pipelines processing 2.4M+ images for IP infringement detection
-
-## Let's Connect!
-
-I'm always excited to discuss research collaborations, data science projects, or survey methodology innovations. Feel free to reach out via [email](mailto:namit507@gmail.com), connect on [LinkedIn](https://www.linkedin.com/in/namit-shrivastava-baab47204/), or check out my work on [GitHub](https://github.com/namo507)!
-
----
-
-<p style="text-align: center; margin-top: 2rem;">
-  <a href="/cv/" class="cta-btn">View CV</a>
-  <a href="/publications/" class="cta-btn">Publications</a>
-  <a href="/portfolio/" class="cta-btn">Projects</a>
-</p>
+<section class="page__section page__section--contact" data-reveal>
+  <p class="page__eyebrow">Contact</p>
+  <h2>Open to research collaboration, data science work, and thoughtful conversations.</h2>
+  <p>Reach out via <a href="mailto:namit507@gmail.com">email</a>, connect on <a href="https://www.linkedin.com/in/namit-shrivastava-baab47204/">LinkedIn</a>, or browse code on <a href="https://github.com/namo507">GitHub</a>.</p>
+</section>

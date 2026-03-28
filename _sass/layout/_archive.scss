@@ -15,10 +15,10 @@
   }
 
   a {
-    text-decoration: underline;
+    text-decoration: none;
 
     &:hover {
-      text-decoration: underline;
+      text-decoration: none;
 
       img {
         box-shadow: 0 0 10px rgba(#000, 0.25);
@@ -42,6 +42,7 @@
 .archive__item-title {
   margin-bottom: 0.25em;
   font-family: $sans-serif-narrow;
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
 
   a + a {
     opacity: 0.5;
@@ -59,7 +60,8 @@
 
 .archive__item-excerpt {
   margin-top: 0;
-  font-size: $type-size-6;
+  color: var(--global-text-color-light);
+  font-size: 0.95rem;
 
   & + p {
     text-indent: 0;
@@ -80,7 +82,26 @@
   }
 
   .archive__item-title {
-    text-decoration: underline;
+    text-decoration: none;
+  }
+}
+
+.archive__item {
+  padding: 1.4rem 1.45rem;
+  border: 1px solid var(--global-border-color);
+  border-radius: 1.25rem;
+  background: var(--global-card-bg-color);
+  box-shadow: 0 18px 40px var(--global-shadow-color);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(var(--global-accent-color-rgb), 0.38);
+    box-shadow: 0 26px 52px var(--global-shadow-color);
+  }
+
+  p:last-child {
+    margin-bottom: 0;
   }
 }
 
@@ -90,6 +111,8 @@
    ========================================================================== */
 
 .list__item {
+  margin-bottom: 1rem;
+
   @include breakpoint($medium) {
     padding-right: $right-sidebar-width-narrow;
   }

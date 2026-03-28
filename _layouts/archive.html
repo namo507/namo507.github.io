@@ -17,7 +17,10 @@ layout: default
 
   <div class="archive">
     {% unless page.header.overlay_color or page.header.overlay_image %}
-      <h1 class="page__title">{{ page.title }}</h1>
+      <header class="page__header-block" data-reveal>
+        <h1 class="page__title">{{ page.title }}</h1>
+        {% if page.excerpt %}<p class="page__lead">{{ page.excerpt | markdownify | remove: "<p>" | remove: "</p>" }}</p>{% endif %}
+      </header>
     {% endunless %}
     {{ content }}
   </div>

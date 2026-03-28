@@ -6,6 +6,8 @@
   @include clearfix;
   background-color: var(--global-footer-bg-color);
   color: var(--global-text-color-light);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
 
   float: left;
   margin-left: 0;
@@ -60,8 +62,29 @@
 .page__footer-copyright {
   font-family: $global-font-family;
   font-size: $type-size-7;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--global-border-color);
 }
 
+.page__footer-main {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+
+  @include breakpoint($medium) {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.page__footer-brand p:last-child {
+  margin-bottom: 0;
+}
+
+.page__footer-nav ul,
 .page__footer-follow {
   ul {
     margin: 0;
@@ -70,12 +93,23 @@
   }
 
   li {
-    display: inline-block;
     padding-top: 5px;
     padding-bottom: 5px;
     font-family: $sans-serif-narrow;
     font-size: $type-size-6;
     text-transform: uppercase;
+  }
+}
+
+.page__footer-nav ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  gap: 0.2rem 1rem;
+}
+
+.page__footer-follow {
+  li {
+    display: inline-block;
   }
 
   li + li:before {
