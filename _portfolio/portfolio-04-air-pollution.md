@@ -1,6 +1,6 @@
 ---
 title: "Air Pollution Abatement and Modeling"
-excerpt: "Developed multivariate regression models predicting ambient air quality (PM2.5, NO2, O3) using meteorological, traffic, and industrial emission features with 85% accuracy.<br/><img src='/images/projects/air-pollution.png' style='max-width:500px;'>"
+excerpt: "Developed multivariate regression models predicting ambient air quality (PM2.5, NO2, O3) using meteorological, traffic, and industrial emission features with 85% accuracy."
 collection: portfolio
 date: 2023-12-15
 tags: [Environmental Science, Regression, Python, Data Analysis]

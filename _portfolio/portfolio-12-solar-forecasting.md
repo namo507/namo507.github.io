@@ -1,6 +1,6 @@
 ---
 title: "Statistical Analysis and Forecasting of Solar Energy Production"
-excerpt: "Developed time series forecasting models (ARIMA, Prophet) for solar energy production achieving MAPE of 8.5% on 3-year historical data.<br/><img src='/images/projects/solar-forecasting.png' style='max-width:500px;'>"
+excerpt: "Developed time series forecasting models (ARIMA, Prophet) for solar energy production achieving MAPE of 8.5% on 3-year historical data."
 collection: portfolio
 date: 2022-11-15
 tags: [Time Series, Forecasting, ARIMA, Python, Renewable Energy]

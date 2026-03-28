@@ -13,31 +13,31 @@ redirect_from:
 <section class="home-hero" data-reveal>
   <p class="page__eyebrow">Survey Methodology • Data Science • Responsible AI</p>
   <h1 class="home-hero__title">Designing rigorous measurement systems for AI-enabled research.</h1>
-  <p class="home-hero__lead">I am Namit Shrivastava, a graduate researcher at the University of Maryland building data-intensive workflows that combine survey rigor, computational social science, geospatial analysis, and trustworthy machine learning.</p>
+  <p class="home-hero__lead">{{ site.data.cv.profile.summary }}</p>
 
   <div class="page__actions">
     <a class="button-link button-link--primary" href="{{ '/cv/' | relative_url }}">View CV</a>
     <a class="button-link" href="{{ '/publications/' | relative_url }}">Publications</a>
     <a class="button-link" href="{{ '/portfolio/' | relative_url }}">Projects</a>
+    <a class="button-link" href="{{ '/github/' | relative_url }}">GitHub</a>
   </div>
 
   <div class="hero-metrics">
-    <article class="metric-card">
-      <span class="metric-card__value">129K+</span>
-      <span class="metric-card__label">Census tracts analyzed</span>
-    </article>
-    <article class="metric-card">
-      <span class="metric-card__value">1.1M+</span>
-      <span class="metric-card__label">Social posts processed</span>
-    </article>
-    <article class="metric-card">
-      <span class="metric-card__value">2.4M</span>
-      <span class="metric-card__label">Images in ML workflows</span>
-    </article>
-    <article class="metric-card">
-      <span class="metric-card__value">91.6%</span>
-      <span class="metric-card__label">Best model accuracy</span>
-    </article>
+    {% for metric in site.data.cv.hero_metrics %}
+      <article class="metric-card">
+        <span class="metric-card__value">{{ metric.value }}</span>
+        <span class="metric-card__label">{{ metric.label }}</span>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="page__section" data-reveal>
+  <p class="page__eyebrow">Links</p>
+  <div class="social-link-grid">
+    {% for link in site.data.cv.links %}
+      <a class="social-link-card" href="{{ link.url }}">{{ link.label }}</a>
+    {% endfor %}
   </div>
 </section>
 
@@ -56,21 +56,13 @@ redirect_from:
   <article class="page__panel">
     <p class="page__eyebrow">Current Roles</p>
     <div class="timeline-stack">
-      <div class="timeline-card">
-        <h3>Research Assistant</h3>
-        <p>University of Michigan Institute for Social Research</p>
-        <span>Geospatial COVID-19 epidemiology across U.S. census tracts.</span>
-      </div>
-      <div class="timeline-card">
-        <h3>Teaching Assistant</h3>
-        <p>University of Maryland JPSM</p>
-        <span>Data privacy, confidentiality, and quantitative research practice.</span>
-      </div>
-      <div class="timeline-card">
-        <h3>Dean's Fellow</h3>
-        <p>University of Maryland</p>
-        <span>Graduate study in Survey and Data Science, Data Science track.</span>
-      </div>
+      {% for role in site.data.cv.experience limit:3 %}
+        <div class="timeline-card">
+          <h3>{{ role.role }}</h3>
+          <p>{{ role.organization }}</p>
+          <span>{{ role.location }} • {{ role.dates }}</span>
+        </div>
+      {% endfor %}
     </div>
   </article>
 </section>
@@ -102,6 +94,11 @@ redirect_from:
       <strong>Projects</strong>
       <span>Selected technical projects spanning machine learning, forecasting, analytics, and engineering systems.</span>
     </a>
+    <a class="stream-card" href="{{ '/github/' | relative_url }}">
+      <span class="stream-card__meta">Ship</span>
+      <strong>GitHub</strong>
+      <span>Repository spotlight across research code, workflow automation, and starred builds with live project links.</span>
+    </a>
     <a class="stream-card" href="{{ '/talks/' | relative_url }}">
       <span class="stream-card__meta">Present</span>
       <strong>Talks</strong>
@@ -115,30 +112,59 @@ redirect_from:
   </div>
 </section>
 
+<section class="page__section" data-reveal>
+  <p class="page__eyebrow">GitHub Spotlight</p>
+  <div class="page__panel page__panel--highlight page__panel--compact">
+    <h2>Starred repositories that best represent current work.</h2>
+    <p>The GitHub showcase now refreshes from the GitHub API automatically and highlights the repositories that map most directly to active research, portfolio work, and reproducible code artifacts.</p>
+    <div class="page__actions">
+      <a class="button-link button-link--primary" href="{{ '/github/' | relative_url }}">Open GitHub showcase</a>
+      <a class="button-link" href="{{ site.data.github.overview.repositories_url }}" target="_blank" rel="noopener">All repositories</a>
+      <a class="button-link" href="{{ '/copilot-prompts/' | relative_url }}">Prompt library</a>
+    </div>
+  </div>
+
+  <div class="github-repo-grid github-repo-grid--compact">
+    {% for repo in site.data.github.featured_repositories limit:3 %}
+      {% include github-repo-card.html repo=repo compact=true %}
+    {% endfor %}
+  </div>
+</section>
+
+<section class="page__section" data-reveal>
+  <p class="page__eyebrow">CV Snapshot</p>
+  <div class="result-grid">
+    {% for result in site.data.cv.featured_results %}
+      <article class="result-card">
+        <span class="result-card__metric">{{ result.metric }}</span>
+        <h3>{{ result.title }}</h3>
+        <p>{{ result.detail }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
 <section class="page__section page__section--split" data-reveal>
   <article class="page__panel">
     <p class="page__eyebrow">Education</p>
     <div class="timeline-stack">
-      <div class="timeline-card">
-        <h3>M.S. in Survey &amp; Data Science</h3>
-        <p>University of Maryland, College Park</p>
-        <span>Aug 2024 – May 2026 • Dean's Fellow • GPA 3.814</span>
-      </div>
-      <div class="timeline-card">
-        <h3>B.E. (Hons) in Civil Engineering</h3>
-        <p>BITS Pilani, India</p>
-        <span>Minor in Data Science • Nov 2020 – Jul 2024 • GPA 3.33</span>
-      </div>
+      {% for degree in site.data.cv.education limit:2 %}
+        <div class="timeline-card">
+          <h3>{{ degree.degree }}</h3>
+          <p>{{ degree.institution }}</p>
+          <span>{{ degree.dates }}{% if degree.highlights and degree.highlights.size > 0 %} • {{ degree.highlights | join: ' • ' }}{% endif %}</span>
+        </div>
+      {% endfor %}
     </div>
   </article>
 
   <article class="page__panel">
     <p class="page__eyebrow">Highlights</p>
     <ul class="detail-list detail-list--compact">
-      <li>Published in Springer's Advances in Data-Driven Computing and Intelligent Systems.</li>
-      <li>Presented at the 80th AAPOR Annual Conference on EV sentiment analysis.</li>
-      <li>Built ML pipelines processing 2.4M+ images for large-scale classification tasks.</li>
-      <li>Conducted geospatial analysis over 129,572 U.S. census tracts for epidemiological research.</li>
+      <li>Published survey research in Springer and presented at AAPOR on transformer-based sentiment analysis.</li>
+      <li>Built ML systems processing 2.4M images, 1.1M social posts, and 129,572 census tracts.</li>
+      <li>Improved data discoverability by 35% and reduced metadata maintenance work by 90%.</li>
+      <li>Delivered quantifiable outcomes across research, infrastructure, public health, and ML engineering.</li>
     </ul>
   </article>
 </section>

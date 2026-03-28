@@ -1,6 +1,6 @@
 ---
 title: "LEXNet for Internet Traffic Classification"
-excerpt: "Implemented CNN architecture achieving 98.7% accuracy on ISCXVPN2016 dataset for encrypted traffic classification and VPN detection.<br/><img src='/images/projects/lexnet.png' style='max-width:500px;'>"
+excerpt: "Implemented CNN architecture achieving 98.7% accuracy on ISCXVPN2016 dataset for encrypted traffic classification and VPN detection."
 collection: portfolio
 date: 2023-12-15
 tags: [Deep Learning, CNN, Network Security, Python]

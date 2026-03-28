@@ -1,6 +1,6 @@
 ---
 title: "English Premier League Spending Analysis"
-excerpt: "Quasi-experimental analysis examining causal effects of squad investment on team performance using synthetic control and difference-in-differences methods.<br/><img src='/images/projects/epl-spending.png' style='max-width:500px;'>"
+excerpt: "Quasi-experimental analysis examining causal effects of squad investment on team performance using synthetic control and difference-in-differences methods."
 collection: portfolio
 date: 2025-04-15
 tags: [Causal Inference, Sports Analytics, R, Statistics]

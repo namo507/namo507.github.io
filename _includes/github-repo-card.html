@@ -1,0 +1,51 @@
+{% assign repo = include.repo %}
+{% assign repo_project_url = repo.project_url | default: nil %}
+{% assign related_links = repo.related_links | default: empty %}
+
+<article class="github-repo-card{% if include.compact %} github-repo-card--compact{% endif %}" data-theme="{{ repo.theme | default: 'research' }}" data-reveal>
+  <div class="github-repo-card__visual" aria-hidden="true">
+    <div class="github-repo-card__orb github-repo-card__orb--one"></div>
+    <div class="github-repo-card__orb github-repo-card__orb--two"></div>
+    <div class="github-repo-card__signal"></div>
+
+    <div class="github-repo-card__visual-copy">
+      <span class="github-repo-card__badge">{{ repo.badge }}</span>
+      <strong class="github-repo-card__hero-value">{{ repo.hero_metric }}</strong>
+      <span class="github-repo-card__hero-label">{{ repo.hero_label }}</span>
+    </div>
+  </div>
+
+  <div class="github-repo-card__body">
+    <p class="github-repo-card__repo-meta">{{ repo.language | default: 'Multi-language' }} · {{ repo.full_name }}</p>
+    <h3 class="github-repo-card__title">{{ repo.name }}</h3>
+    <p class="github-repo-card__description">{{ repo.description }}</p>
+
+    <div class="github-repo-card__metric-grid">
+      {% for metric in repo.metrics %}
+        <div class="github-repo-card__metric">
+          <span class="github-repo-card__metric-value">{{ metric.value }}</span>
+          <span class="github-repo-card__metric-label">{{ metric.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if repo.tags %}
+      <div class="github-repo-card__tags">
+        {% for tag in repo.tags %}
+          <span class="tag-chip">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="github-repo-card__actions">
+      <a class="github-repo-card__action github-repo-card__action--primary" href="{{ repo.url }}" target="_blank" rel="noopener">View repository</a>
+      {% if related_links and related_links.size > 0 %}
+        {% for link in related_links limit: 3 %}
+          <a class="github-repo-card__action" href="{% if link.url contains '://' %}{{ link.url }}{% else %}{{ link.url | relative_url }}{% endif %}"{% if link.url contains '://' %} target="_blank" rel="noopener"{% endif %}>{{ link.label }}</a>
+        {% endfor %}
+      {% elsif repo_project_url %}
+        <a class="github-repo-card__action" href="{% if repo_project_url contains '://' %}{{ repo_project_url }}{% else %}{{ repo_project_url | relative_url }}{% endif %}"{% if repo_project_url contains '://' %} target="_blank" rel="noopener"{% endif %}>{{ repo.project_label | default: 'Related project' }}</a>
+      {% endif %}
+    </div>
+  </div>
+</article>

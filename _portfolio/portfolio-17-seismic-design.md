@@ -1,6 +1,6 @@
 ---
 title: "Performance Based Seismic Design"
-excerpt: "Developed performance-based seismic design framework for RC structures using pushover analysis and FEMA guidelines for multi-hazard resilience assessment.<br/><img src='/images/projects/seismic-design.png' style='max-width:500px;'>"
+excerpt: "Developed performance-based seismic design framework for RC structures using pushover analysis and FEMA guidelines for multi-hazard resilience assessment."
 collection: portfolio
 date: 2022-05-15
 tags: [Civil Engineering, Structural Analysis, ETABS, Seismic Design]

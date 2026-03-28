@@ -1,6 +1,6 @@
 ---
 title: "Convolutional Neural Networks for Image Classification"
-excerpt: "Implemented CNN architectures from scratch achieving 92% accuracy on CIFAR-10, exploring various optimization techniques and regularization methods.<br/><img src='/images/projects/cnn-classification.png' style='max-width:500px;'>"
+excerpt: "Implemented CNN architectures from scratch achieving 92% accuracy on CIFAR-10, exploring various optimization techniques and regularization methods."
 collection: portfolio
 date: 2022-12-05
 tags: [Deep Learning, CNN, Computer Vision, PyTorch]

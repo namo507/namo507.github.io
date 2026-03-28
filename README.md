@@ -39,6 +39,12 @@ Showcase of technical projects:
 - Voice Gender Recognition (96% accuracy)
 - Website Development - Indian Red Cross Society
 
+### 🧑‍💻 [GitHub](https://namo507.github.io/github/)
+Repository showcase featuring research repositories, starred spotlights, and linked project mappings.
+
+### 🧠 [Copilot Prompts](https://namo507.github.io/copilot-prompts/)
+Prompt library mapping GitHub repositories to portfolio and LinkedIn project context for GitHub Copilot Chat.
+
 ### 🎤 [Talks](https://namo507.github.io/talks/)
 Conference presentations and talks:
 - AAPOR 2025: Electric Vehicles sentiment analysis
@@ -127,6 +133,15 @@ Alternatively, use Docker:
 chmod -R 777 .
 docker compose up
 ```
+
+## GitHub Showcase Automation
+
+The GitHub showcase data is generated automatically rather than maintained by hand.
+
+- Source metadata for curated repositories lives in `scripts/github_showcase_source.json`
+- Generated site data is written to `_data/github.yml`
+- Refresh locally with `python3 scripts/sync_github_showcase.py`
+- Scheduled refresh runs via `.github/workflows/sync_github_showcase.yml`
 
 ## Contact & Connect
 

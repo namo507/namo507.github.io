@@ -1,6 +1,6 @@
 ---
 title: "Madhav Gadgil – Kasturi Rangan Reports Analysis"
-excerpt: "Comprehensive policy analysis comparing two landmark environmental committee reports on Western Ghats conservation and their implementation outcomes.<br/><img src='/images/projects/western-ghats.png' style='max-width:500px;'>"
+excerpt: "Comprehensive policy analysis comparing two landmark environmental committee reports on Western Ghats conservation and their implementation outcomes."
 collection: portfolio
 date: 2023-04-15
 tags: [Policy Analysis, Environmental Science, Research]

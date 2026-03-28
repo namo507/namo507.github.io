@@ -1,0 +1,339 @@
+profile:
+  name: Namit Shrivastava
+  location: College Park, MD, USA
+  phone: "(240)-476-8513"
+  email: namit507@gmail.com
+  summary: Graduate researcher with expertise in survey methodology, causal inference, geospatial epidemiology, and advanced statistical modeling. Research agenda focuses on trustworthy data integration frameworks that fuse survey methodology with generative AI, deep learning, and privacy-preserving computational methods for automated data collection, quality assurance, and responsible measurement at scale.
+
+links:
+  - label: LinkedIn
+    url: "https://www.linkedin.com/in/namit-shrivastava-baab47204/"
+  - label: GitHub
+    url: "https://github.com/namo507"
+  - label: Google Scholar
+    url: "https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en"
+  - label: ORCID
+    url: "https://orcid.org/0009-0005-7920-8350"
+  - label: Email
+    url: "mailto:namit507@gmail.com"
+
+hero_metrics:
+  - value: 129K+
+    label: Census tracts analyzed
+  - value: 1.1M+
+    label: Social posts processed
+  - value: 2.4M
+    label: Images in ML workflows
+  - value: 91.6%
+    label: Best model accuracy
+
+featured_results:
+  - metric: 100%
+    title: Broadband completeness
+    detail: Achieved full broadband data completeness across 129,572 U.S. census tracts through multi-source fusion.
+  - metric: 35%
+    title: Search discoverability gain
+    detail: Improved open-data repository search discoverability through hierarchical taxonomy redesign.
+  - metric: 90%
+    title: Maintenance reduction
+    detail: Reduced manual maintenance overhead with bulk metadata automation and schema-compliance workflows.
+  - metric: 844
+    title: Blood donations mobilized
+    detail: Helped organize a two-day blood donation drive with 60+ volunteers and 1,000+ donor records.
+
+education:
+  - institution: University of Maryland, College Park
+    degree: Master of Science, Survey & Data Science (Data Science Track)
+    dates: Aug 2024 - May 2026
+    location: College Park, MD, USA
+    highlights:
+      - "GPA: 3.814/4.0"
+      - Dean's Fellowship Award Winner AY 2025-26
+    coursework:
+      - Statistical Modeling and Machine Learning I and II
+      - Fundamentals of Data Collection I and II
+      - Experimental Design and Causal Inference
+      - Fundamentals of Computational Data Display
+      - Long-Context Language Models
+      - Machine Learning for Social Science
+      - Applied Sampling
+      - Applications of Statistical Modeling
+      - Total Survey Error and Data Quality I
+      - Fundamentals of Inference
+  - institution: Birla Institute of Technology and Science (BITS) Pilani
+    degree: "Bachelor of Engineering (Honours), Civil Engineering (Minor: Data Science)"
+    dates: Nov 2020 - Jul 2024
+    location: Pilani, RJ, India
+    highlights:
+      - "GPA: 3.327/4.0"
+    coursework:
+      - Foundations of Data Science
+      - Object Oriented Programming
+      - Applied Statistical Methods
+      - Artificial Intelligence
+      - Data Mining
+      - Data Visualization
+      - Machine Learning
+      - Probability and Statistics
+      - Operating Systems
+      - Mathematics I, II and III
+
+experience:
+  - organization: Social Data Science Center, University of Maryland
+    role: Graduate Research Assistant
+    dates: Jan 2026 - May 2026
+    location: College Park, MD, USA
+    bullets:
+      - Engineered Python automation suite interacting with CKAN REST API to manage lifecycle of 18 datasets, ensuring 100% resource accessibility and data integrity.
+      - Architected scalable data taxonomy transforming flat catalogs into hierarchical thematic groups, improving search discoverability by 35%.
+      - Implemented bulk metadata update scripts reducing manual maintenance overhead by 90% and ensuring strict schema compliance.
+  - organization: Institute for Social Research, University of Michigan
+    role: Research Assistant
+    dates: May 2025 - Dec 2025
+    location: Ann Arbor, MI, USA
+    bullets:
+      - Architected and deployed a production geospatial data integration pipeline processing 129,572 U.S. census tracts across 3 RUCA strata, achieving 100% broadband data completeness and reducing baseline missingness by 28.6%.
+      - Developed a stratified epidemiological modeling framework over 2,788 census tracts with 100% social determinant coverage, uncovering statistically significant rural inflections with p < 0.01.
+      - Designed a multi-stage data quality assurance protocol identifying 15% spatial clustering violations and achieving 85% of tracts with at least 95% temporal completeness.
+  - organization: Joint Program in Survey Methodology (JPSM)
+    role: Teaching and Graduate Assistant
+    dates: Feb 2025 - May 2026
+    location: College Park, MD, USA
+    bullets:
+      - Assisted in teaching SURV735 and guided 23 students on data privacy and confidentiality principles.
+      - Redesigned Canvas LMS infrastructure for 10+ instructors supporting 125+ graduate students, increasing course satisfaction by 30% and reducing setup time by 40%.
+  - organization: Legistify Services Private Limited
+    role: Machine Learning Engineer
+    dates: Jan 2024 - Jun 2024
+    location: Gurugram, HR, India
+    bullets:
+      - Engineered a scalable logo similarity detection system processing 2.4 million images, achieving 92% precision and reducing manual review time by 70%.
+      - Deployed Azure Cognitive Services workflows processing 50,000+ legal filings with 95% extraction accuracy and bilingual OCR support.
+      - Developed trademark similarity algorithms comparing 50,000 new marks against 300,000 existing entries, achieving 92% accuracy and reducing computational overhead by 60%.
+      - Stress-tested a production API ecosystem with 150+ REST calls, identifying 12 bottlenecks and increasing retrieval efficiency by 30% for 500+ daily active users.
+  - organization: Accenture
+    role: Advanced Application Engineering Analyst
+    dates: Jun 2023 - Aug 2023
+    location: Bangalore, KA, India
+    bullets:
+      - Achieved 89% accuracy in threat classification using enterprise threat intelligence feeds and reduced incident detection latency by 20%.
+      - Conducted penetration testing across 50+ web applications and identified 120+ vulnerabilities, including 15 critical findings.
+      - Supported incident response during 3 security breaches and reduced MTTR by 80% through automated runbook implementation.
+      - Processed 10M+ daily log events with Python automation and produced executive security reporting for data-driven decisions.
+  - organization: Indian Red Cross Society
+    role: Web Developer
+    dates: May 2022 - Jul 2022
+    location: Bangalore, KA, India
+    bullets:
+      - Designed and deployed a Drupal-based CMS for volunteer registry and donor database management, reducing manual data entry time by 50%.
+      - Localized the IRCS website for Hindi and Kannada, achieving a 95% bug-free experience across 10,000+ monthly visitors.
+
+projects:
+  - title: "Achieving Sustainability in Supply Chain during Disruption Times: Role of Industry 4.0"
+    type: Springer publication
+    dates: Aug 2023 - Feb 2024
+    location: BITS Goa, India
+    url: https://www.springerprofessional.de/en/achieving-sustainability-in-supply-chain-during-disruption-times/26762004
+    link_label: Publication Link
+    bullets:
+      - Designed and executed a survey study with 200+ automotive supply chain experts using FAHP to rank 5 Industry 4.0 technologies and 6 green supply chain practices.
+      - Built an ISM and MICMAC framework identifying government regulation and top management commitment as top drivers with driving power 9 out of 9.
+      - Established quantitative linkage between Industry 4.0 adoption and green supply chain performance through a three-level hierarchical structure.
+  - title: Analyzing Public Sentiments of EVs in the Era of Sustainable Transformation
+    type: 80th AAPOR Annual Conference
+    dates: Nov 2024 - May 2025
+    location: St. Louis, MO
+    url: https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714
+    link_label: Conference Paper
+    bullets:
+      - Engineered a sentiment analysis pipeline over 1.1M+ social posts from 5 Reddit communities and 40 NYT articles using DistilBERT, achieving 91.6% classification accuracy.
+      - Compared 10 Groq LLM variants and found a +0.57 positive sentiment bias relative to observed Reddit data with F(2,549)=28.43.
+      - Identified a 35% increase in negative EV sentiment after 2022 and showed Llama-3.2-90b-vision-preview best approximated human sentiment patterns.
+  - title: Player Market Value Analysis in Elite European Football
+    type: Graduate Research Project
+    dates: Sep 2025 - Dec 2025
+    location: University of Maryland, College Park, MD, USA
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Developed a cross-classified multilevel model on 7,023 player-season observations from 2,159 elite players, explaining 78% of player-level variance.
+      - Quantified a 42% market valuation premium for squad-status playing time and isolated COVID-era effects across the €38bn transfer market.
+  - title: English Premier League Spending Analysis and 20-Year Forecasting
+    type: Course Project - Sports Analytics
+    dates: Jan 2025 - Apr 2025
+    location: University of Maryland, College Park, MD, USA
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Automated integration of 30 EPL seasons into a 600+ record analysis dataset.
+      - Built Random Forest, ARIMA, Prophet, LSTM, and SVR models, achieving 72.3% out-of-sample classification accuracy and generating 20-year forecasts.
+  - title: Air Pollution Abatement and Modeling
+    type: Undergraduate Thesis Project
+    dates: Aug 2023 - Dec 2023
+    location: BITS Pilani, Rajasthan, India
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Processed 26 ambient air samples across 766 hours, estimating PM10 mean at 184.2 µg/m³ with 64.5% exceedance above standards.
+      - Built ML forecasting and Gaussian plume models with R² up to 0.87 and evaluated 4 emission reduction scenarios with up to 24% projected improvement.
+  - title: Applications of ML/IoT in Concrete Technology and Structural Health Monitoring
+    type: Undergraduate Research Project
+    dates: May 2023 - Dec 2023
+    location: BITS Pilani, Rajasthan, India
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Developed a multilabel CNN on 42,520 road-surface images across 5 distress categories, achieving 86.67% accuracy and 88.19% F1-score.
+      - Expanded training data to 245,735 labeled distress instances to support scalable road monitoring workflows.
+  - title: "LEXNet: Lightweight Explainable CNNs for Internet Traffic Classification"
+    type: Undergraduate Research Project
+    dates: Aug 2023 - Dec 2023
+    location: BITS Pilani, Rajasthan, India
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Architected LEXNet for 1.5M flows and 200 application classes, reducing model size by 97% and inference time by 93%.
+      - Improved accuracy by 4% while adding faithful prototype-based explanations versus multiple baseline architectures.
+  - title: "Madhav Gadgil vs. Kasturirangan Reports: Western Ghats Conservation Policy Analysis"
+    type: Course Project
+    dates: Apr 2023
+    location: BITS Pilani, Rajasthan, India
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Compared two conservation frameworks across 6 states, 44 districts, and 142 taluks, quantifying a 50.7% reduction in protected coverage.
+      - Analyzed the shift from decentralized Gram Sabha governance toward centralized working-group execution.
+  - title: Active Learning for Forest Cover Classification
+    type: Course Project - Machine Learning
+    dates: Sep 2022 - Dec 2022
+    location: BITS Pilani, Rajasthan, India
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Implemented active learning on 581,012 observations with 54 features, achieving 85% accuracy and outperforming random sampling by about 15 percentage points.
+      - Demonstrated 60-70% lower labeling requirements while maintaining 82-85% model accuracy.
+  - title: Automated Plagiarism Detector for Text and Images
+    type: Course Project - Artificial Intelligence
+    dates: Sep 2022 - Dec 2022
+    location: BITS Pilani, Rajasthan, India
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Built a dual-search plagiarism detection system achieving 68.1% accuracy with LinearSVC for essays, code, and transcripts.
+      - Added image plagiarism detection using 8x8 Average Hash and automated Excel reporting, reducing review time by an estimated 95%.
+  - title: Statistical Analysis and Forecasting of Solar Energy
+    type: Course Project - Applied Statistical Methods
+    dates: Sep 2022 - Dec 2022
+    location: BITS Pilani, Rajasthan, India
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Engineered solar forecasting on a 14-year dataset with 8 meteorological parameters and strong correlation discovery above 0.80 for key GHI factors.
+      - Achieved 5.93% MAPE with SARIMA on 781 weekly observations.
+  - title: Voice Gender Recognition using Acoustic Features
+    type: Independent Data Science Project
+    dates: Jul 2022
+    location: BITS Pilani, Rajasthan, India
+    url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
+    link_label: LinkedIn
+    bullets:
+      - Benchmarked 5 machine learning algorithms on 3,168 voice samples and achieved 98.3% classification accuracy with Random Forest.
+      - Tuned a balanced Random Forest model with only 11 misclassifications on the held-out test set.
+
+skills:
+  Programming:
+    - Python
+    - R
+    - Java
+    - C++
+    - JavaScript
+    - TypeScript
+    - HTML/CSS
+    - Bash/Shell
+  Data & Databases:
+    - SQL
+    - PostgreSQL
+    - MySQL
+    - MongoDB
+    - Cassandra
+    - Snowflake
+    - Neo4j
+    - Pinecone
+    - Apache Spark
+    - Kafka
+  AI/ML:
+    - PyTorch
+    - TensorFlow
+    - Keras
+    - Hugging Face
+    - LangChain
+    - LlamaIndex
+    - LangGraph
+    - PySpark
+    - NLTK
+    - Spacy
+    - Scikit-Learn
+  DevOps:
+    - Git
+    - Docker
+    - Kubernetes
+    - Jenkins CI/CD
+    - REST APIs
+    - Django
+    - Flask
+    - Angular
+    - React.js
+    - Terraform
+    - Ansible
+  Cloud:
+    - AWS
+    - Azure
+    - GCP
+    - Tableau
+    - Power BI
+    - MLFlow
+    - Qualtrics
+    - STATA
+  Core:
+    - LLMs
+    - Generative AI
+    - RLHF/DPO
+    - Deep Learning
+    - NLP
+    - Computer Vision
+    - Survey Methodology
+    - Causal Inference
+    - MLOps
+
+service:
+  - organization: Terrapin Leadership Institute, University of Maryland
+    role: Member
+    dates: Aug 2024 - May 2025
+    location: College Park, MD
+    bullets:
+      - Achieved 100% participation in workshops on leadership, ethics, inclusion, and resilience.
+      - Contributed reflective insights that improved dialogue quality and peer engagement.
+  - organization: National Service Scheme (NSS), BITS Pilani
+    role: Executive Committee and Blood Donation Camp Core Team Member
+    dates: Mar 2022 - Dec 2023
+    location: Pilani, RJ, India
+    bullets:
+      - Planned 10+ activities to improve English skills and confidence in villages around campus.
+      - Organized a blood donation camp with 60+ volunteers, 1,000+ donor records, and 844 successful donations in two days.
+  - organization: Peer Mentorship Program (PMP), BITS Pilani
+    role: Mentor
+    dates: Aug 2021 - Dec 2023
+    location: Pilani, RJ, India
+    bullets:
+      - Assisted juniors with materials and guidance for a successful transition into college life.
+
+certifications:
+  - "Microsoft Certified: Azure AI Fundamentals"
+  - API-based Programming (Postman)
+  - AI For Everyone (Coursera)
+  - Deep Learning & Machine Learning (Smartknower, Internshala)
+
+achievements:
+  - 1st rank in Human Resource Development (180 students, BITS Pilani)
+  - Top 10 in Water & Wastewater Treatment (98 students, BITS Pilani)
+  - JPSM Dean's Fellowship Award (AY 2025-26, UMD)

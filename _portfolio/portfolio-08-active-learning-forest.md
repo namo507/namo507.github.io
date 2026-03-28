@@ -1,6 +1,6 @@
 ---
 title: "Active Learning for Forest Cover Classification"
-excerpt: "Developed active learning framework achieving 94% accuracy with 30% less labeled data using uncertainty sampling and query-by-committee strategies.<br/><img src='/images/projects/forest-cover.png' style='max-width:500px;'>"
+excerpt: "Developed active learning framework achieving 94% accuracy with 30% less labeled data using uncertainty sampling and query-by-committee strategies."
 collection: portfolio
 date: 2022-12-15
 tags: [Machine Learning, Active Learning, Random Forest, Python]

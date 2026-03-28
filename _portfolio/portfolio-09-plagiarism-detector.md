@@ -1,6 +1,6 @@
 ---
 title: "Automated Plagiarism Detector"
-excerpt: "Developed multi-algorithm plagiarism detection system using TF-IDF, cosine similarity, and Jaccard index achieving 91% detection accuracy.<br/><img src='/images/projects/plagiarism.png' style='max-width:500px;'>"
+excerpt: "Developed multi-algorithm plagiarism detection system using TF-IDF, cosine similarity, and Jaccard index achieving 91% detection accuracy."
 collection: portfolio
 date: 2022-12-10
 tags: [NLP, Text Analysis, Python, Machine Learning]

@@ -1,0 +1,326 @@
+prompts:
+  - anchor: prompt-1-ev-sentiment-analysis
+    title: EV Sentiment Analysis
+    repo: AAPOR-Project-EV-Sentiment-Analysis
+    repo_url: https://github.com/namo507/AAPOR-Project-EV-Sentiment-Analysis
+    languages:
+      - Python
+      - Jupyter
+      - R
+    projects:
+      - Analyzing Public Perceptions and Sentiments of EVs in the Era of Sustainable Transformation
+    focus: Refactor Groq batching, quantify the positive LLM bias, and add temporal trend analysis across subreddits.
+    workspace_hint: Open AAPOR-Project-EV-Sentiment-Analysis as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on a multi-source NLP sentiment analysis project in the
+      `Electronic_Vehicle_Sentiment/` directory. The pipeline scrapes Reddit (via Reddit API)
+      and New York Times (via NYT API) posts about electric vehicles, runs them through
+      multiple Groq LLM variants (Llama 3.1/3.2, Mixtral), and compares LLM-predicted
+      sentiment scores against a DistilBERT transformer baseline that achieved 91.6%
+      classification accuracy on 1.1M+ posts from 2020–2024.
+
+      Key files:
+      - `WebScrapping/LLM/LLMSentiment.ipynb` — LLM sentiment scoring pipeline
+      - `WorkableData/` — cleaned datasets (cleaned_llm.csv, sentimentLLM.csv)
+      - `Statistical Test/` — ANOVA & F-statistic comparison across sources
+      - `EVSentimentAnalysisProjectPaper.pdf` — full research paper
+
+      Help me:
+      1. Refactor `LLMSentiment.ipynb` to batch-process Groq API calls more efficiently and handle rate limiting gracefully.
+      2. Write a function that computes and visualizes the +0.57 positive bias between LLM predictions and actual Reddit sentiment (M=-0.18, SD=0.52), using the F-statistic F(2,549)=28.43 as a reference benchmark.
+      3. Add a temporal trend analysis function that tracks the 35% increase in negative EV sentiment post-2022 across the Reddit dataset, segmented by subreddit.
+
+  - anchor: prompt-2-player-market-value-analysis
+    title: Player Market Value Analysis
+    repo: Project_Moneyball_FC
+    repo_url: https://github.com/namo507/Project_Moneyball_FC
+    languages:
+      - R
+      - Quarto
+    projects:
+      - Player Market Value Analysis in Elite European Football
+    focus: Extend the cross-classified model, compute ICC decomposition, and compare cubic versus simpler time-series terms.
+    workspace_hint: Open Project_Moneyball_FC as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on a cross-classified multilevel model (using R's `lme4`)
+      in the `code/` directory to analyze 7,023 player-season observations from 2,159
+      elite European football players sourced from Transfermarkt.
+
+      Key files:
+      - `code/00_data_prep_uefa.R` — data ingestion and cleaning
+      - `code/cross_classified_models.qmd` — main multilevel modeling script
+      - `code/03_model_diagnostics_files/` — residual/diagnostic outputs
+      - `code/04_interpretation_inference_files/` — fixed/random effect estimates
+      - `Project_Paper.pdf` — final research paper (Quarto-rendered)
+      - `inputs/` — player_df and raw datasets
+
+      The model captures:
+      - Squad status (playing time) as driving a 42% market valuation premium
+      - A cubic polynomial time-series for COVID-19's structural impact on the €38bn transfer market (23.7% quadratic contraction, 11% cubic correction)
+      - Valuation disparities: 65% discount for goalkeepers, 34% discount for East Asian players, 21% premium for Latin American players
+
+      Help me:
+      1. Extend the `cross_classified_models.qmd` script to add a cross-level interaction term between squad status and club financial strength, then produce a `ggplot2` visualization of predicted market value by squad status quartile.
+      2. Write a variance decomposition summary function in R that outputs the ICC (intraclass correlation) at player, club, and league levels, matching the 78% player-level variance explanation reported in the paper.
+      3. Add model comparison code (AIC/BIC) to evaluate the cubic polynomial time-series specification against quadratic and linear alternatives.
+
+  - anchor: prompt-3-active-learning-for-forest-cover-classification
+    title: Active Learning for Forest Cover Classification
+    repo: Portfolio
+    repo_url: https://github.com/namo507/Portfolio
+    languages:
+      - Python
+      - scikit-learn
+    projects:
+      - Active Learning for Forest Cover Classification
+    focus: Build a reusable ActiveLearner class, compare five strategies, and add query-by-committee ranking.
+    workspace_hint: Open Portfolio as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on the Active Learning ML project (`Active Learning_MLproject (4).pdf` in Portfolio repo). The project applies 5 active learning strategies — Margin Sampling, Least Confidence Sampling, Entropy Sampling, Vote Entropy, and KL Divergence — to a 581,012-observation forest cover dataset (54 features: elevation, slope, wilderness areas, 40 soil types) from Colorado's Roosevelt National Forest.
+
+      Key results:
+      - Entropy Sampling achieved 85% accuracy, outperforming random sampling by ~15pp
+      - QBC ensemble using Random Forest with Vote Entropy scores 0.44–0.57
+
+      Help me:
+      1. Write a Python class `ActiveLearner` that implements all 5 query strategies (Margin, Least Confidence, Entropy, Vote Entropy, KL Divergence) with a unified `.query(X_unlabeled, n_instances)` interface using scikit-learn.
+      2. Create a learning curve plot comparing all 5 strategies against random sampling baseline across 10,000 labeled instances with 80-20 train-test split.
+      3. Add a `QueryByCommittee` ensemble of 5 Random Forest Decision Trees that computes KL Divergence values for candidate samples, then rank-orders them for labeling priority.
+
+  - anchor: prompt-4-convolutional-neural-networks
+    title: Convolutional Neural Networks
+    repo: Portfolio
+    repo_url: https://github.com/namo507/Portfolio
+    languages:
+      - Python
+      - PyTorch
+    projects:
+      - Convolutional Neural Networks
+    focus: Rebuild the CNN core in PyTorch, add hyperparameter search, and visualize learned filters.
+    workspace_hint: Open Portfolio as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on the CNN ML project (`CNN_MLproject (3).pdf` in Portfolio repo). The project implements a CNN framework with a 3-layer architecture (convolutional, pooling, fully-connected) in C, demonstrating ReLU activations, max/average pooling with 3 padding strategies, and backpropagation with gradient descent for hyperparameter tuning (filter count, stride length, padding type).
+
+      Help me:
+      1. Translate the core CNN forward pass logic into Python using PyTorch, preserving the 3x3 kernel filter matrix with parameter sharing and the softmax output layer for multi-class image recognition.
+      2. Write a hyperparameter search function that performs grid search over filter count [32, 64, 128], stride [1, 2], and padding type [valid, same, full], reporting accuracy for each configuration.
+      3. Add a visualization function that renders learned filter weights as heatmaps after each convolutional layer to show hierarchical feature representations.
+
+  - anchor: prompt-5-statistical-analysis-and-forecasting-of-solar-energy
+    title: Statistical Analysis and Forecasting of Solar Energy
+    repo: Portfolio
+    repo_url: https://github.com/namo507/Portfolio
+    languages:
+      - Python
+      - statsmodels
+    projects:
+      - Statistical Analysis and Forecasting of Solar Energy
+    focus: Compare classical time-series models, fit feature distributions, and build SARIMA diagnostics.
+    workspace_hint: Open Portfolio as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on the Applied Statistical Methods project (`Applied_Statistical_Methods_Project (5).pdf` in Portfolio repo). The project analyzes 14 years of Rajasthan solar farm data (2000–2014, 781 weekly observations) with 8 meteorological parameters (DHI, DNI, GHI, temperature, humidity, wind speed, snow depth, solar zenith angle).
+
+      Key results:
+      - Best model: SARIMA(1,0,1)(1,1,1,52) with 5.93% MAPE
+      - AR(6) achieved minimum AIC of 14,706.81
+      - ADF test: p-value = 3.67×10⁻¹⁶ confirming stationarity
+
+      Help me:
+      1. Write a Python pipeline using `statsmodels` that (a) runs the Augmented Dickey-Fuller test, (b) fits AR, MA, ARMA, ARIMA, and SARIMA models with auto-selection of orders via AIC, and (c) outputs a comparison table of AIC, BIC, and MAPE for each model.
+      2. Implement a Cullen-Frey graphical analysis function that plots kurtosis vs. skewness² for each meteorological feature and fits candidate distributions (beta, gamma, normal, lognormal) using the `fitter` library.
+      3. Generate a residual diagnostics dashboard (ACF, PACF, Ljung-Box test, Q-Q plot) for the best-fit SARIMA model.
+
+  - anchor: prompt-6-design-of-experiments
+    title: Design of Experiments
+    repo: Portfolio
+    repo_url: https://github.com/namo507/Portfolio
+    languages:
+      - Python
+      - scipy
+      - statsmodels
+    projects:
+      - Design of Experiments
+    focus: Reproduce the blocked ANOVA, quantify blocking efficiency, and estimate sample-size needs by power level.
+    workspace_hint: Open Portfolio as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on the Design of Experiments project (`Design of Experiments_NamitShrivastava (3).pdf` in Portfolio repo). The project compares 6 experimental design methodologies (CRD, RBD, GRBD, Optimal, Bayesian, Quasi-Experimental) on a dataset of 30 students blocked into 6 IQ-homogeneous groups (91–120 range) across 3 teaching methods.
+
+      Key results:
+      - ANOVA F-statistic = 21.04 (p = 0.000015) for Randomized Block Design
+      - MSE reduced to 0.61 through IQ-based blocking
+      - 87% reduction in experimental error via local control
+
+      Help me:
+      1. Write a Python function using `scipy.stats` and `pandas` that performs a two-way ANOVA (treatment × block) on the teaching methods dataset, reproducing the F=21.04 result and outputting a formatted ANOVA summary table.
+      2. Implement a blocking efficiency calculator that quantifies variance reduction (σ²/n) as block count increases from 1 to 6, visualized as a line plot.
+      3. Add a power analysis function using `statsmodels.stats.power` that computes the minimum sample size needed to detect the observed effect size (F=21.04) at α=0.05 and 80%, 90%, 95% power levels.
+
+  - anchor: prompt-7-automated-plagiarism-detector
+    title: Automated Plagiarism Detector
+    repo: Portfolio
+    repo_url: https://github.com/namo507/Portfolio
+    languages:
+      - Python
+      - scikit-learn
+    projects:
+      - Automated Plagiarism Detector
+    focus: Refactor Winnowing, benchmark seven classifiers, and implement the A-Hash image similarity stage.
+    workspace_hint: Open Portfolio as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on the Automated Plagiarism Detector project (`Automated Plagiarism Detector_Group 7_Final Report (3).pdf` in Portfolio repo). The system implements the Winnowing Algorithm with a dual-search architecture (local DB + MSN Live Search), image plagiarism via Average Hash (A-Hash) on 8×8 pixel reduction, and benchmarks 7 ML classifiers for text similarity.
+
+      Key results:
+      - Best: LinearSVC at 68.1% accuracy
+      - Worst: Neural Network at 50.3% (−35.7pp gap)
+      - A-Hash image comparison pipeline with Excel report generation
+
+      Help me:
+      1. Refactor the Winnowing Algorithm implementation in Python to use a sliding window of configurable size k, generating document fingerprints as sets of (hash, position) tuples, then compute Jaccard similarity between two documents.
+      2. Write a classifier benchmarking pipeline using scikit-learn that trains and cross-validates all 7 classifiers (SVM, Random Forest, Decision Tree, Neural Network, KNN, SGD, Naive Bayes) on TF-IDF vectorized text, outputting a precision/recall/F1 comparison DataFrame sorted by accuracy.
+      3. Implement the A-Hash image similarity function: resize to 8×8 grayscale → compute mean pixel value → binarize → return Hamming distance between two document hashes.
+
+  - anchor: prompt-8-taj-mahal-eia
+    title: Taj Mahal EIA
+    repo: Portfolio
+    repo_url: https://github.com/namo507/Portfolio
+    languages:
+      - Python
+      - geopandas
+    projects:
+      - Taj Mahal: Saving The Corroding Beauty (Environmental Impact Assessment)
+    focus: Simulate plume dispersion, map ward-level pollution, and calculate health impacts by cause.
+    workspace_hint: Open Portfolio as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on the Taj Mahal EIA project (`EIA Project_Taj Mahal Discolouration (3).pdf` in Portfolio repo). The project uses AERMOD dispersion modeling and spectroscopic analysis to quantify particulate deposition on Taj Mahal marble from open waste burning sources across 64 electoral wards in Agra.
+
+      Key data:
+      - Municipal solid waste burning: 150 mg/m²/year PM2.5 (vs. 12 mg/m²/year for dung cake burning)
+      - Single scattering albedo: 0.64 at 400nm, 0.95 at 700nm
+      - 713 premature deaths/year; 10,087 life-years lost attributable to trash burning
+
+      Help me:
+      1. Write a Python simulation of a simplified Gaussian plume dispersion model that takes inputs (emission rate Q, wind speed u, stack height H, downwind distance x, crosswind distance y) and outputs ground-level PM2.5 concentration in µg/m³, matching the AERMOD R²=0.87 and RMSE=12.4 µg/m³ benchmark.
+      2. Create a data visualization pipeline that maps PM2.5 concentrations across 64 electoral wards using `geopandas` and `matplotlib`, with a choropleth layer for emission source contributions (waste burning, dung cake, industrial).
+      3. Implement a health impact calculator using the WHO concentration-response functions for PM2.5 that estimates premature deaths by cause (IHD: 56%, stroke: 32%, COPD: 11%) given a baseline population and ambient PM2.5 level.
+
+  - anchor: prompt-9-epl-spending-analysis
+    title: EPL Spending Analysis
+    repo: Portfolio + Project_Moneyball_FC
+    repo_url: https://github.com/namo507/Project_Moneyball_FC
+    languages:
+      - Python
+      - Prophet
+      - LSTM
+    projects:
+      - English Premier League (1992/93 – 2021/22): Spending Analysis and Predictions
+    focus: Build the historical panel, compare five forecasting models, and generate long-range Prophet visualizations.
+    workspace_hint: Open Portfolio or Project_Moneyball_FC depending on whether you are working on the data pipeline or the supplementary model files.
+    prompt: |
+      @workspace I am working on the EPL Spending Analysis project (closely related to the Project_Moneyball_FC repo structure). The project automates extraction of 30 seasons (1992–2021) of EPL financial and performance data, producing 600+ club-season records, and builds forecasting models for the next 20 years.
+
+      Key results:
+      - Best classification: Random Forest at 72.3% accuracy on out-of-sample data
+      - 20-year financial forecasts for top clubs using Prophet/LSTM/ARIMA/SVR
+      - Clubs with higher average spend finished 2–4 places higher in the table
+      - >500% increase in average club expenditure since inception
+
+      Help me:
+      1. Write a Python data pipeline that scrapes and cleans EPL club expenditure and final standings data from 1992–2021, then merges them into a panel dataset keyed by (club, season).
+      2. Build a model comparison script that fits Random Forest, ARIMA, Prophet, LSTM, and SVR models to club expenditure time series, reports out-of-sample RMSE and classification accuracy (top-6 finish prediction), and selects the best model per club via cross-validation.
+      3. Generate a 20-year forecast visualization (2022–2042) for the top 6 clubs by average spend, using Prophet with changepoint detection to capture structural breaks like COVID-19 (2020) and the Super League controversy (2021).
+
+  - anchor: prompt-10-cross-project-portfolio-level
+    title: Cross-Project / Portfolio-Level
+    repo: Portfolio + AAPOR-Project-EV-Sentiment-Analysis + Project_Moneyball_FC
+    repo_url: https://github.com/namo507/Portfolio
+    languages:
+      - Python
+      - R
+      - Quarto
+      - GitHub Actions
+    projects:
+      - Portfolio-level infrastructure
+    focus: Unify dependencies, add CI, and cross-link the three main repositories in a single project-level README.
+    workspace_hint: Open the repository where you want the shared dependency or CI files to live, then adapt paths as needed across the other two repos.
+    prompt: |
+      @workspace I am Namit Shrivastava, a 2nd-year MS Data Science student at UMD. My Portfolio repo (github.com/namo507/Portfolio) contains project reports across ML, NLP, statistics, and environmental science. My two main active research repos are:
+      - `AAPOR-Project-EV-Sentiment-Analysis`: LLM sentiment analysis in Python/R/Jupyter
+      - `Project_Moneyball_FC`: Cross-classified multilevel modeling in R/Quarto
+
+      Given this context, help me:
+      1. Create a unified `requirements.txt` (Python) and `renv.lock` snapshot (R) that covers all dependencies across these three repos — including: groq, praw, requests, pandas, scikit-learn, statsmodels, transformers (DistilBERT), lme4, ggplot2, and quarto render targets.
+      2. Write a GitHub Actions CI workflow (`.github/workflows/ci.yml`) that:
+         - On push to `main`, lints all Python notebooks with `nbqa flake8`
+         - Renders all `.qmd` Quarto files in `Project_Moneyball_FC/code/` via `quarto render`
+         - Runs unit tests for the EV sentiment pipeline functions
+         - Caches R package dependencies with `actions/cache` for `renv`
+      3. Generate a project-level `README.md` template that cross-links all three repos, maps each to the corresponding LinkedIn project entry, and includes badges for language (Python/R), institution (UMD), and status (Complete/In Progress).
+
+  - anchor: prompt-11-adult-income-and-voice-gender-recognition
+    title: Adult Income Classification & Voice Gender Recognition
+    repo: Portfolio
+    repo_url: https://github.com/namo507/Portfolio
+    languages:
+      - Python
+      - scikit-learn
+      - SHAP
+      - fairlearn
+    projects:
+      - Adult Income Classification
+      - Voice Gender Recognition
+    focus: Build unified sklearn pipelines, audit fairness for the income model, and compare SHAP feature importance across both tasks.
+    workspace_hint: Open Portfolio as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on two binary classification projects from my Portfolio repo:
+
+      PROJECT A — Adult Income Classification (`Data Science June Major Project`):
+      - Dataset: 32,560 census records, 14 features, target: <=50K vs >50K
+      - Best model: Random Forest — 86.1% accuracy, 89%/94% precision/recall (low-income), 76%/62% (high-income), F1: 0.91 / 0.68
+      - Pipeline: LabelEncoder on 8 categorical vars, 75-25 train-test split
+
+      PROJECT B — Voice Gender Recognition (`Data Science June Minor Project`):
+      - Dataset: 3,168 voice samples, 20 acoustic features (mean freq, spectral entropy, kurtosis, skewness), balanced (1,584 male / 1,584 female)
+      - Best model: Random Forest (entropy, max_depth=6, n_estimators=50) — 98.3% test accuracy, only 11 misclassifications on 634 test samples
+
+      Help me:
+      1. Build a unified scikit-learn `Pipeline` class for BOTH projects that handles preprocessing (LabelEncoder/StandardScaler), hyperparameter tuning via `GridSearchCV`, and outputs a comparison table of all 5 classifiers (Decision Tree, Random Forest, KNN, Logistic Regression, SVM) sorted by F1-weighted score.
+      2. Write a model fairness audit for the Income Classification project using `fairlearn` — compute demographic parity and equalized odds across gender and race features, flagging any disparity > 5pp.
+      3. Generate a SHAP feature importance plot for both Random Forest models that ranks the top 10 contributing features, with an overlay comparing the two projects' feature importance distributions side-by-side.
+
+  - anchor: prompt-12-air-pollution-ml-iot-and-lexnet
+    title: Air Pollution, ML/IoT, and LEXNet
+    repo: Portfolio
+    repo_url: https://github.com/namo507/Portfolio
+    languages:
+      - Python
+      - PyTorch
+      - geopandas
+    projects:
+      - Air Pollution Abatement and Modeling
+      - Applications of ML/IoT in Concrete Technology
+      - LEXNet for Internet Traffic Classification
+    focus: Simulate Gaussian plume scenarios, train multilabel road-distress CNNs, and implement LERes plus dynamic prototypes for LEXNet.
+    workspace_hint: Open Portfolio as the workspace root before pasting.
+    prompt: |
+      @workspace I am working on three additional projects from my Portfolio repo (`Publication1.pdf` and related BITS Pilani coursework):
+
+      PROJECT A — Air Pollution Abatement (Pilani, Rajasthan):
+      - 26 ambient air samples over 766 hours, PM10 mean=184.2 µg/m³ (98.7 µg/m³ measured, exceeding NAAQS 60 µg/m³ by 64.5%)
+      - Gaussian plume model: R²=0.87, RMSE=12.4 µg/m³ for PM10
+      - 4 emission reduction scenarios (0%, 10%, 20%, 30% reduction)
+
+      PROJECT B — ML/IoT Structural Health Monitoring (ResNet50/101 CNN):
+      - 42,520 road surface images (1920×1080), 5 distress categories
+      - 86.67% accuracy, 87.50% precision, 88.89% recall, 88.19% F1
+      - Data augmented from 52,009 → 245,735 labeled instances (372% increase)
+
+      PROJECT C — LEXNet Internet Traffic Classification:
+      - 1.5M network traffic flows, 200 application classes
+      - Reduced model size by 97% (to 118,880 params) vs ResNet baseline
+      - LERes block: −19% params, −41% CPU inference time, −0.7% accuracy
+      - LProto layer: −36% params, −24% inference time, +4% accuracy
+
+      Help me:
+      1. For Project A: Write a Python Gaussian plume dispersion simulator that accepts a CSV of emission sources (lat/lon, Q, H) and a meteorological conditions file (wind speed, direction, stability class), then outputs a spatial PM10 heatmap using `matplotlib` and computes the 4 emission reduction scenarios.
+      2. For Project B: Write a PyTorch training script for a multilabel ResNet50 model on road distress images — use `BCEWithLogitsLoss`, sigmoid activation on a 5-node output layer, and `torchvision.transforms` for the augmentation pipeline (rotation, scaling, flipping) targeting the reported 372% dataset expansion.
+      3. For Project C: Implement the LERes (Lightweight Efficient Residual) block in PyTorch that reduces a standard ResNet block's parameters by 19% and inference time by 41%, then wire it into a LEXNet architecture with a dynamic LProto layer that allocates 1–N prototypes per traffic class using learned cosine similarity embeddings.

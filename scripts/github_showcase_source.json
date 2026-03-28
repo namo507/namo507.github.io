@@ -1,0 +1,408 @@
+{
+  "username": "namo507",
+  "featured_repositories": [
+    {
+      "full_name": "namo507/AAPOR-Project-EV-Sentiment-Analysis",
+      "badge": "Featured research repo",
+      "theme": "research",
+      "language": "Python",
+      "hero_metric": "91.6%",
+      "hero_label": "sentiment accuracy",
+      "description": "Multi-source EV sentiment analysis comparing Reddit discourse, New York Times coverage, and LLM-based interpretation.",
+      "metrics": [
+        {
+          "value": "1.1M+",
+          "label": "social posts"
+        },
+        {
+          "value": "91.6%",
+          "label": "model accuracy"
+        },
+        {
+          "value": "35%",
+          "label": "negative-shift rise"
+        }
+      ],
+      "tags": [
+        "NLP",
+        "Groq LLMs",
+        "Survey research"
+      ],
+      "related_links": [
+        {
+          "label": "Site project",
+          "url": "/portfolio/portfolio-02-ev-sentiment/"
+        },
+        {
+          "label": "Prompt library",
+          "url": "/copilot-prompts/#prompt-1-ev-sentiment-analysis"
+        }
+      ]
+    },
+    {
+      "full_name": "namo507/Project_Moneyball_FC",
+      "badge": "Featured research repo",
+      "theme": "research",
+      "language": "R",
+      "hero_metric": "7,023",
+      "hero_label": "player-season rows",
+      "description": "Cross-classified multilevel modeling for player market values across elite European football, linking player, club, and league context.",
+      "metrics": [
+        {
+          "value": "7,023",
+          "label": "rows modeled"
+        },
+        {
+          "value": "78%",
+          "label": "variance explained"
+        },
+        {
+          "value": "42%",
+          "label": "valuation premium"
+        }
+      ],
+      "tags": [
+        "Multilevel modeling",
+        "Sports analytics",
+        "Transfermarkt"
+      ],
+      "related_links": [
+        {
+          "label": "Site project",
+          "url": "/portfolio/portfolio-01-football-market-value/"
+        },
+        {
+          "label": "Prompt library",
+          "url": "/copilot-prompts/#prompt-2-player-market-value-analysis"
+        }
+      ]
+    },
+    {
+      "full_name": "namo507/Portfolio",
+      "badge": "Featured portfolio repo",
+      "theme": "portfolio",
+      "language": "Multi-project",
+      "hero_metric": "8",
+      "hero_label": "mapped projects",
+      "description": "Portfolio repository of BITS Pilani project reports spanning machine learning, forecasting, experimental design, and environmental analysis.",
+      "metrics": [
+        {
+          "value": "581K",
+          "label": "forest rows"
+        },
+        {
+          "value": "5.93%",
+          "label": "solar MAPE"
+        },
+        {
+          "value": "68.1%",
+          "label": "plagiarism accuracy"
+        }
+      ],
+      "tags": [
+        "Active learning",
+        "Forecasting",
+        "DOE",
+        "Environmental modeling"
+      ],
+      "related_links": [
+        {
+          "label": "Site portfolio",
+          "url": "/portfolio/"
+        },
+        {
+          "label": "Prompt library",
+          "url": "/copilot-prompts/#prompt-3-active-learning-for-forest-cover-classification"
+        }
+      ]
+    }
+  ],
+  "spotlight_priority": [
+    "namo507/AAPOR-Project-EV-Sentiment-Analysis",
+    "namo507/Project_Moneyball_FC",
+    "namo507/office-doc-redactor",
+    "namo507/n8n-Project",
+    "namo507/Smart-Order-Routing-SOR",
+    "namo507/namo507.github.io",
+    "namo507/CV_Namit-Shrivastava"
+  ],
+  "spotlight_overrides": [
+    {
+      "full_name": "namo507/AAPOR-Project-EV-Sentiment-Analysis",
+      "badge": "Starred spotlight",
+      "theme": "research",
+      "language": "Python",
+      "hero_metric": "91.6%",
+      "hero_label": "sentiment accuracy",
+      "description": "Multi-source EV sentiment analysis comparing Reddit discourse, New York Times coverage, and LLM-based interpretation.",
+      "metrics": [
+        {
+          "value": "1.1M+",
+          "label": "social posts"
+        },
+        {
+          "value": "91.6%",
+          "label": "model accuracy"
+        },
+        {
+          "value": "10",
+          "label": "LLM variants"
+        }
+      ],
+      "tags": [
+        "NLP",
+        "Groq LLMs",
+        "Survey research"
+      ],
+      "related_links": [
+        {
+          "label": "Site project",
+          "url": "/portfolio/portfolio-02-ev-sentiment/"
+        }
+      ]
+    },
+    {
+      "full_name": "namo507/Project_Moneyball_FC",
+      "badge": "Starred spotlight",
+      "theme": "research",
+      "language": "R",
+      "hero_metric": "7,023",
+      "hero_label": "player-season rows",
+      "description": "Multilevel football market-value analysis connecting player, club, and league context in a single modeling workflow.",
+      "metrics": [
+        {
+          "value": "7,023",
+          "label": "rows modeled"
+        },
+        {
+          "value": "78%",
+          "label": "variance explained"
+        },
+        {
+          "value": "42%",
+          "label": "valuation premium"
+        }
+      ],
+      "tags": [
+        "Multilevel modeling",
+        "Sports analytics",
+        "Transfermarkt"
+      ],
+      "related_links": [
+        {
+          "label": "Site project",
+          "url": "/portfolio/portfolio-01-football-market-value/"
+        }
+      ]
+    },
+    {
+      "full_name": "namo507/office-doc-redactor",
+      "badge": "Starred spotlight",
+      "theme": "security",
+      "language": "TypeScript",
+      "hero_metric": "3",
+      "hero_label": "sensitive data types",
+      "description": "Word add-in for scanning documents, redacting sensitive fields, adding confidentiality headers, and preserving edits through tracked changes.",
+      "metrics": [
+        {
+          "value": "3",
+          "label": "redaction patterns"
+        },
+        {
+          "value": "1",
+          "label": "Word add-in"
+        },
+        {
+          "value": "3000",
+          "label": "local dev port"
+        }
+      ],
+      "tags": [
+        "Office.js",
+        "TypeScript",
+        "Applied AI challenge"
+      ]
+    },
+    {
+      "full_name": "namo507/n8n-Project",
+      "badge": "Starred spotlight",
+      "theme": "automation",
+      "language": "JavaScript",
+      "hero_metric": "5",
+      "hero_label": "workflow stages",
+      "description": "Daily weather automation that pulls OpenWeatherMap data, flags alerts, logs each run to Supabase, and sends a formatted HTML briefing.",
+      "metrics": [
+        {
+          "value": "08:00",
+          "label": "daily trigger"
+        },
+        {
+          "value": "5",
+          "label": "workflow stages"
+        },
+        {
+          "value": "1",
+          "label": "email digest"
+        }
+      ],
+      "tags": [
+        "n8n",
+        "Supabase",
+        "Workflow automation"
+      ]
+    },
+    {
+      "full_name": "namo507/Smart-Order-Routing-SOR",
+      "badge": "Starred spotlight",
+      "theme": "research",
+      "language": "Jupyter Notebook",
+      "hero_metric": "2",
+      "hero_label": "execution benchmarks",
+      "description": "Strategy backtesting toolkit for simulated smart order routing across multiple venues with TWAP execution and VWAP benchmarking.",
+      "metrics": [
+        {
+          "value": "2",
+          "label": "benchmark styles"
+        },
+        {
+          "value": "3",
+          "label": "core libraries"
+        },
+        {
+          "value": "283",
+          "label": "repo KB"
+        }
+      ],
+      "tags": [
+        "Market simulation",
+        "TWAP",
+        "VWAP"
+      ]
+    },
+    {
+      "full_name": "namo507/namo507.github.io",
+      "badge": "Starred spotlight",
+      "theme": "portfolio",
+      "language": "HTML",
+      "hero_metric": "17",
+      "hero_label": "project writeups",
+      "description": "Source repository for the personal academic site, integrating research metrics, portfolio projects, CV data, and the GitHub showcase.",
+      "metrics": [
+        {
+          "value": "39",
+          "label": "repos linked"
+        },
+        {
+          "value": "17",
+          "label": "portfolio entries"
+        },
+        {
+          "value": "5",
+          "label": "main sections"
+        }
+      ],
+      "tags": [
+        "Jekyll",
+        "GitHub Pages",
+        "Academic site"
+      ],
+      "related_links": [
+        {
+          "label": "Visit live site",
+          "url": "/"
+        }
+      ]
+    },
+    {
+      "full_name": "namo507/CV_Namit-Shrivastava",
+      "badge": "Starred spotlight",
+      "theme": "document",
+      "language": "PDF / Markdown",
+      "hero_metric": "1",
+      "hero_label": "maintained CV PDF",
+      "description": "Dedicated CV repository that keeps a current PDF resume, research overview, technical profile, and outbound professional links in one place.",
+      "metrics": [
+        {
+          "value": "1",
+          "label": "current PDF"
+        },
+        {
+          "value": "5",
+          "label": "profile links"
+        },
+        {
+          "value": "2025",
+          "label": "latest repo update"
+        }
+      ],
+      "tags": [
+        "CV",
+        "Academic profile",
+        "PDF artifact"
+      ],
+      "related_links": [
+        {
+          "label": "Website CV",
+          "url": "/cv/"
+        }
+      ]
+    }
+  ],
+  "repository_mappings": [
+    {
+      "full_name": "namo507/AAPOR-Project-EV-Sentiment-Analysis",
+      "projects": [
+        {
+          "label": "Analyzing Public Perceptions and Sentiments of EVs in the Era of Sustainable Transformation",
+          "url": "/portfolio/portfolio-02-ev-sentiment/"
+        }
+      ]
+    },
+    {
+      "full_name": "namo507/Project_Moneyball_FC",
+      "projects": [
+        {
+          "label": "Player Market Value Analysis in Elite European Football",
+          "url": "/portfolio/portfolio-01-football-market-value/"
+        }
+      ]
+    },
+    {
+      "full_name": "namo507/Portfolio",
+      "projects": [
+        {
+          "label": "Active Learning for Forest Cover Classification",
+          "url": "/portfolio/portfolio-08-active-learning-forest/"
+        },
+        {
+          "label": "Convolutional Neural Networks",
+          "url": "/portfolio/portfolio-10-cnn-classification/"
+        },
+        {
+          "label": "Statistical Analysis and Forecasting of Solar Energy",
+          "url": "/portfolio/portfolio-12-solar-forecasting/"
+        },
+        {
+          "label": "Design of Experiments",
+          "url": "/portfolio/portfolio-11-doe-analysis/"
+        },
+        {
+          "label": "Automated Plagiarism Detector",
+          "url": "/portfolio/portfolio-09-plagiarism-detector/"
+        },
+        {
+          "label": "Taj Mahal EIA",
+          "url": "/portfolio/portfolio-13-taj-mahal-eia/"
+        },
+        {
+          "label": "Adult Income Classification",
+          "url": "/portfolio/portfolio-14-adult-income/"
+        },
+        {
+          "label": "Voice Gender Recognition",
+          "url": "/portfolio/portfolio-16-voice-gender/"
+        }
+      ]
+    }
+  ]
+}

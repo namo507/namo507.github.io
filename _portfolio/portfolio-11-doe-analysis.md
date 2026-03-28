@@ -1,6 +1,6 @@
 ---
 title: "Design of Experiments (DOE) Analysis"
-excerpt: "Applied factorial design and response surface methodology to optimize industrial processes, achieving 25% improvement in process efficiency.<br/><img src='/images/projects/doe-analysis.png' style='max-width:500px;'>"
+excerpt: "Applied factorial design and response surface methodology to optimize industrial processes, achieving 25% improvement in process efficiency."
 collection: portfolio
 date: 2022-12-01
 tags: [Statistics, DOE, R, Process Optimization]

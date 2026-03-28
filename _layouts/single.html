@@ -23,11 +23,13 @@ layout: default
     {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date: "%B %d, %Y" }}">{% endif %}
     {% if page.modified %}<meta itemprop="dateModified" content="{{ page.modified | date: "%B %d, %Y" }}">{% endif %}
 
+    {% assign clean_page_excerpt = page.excerpt | strip_html %}
+
     <div class="page__inner-wrap">
       {% unless page.header.overlay_color or page.header.overlay_image %}
         <header class="page__header-block"{% unless page.hide_title %} data-reveal{% endunless %}>
           {% if page.title and page.hide_title != true %}<h1 class="page__title" itemprop="headline">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</h1>{% endif %}
-          {% if page.excerpt and page.hide_excerpt != true %}<p class="page__lead">{{ page.excerpt | markdownify | remove: "<p>" | remove: "</p>" }}</p>{% endif %}
+          {% if clean_page_excerpt and page.hide_excerpt != true %}<p class="page__lead">{{ clean_page_excerpt | markdownify | remove: "<p>" | remove: "</p>" }}</p>{% endif %}
           {% if page.read_time %}
             <p class="page__meta"><i class="fa fa-clock" aria-hidden="true"></i> {% include read-time.html %}</p>
           {% endif %}
@@ -44,6 +46,20 @@ layout: default
         {% endif %}    
         </header>
       {% endunless %}
+
+      {% if page.collection == 'portfolio' %}
+        <div data-reveal>
+          {% include portfolio-visual.html post=page detail=true %}
+        </div>
+        <div class="page__actions portfolio-actions" data-reveal>
+          {% if page.paperurl %}
+            <a class="button-link button-link--primary" href="{{ page.paperurl }}" target="_blank" rel="noopener">Open project paper</a>
+          {% endif %}
+          {% if site.portfolio_archive_url %}
+            <a class="button-link{% unless page.paperurl %} button-link--primary{% endunless %}" href="{{ site.portfolio_archive_url }}" target="_blank" rel="noopener">Open LinkedIn project archive</a>
+          {% endif %}
+        </div>
+      {% endif %}
 
       <section class="page__content" itemprop="text">
         {{ content }}

@@ -16,6 +16,7 @@ description              : &description "Graduate Researcher | Survey Methodolog
 url                      : https://namo507.github.io
 baseurl                  : ""
 repository               : "namo507/namo507.github.io"
+portfolio_archive_url    : "https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/"
 
 # Site Author - The following control what appear as part of the author content on the side bar.
 #               If a field is blank the icon and link will not appear, otherwise it will be shown.
@@ -25,9 +26,11 @@ author:
   avatar           : "IMG_6432.jpg"
   name             : "Namit Shrivastava"
   pronouns         : "he/him"
-  bio              : "Graduate Researcher in Survey Methodology & Data Science | Dean's Fellow | UMD & UMich"
+  bio              : "Graduate researcher in survey methodology, trustworthy AI, and computational social science."
   employer         : "University of Maryland"
+  location         : "College Park, MD, USA"
   email            : "namit507@gmail.com"
+  uri              : "https://namo507.github.io"
 
   # Academic websites
   academia         : # URL
@@ -54,7 +57,7 @@ author:
 
   # Social media
   artstation       : # Username
-  bluesky          : "bsky.app" # Replace this with you Bluesky username
+  bluesky          :
   facebook         : # Username
   flickr           : # Username
   foursquare       : # Username

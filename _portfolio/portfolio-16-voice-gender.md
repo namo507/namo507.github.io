@@ -1,6 +1,6 @@
 ---
 title: "Voice Gender Recognition"
-excerpt: "Developed audio classification system for voice gender recognition achieving 96% accuracy using MFCC features and SVM/Random Forest classifiers.<br/><img src='/images/projects/voice-gender.png' style='max-width:500px;'>"
+excerpt: "Developed audio classification system for voice gender recognition achieving 96% accuracy using MFCC features and SVM/Random Forest classifiers."
 collection: portfolio
 date: 2022-07-15
 tags: [Machine Learning, Audio Processing, Python, Classification]

@@ -1,8 +1,9 @@
 ---
 title: "Applications of ML/IoT in Concrete Technology"
-excerpt: "Published research on ML/IoT integration in concrete strength prediction and quality monitoring, achieving 89% accuracy with Random Forest and XGBoost models.<br/><img src='/images/projects/concrete-ml.png' style='max-width:500px;'>"
+excerpt: "Published research on ML/IoT integration in concrete strength prediction and quality monitoring, achieving 89% accuracy with Random Forest and XGBoost models."
 collection: portfolio
 date: 2023-12-01
+paperurl: "https://doi.org/10.1007/978-981-99-9521-9_21"
 tags: [Machine Learning, IoT, Civil Engineering, Published Research]
 ---
 

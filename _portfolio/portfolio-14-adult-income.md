@@ -1,6 +1,6 @@
 ---
 title: "Adult Income Classification"
-excerpt: "Built ensemble classification models on UCI Adult Census dataset achieving 87% accuracy in predicting income levels using gradient boosting and feature engineering.<br/><img src='/images/projects/income-classification.png' style='max-width:500px;'>"
+excerpt: "Built ensemble classification models on UCI Adult Census dataset achieving 87% accuracy in predicting income levels using gradient boosting and feature engineering."
 collection: portfolio
 date: 2022-08-15
 tags: [Machine Learning, Classification, Python, Scikit-Learn]

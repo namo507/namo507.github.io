@@ -8,8 +8,18 @@ excerpt: "Selected technical work across machine learning, analytics, and applie
 
 {% include base_path %}
 
+<section class="page__panel page__panel--highlight page__panel--compact" data-reveal>
+  <p class="page__eyebrow">Project Archive</p>
+  <h2>Project writeups, visuals, and supporting documents.</h2>
+  <p>Each project page now uses a native visual cover instead of broken thumbnail references. For full supporting documents and attached project files, use the LinkedIn project archive while the remaining PDFs are migrated into this site.</p>
+  <div class="page__actions">
+    <a class="button-link button-link--primary" href="{{ site.portfolio_archive_url }}" target="_blank" rel="noopener">Open LinkedIn project archive</a>
+  </div>
+</section>
 
-{% for post in site.portfolio %}
-  {% include archive-single.html %}
-{% endfor %}
+<div class="grid__wrapper">
+  {% for post in site.portfolio %}
+    {% include archive-single.html type="grid" %}
+  {% endfor %}
+</div>
 

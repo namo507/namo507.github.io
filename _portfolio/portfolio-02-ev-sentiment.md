@@ -1,6 +1,6 @@
 ---
 title: "EV Sentiment Analysis Using Transformer Models"
-excerpt: "Analyzed 1.1M+ Reddit posts on electric vehicles using transformer-based NLP models, achieving 91.6% accuracy in sentiment classification. Presented at AAPOR 2025.<br/><img src='/images/projects/ev-sentiment.png' style='max-width:500px;'>"
+excerpt: "Analyzed 1.1M+ Reddit posts on electric vehicles using transformer-based NLP models, achieving 91.6% accuracy in sentiment classification. Presented at AAPOR 2025."
 collection: portfolio
 date: 2025-05-15
 tags: [NLP, Deep Learning, Transformers, Survey Research, Python]

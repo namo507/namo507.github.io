@@ -1,0 +1,22 @@
+{% assign portfolio_post = include.post %}
+{% assign project_tags = portfolio_post.tags | default: empty %}
+{% assign primary_tag = project_tags | first | default: "Project" %}
+
+<div class="portfolio-visual{% if include.compact %} portfolio-visual--compact{% endif %}{% if include.detail %} portfolio-visual--detail{% endif %}" data-accent="{{ primary_tag | slugify }}">
+  <div class="portfolio-visual__grid" aria-hidden="true"></div>
+  <div class="portfolio-visual__orb portfolio-visual__orb--one" aria-hidden="true"></div>
+  <div class="portfolio-visual__orb portfolio-visual__orb--two" aria-hidden="true"></div>
+  <div class="portfolio-visual__band" aria-hidden="true"></div>
+
+  <div class="portfolio-visual__content">
+    <p class="portfolio-visual__eyebrow">{{ portfolio_post.date | date: "%Y" }}{% if primary_tag %} · {{ primary_tag }}{% endif %}</p>
+    <p class="portfolio-visual__title">{{ portfolio_post.title }}</p>
+    {% if project_tags.size > 0 %}
+      <div class="portfolio-visual__chips">
+        {% for tag in project_tags limit: 3 %}
+          <span class="portfolio-visual__chip">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>

@@ -1,6 +1,6 @@
 ---
 title: "Website Development - Indian Red Cross Society"
-excerpt: "Designed and deployed Drupal-based CMS for volunteer registry and donor database, reducing manual data entry by 50% and supporting 10,000+ monthly visitors.<br/><img src='/images/projects/ircs-website.png' style='max-width:500px;'>"
+excerpt: "Designed and deployed Drupal-based CMS for volunteer registry and donor database, reducing manual data entry by 50% and supporting 10,000+ monthly visitors."
 collection: portfolio
 date: 2022-08-01
 tags: [Web Development, Drupal, CMS, Full Stack]

@@ -1,6 +1,6 @@
 ---
 title: "Player Market Value Analysis in Elite European Football"
-excerpt: "Econometric analysis of transfer market valuation for 600+ players across Europe's top 5 leagues using regularized regression and feature engineering.<br/><img src='/images/projects/football-market.png' style='max-width:500px;'>"
+excerpt: "Econometric analysis of transfer market valuation for 600+ players across Europe's top 5 leagues using regularized regression and feature engineering."
 collection: portfolio
 date: 2025-12-15
 tags: [Machine Learning, Sports Analytics, Regression, Python]

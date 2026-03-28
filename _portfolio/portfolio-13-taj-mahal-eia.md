@@ -1,6 +1,6 @@
 ---
 title: "Taj Mahal Environmental Impact Assessment"
-excerpt: "Comprehensive environmental impact assessment analyzing air quality, water pollution, and structural degradation threats to the UNESCO World Heritage monument.<br/><img src='/images/projects/taj-mahal.png' style='max-width:500px;'>"
+excerpt: "Comprehensive environmental impact assessment analyzing air quality, water pollution, and structural degradation threats to the UNESCO World Heritage monument."
 collection: portfolio
 date: 2022-11-01
 tags: [Environmental Science, Impact Assessment, Research, Policy]
