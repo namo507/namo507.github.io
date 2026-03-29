@@ -24,9 +24,14 @@ layout: default
     {% if page.modified %}<meta itemprop="dateModified" content="{{ page.modified | date: "%B %d, %Y" }}">{% endif %}
 
     {% assign clean_page_excerpt = page.excerpt | strip_html %}
+    {% assign show_page_header = false %}
+    {% if page.title and page.hide_title != true %}{% assign show_page_header = true %}{% endif %}
+    {% if clean_page_excerpt and page.hide_excerpt != true %}{% assign show_page_header = true %}{% endif %}
+    {% if page.read_time or page.modified or page.collection == 'teaching' or page.venue or page.date %}{% assign show_page_header = true %}{% endif %}
 
     <div class="page__inner-wrap">
       {% unless page.header.overlay_color or page.header.overlay_image %}
+      {% if show_page_header %}
         <header class="page__header-block"{% unless page.hide_title %} data-reveal{% endunless %}>
           {% if page.title and page.hide_title != true %}<h1 class="page__title" itemprop="headline">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</h1>{% endif %}
           {% if clean_page_excerpt and page.hide_excerpt != true %}<p class="page__lead">{{ clean_page_excerpt | markdownify | remove: "<p>" | remove: "</p>" }}</p>{% endif %}
@@ -45,6 +50,7 @@ layout: default
           <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Published:" }}</strong> <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | default: "1900-01-01" | date: "%B %d, %Y" }}</time></p>
         {% endif %}    
         </header>
+      {% endif %}
       {% endunless %}
 
       {% if page.collection == 'portfolio' %}

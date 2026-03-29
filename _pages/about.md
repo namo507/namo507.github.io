@@ -13,7 +13,7 @@ redirect_from:
 <section class="home-hero" data-reveal>
   <p class="page__eyebrow">Survey Methodology • Data Science • Responsible AI</p>
   <h1 class="home-hero__title">Designing rigorous measurement systems for AI-enabled research.</h1>
-  <p class="home-hero__lead">{{ site.data.cv.profile.summary }}</p>
+  <p class="home-hero__lead">{{ site.data.cv_site.profile.summary }}</p>
 
   <div class="page__actions">
     <a class="button-link button-link--primary" href="{{ '/cv/' | relative_url }}">View CV</a>
@@ -23,7 +23,7 @@ redirect_from:
   </div>
 
   <div class="hero-metrics">
-    {% for metric in site.data.cv.hero_metrics %}
+    {% for metric in site.data.cv_site.hero_metrics %}
       <article class="metric-card">
         <span class="metric-card__value">{{ metric.value }}</span>
         <span class="metric-card__label">{{ metric.label }}</span>
@@ -35,7 +35,7 @@ redirect_from:
 <section class="page__section" data-reveal>
   <p class="page__eyebrow">Links</p>
   <div class="social-link-grid">
-    {% for link in site.data.cv.links %}
+    {% for link in site.data.cv_site.links %}
       <a class="social-link-card" href="{{ link.url }}">{{ link.label }}</a>
     {% endfor %}
   </div>
@@ -53,16 +53,55 @@ redirect_from:
     </ul>
   </article>
 
-  <article class="page__panel">
-    <p class="page__eyebrow">Current Roles</p>
-    <div class="timeline-stack">
-      {% for role in site.data.cv.experience limit:3 %}
-        <div class="timeline-card">
-          <h3>{{ role.role }}</h3>
-          <p>{{ role.organization }}</p>
-          <span>{{ role.location }} • {{ role.dates }}</span>
+  <article class="page__panel workflow-panel">
+    <p class="page__eyebrow">Work + Education Snapshot</p>
+    <h2>A compact pipeline from technical foundations to research systems delivery.</h2>
+    <p class="workflow-panel__lead">This view compresses the education and work journey into a readable sequence so the homepage feels directional instead of list-driven.</p>
+
+    <div class="workflow-pipeline">
+      <article class="workflow-stage" style="--workflow-accent: #8fb6ff;" data-reveal>
+        <span class="workflow-stage__step">01 • Quantitative foundation</span>
+        <h3>{{ site.data.cv_site.education[1].institution }}</h3>
+        <p>Built the base in engineering, statistics, and machine learning through a civil engineering degree with a data science minor.</p>
+        <div class="workflow-stage__meta">
+          <span>{{ site.data.cv_site.education[1].dates }}</span>
+          <span>{{ site.data.cv_site.education[1].location }}</span>
         </div>
-      {% endfor %}
+      </article>
+
+      <article class="workflow-stage" style="--workflow-accent: #f1b76a;" data-reveal>
+        <span class="workflow-stage__step">02 • Applied engineering</span>
+        <h3>{{ site.data.cv_site.experience[3].organization }}</h3>
+        <p>Moved into production-oriented ML and platform work across OCR, trademark similarity systems, API testing, and scalable automation.</p>
+        <div class="workflow-stage__meta">
+          <span>{{ site.data.cv_site.experience[3].role }}</span>
+          <span>{{ site.data.cv_site.experience[3].dates }}</span>
+        </div>
+      </article>
+
+      <article class="workflow-stage" style="--workflow-accent: #69d7c3;" data-reveal>
+        <span class="workflow-stage__step">03 • Graduate methods depth</span>
+        <h3>{{ site.data.cv_site.education[0].institution }}</h3>
+        <p>Deepened survey methodology, data collection, and causal inference while also teaching privacy and confidentiality through JPSM.</p>
+        <div class="workflow-stage__meta">
+          <span>{{ site.data.cv_site.education[0].degree }}</span>
+          <span>{{ site.data.cv_site.experience[2].role }}</span>
+        </div>
+      </article>
+
+      <article class="workflow-stage" style="--workflow-accent: #9ed9c5;" data-reveal>
+        <span class="workflow-stage__step">04 • Research systems delivery</span>
+        <h3>{{ site.data.cv_site.experience[1].organization }}</h3>
+        <p>Scaled into large public-data research and infrastructure, from geospatial epidemiology at census-tract scale to CKAN-driven repository automation.</p>
+        <div class="workflow-stage__meta">
+          <span>{{ site.data.cv_site.experience[1].dates }}</span>
+          <span>{{ site.data.cv_site.experience[0].organization }}</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="page__actions workflow-panel__actions">
+      <a class="button-link" href="{{ '/cv/' | relative_url }}">Open full CV</a>
     </div>
   </article>
 </section>
@@ -134,7 +173,7 @@ redirect_from:
 <section class="page__section" data-reveal>
   <p class="page__eyebrow">CV Snapshot</p>
   <div class="result-grid">
-    {% for result in site.data.cv.featured_results %}
+    {% for result in site.data.cv_site.featured_results %}
       <article class="result-card">
         <span class="result-card__metric">{{ result.metric }}</span>
         <h3>{{ result.title }}</h3>
@@ -148,7 +187,7 @@ redirect_from:
   <article class="page__panel">
     <p class="page__eyebrow">Education</p>
     <div class="timeline-stack">
-      {% for degree in site.data.cv.education limit:2 %}
+      {% for degree in site.data.cv_site.education limit:2 %}
         <div class="timeline-card">
           <h3>{{ degree.degree }}</h3>
           <p>{{ degree.institution }}</p>

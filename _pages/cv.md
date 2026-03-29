@@ -1,33 +1,34 @@
 ---
-layout: archive
+layout: single
 title: "Curriculum Vitae"
 permalink: /cv/
-author_profile: false
+author_profile: true
+hide_title: true
+hide_excerpt: true
 excerpt: "Experience, education, research output, and technical focus."
 redirect_from:
   - /resume
 ---
 
 {% include base_path %}
-{% assign cv = site.data.cv %}
 
 <section class="cv-showcase">
   <div class="cv-hero page__panel page__panel--highlight" data-reveal>
     <div class="cv-hero__content">
       <p class="page__eyebrow">Curriculum Vitae</p>
-      <h2 class="cv-hero__name">{{ cv.profile.name }}</h2>
-      <p class="cv-hero__headline">{{ cv.profile.headline }}</p>
-      <p class="cv-hero__summary">{{ cv.profile.summary }}</p>
+      <h2 class="cv-hero__name">{{ site.data.cv_site.profile.name }}</h2>
+      <p class="cv-hero__headline">{{ site.data.cv_site.profile.headline }}</p>
+      <p class="cv-hero__summary">{{ site.data.cv_site.profile.summary }}</p>
 
       <div class="cv-inline-meta">
-        <span class="cv-inline-meta__item">{{ cv.profile.location }}</span>
-        <span class="cv-inline-meta__item">{{ cv.profile.phone }}</span>
-        <a class="cv-inline-meta__item" href="mailto:{{ cv.profile.email }}">{{ cv.profile.email }}</a>
+        <span class="cv-inline-meta__item">{{ site.data.cv_site.profile.location }}</span>
+        <span class="cv-inline-meta__item">{{ site.data.cv_site.profile.phone }}</span>
+        <a class="cv-inline-meta__item" href="mailto:{{ site.data.cv_site.profile.email }}">{{ site.data.cv_site.profile.email }}</a>
       </div>
 
       <div class="page__actions">
-        <a class="button-link button-link--primary" href="{{ cv.profile.pdf_url | relative_url }}" target="_blank" rel="noopener">Download PDF</a>
-        <a class="button-link" href="mailto:{{ cv.profile.email }}">Email</a>
+        <a class="button-link button-link--primary" href="{{ site.data.cv_site.profile.pdf_url | relative_url }}" target="_blank" rel="noopener">Download PDF</a>
+        <a class="button-link" href="mailto:{{ site.data.cv_site.profile.email }}">Email</a>
         <a class="button-link" href="{{ '/publications/' | relative_url }}">Publications</a>
         <a class="button-link" href="{{ '/github/' | relative_url }}">GitHub Showcase</a>
       </div>
@@ -40,7 +41,7 @@ redirect_from:
       </div>
 
       <div class="hero-metrics cv-hero__metrics">
-        {% for metric in cv.hero_metrics %}
+        {% for metric in site.data.cv_site.hero_metrics %}
           <article class="metric-card">
             <span class="metric-card__value">{{ metric.value }}</span>
             <span class="metric-card__label">{{ metric.label }}</span>
@@ -67,7 +68,7 @@ redirect_from:
     </div>
 
     <div class="result-grid">
-      {% for result in cv.featured_results %}
+      {% for result in site.data.cv_site.featured_results %}
         <article class="result-card cv-impact-card">
           <span class="result-card__metric">{{ result.metric }}</span>
           <h3>{{ result.title }}</h3>
@@ -84,7 +85,7 @@ redirect_from:
     </div>
 
     <div class="social-link-grid cv-social-grid">
-      {% for link in cv.links %}
+      {% for link in site.data.cv_site.links %}
         <a class="social-link-card" href="{{ link.url }}"{% unless link.url contains 'mailto:' %} target="_blank" rel="noopener"{% endunless %}>{{ link.label }}</a>
       {% endfor %}
     </div>
@@ -94,33 +95,24 @@ redirect_from:
     <div class="cv-section-heading">
       <p class="page__eyebrow">Technical Skills</p>
       <h2>Research and machine-learning capabilities now carry the strongest visual priority.</h2>
-      <p>The weighting is intentionally opinionated: survey-methodology, quantitative research design, and applied ML categories lead the section, while the rest remain visible as supporting infrastructure.</p>
+      <p>The layout now foregrounds survey methodology, statistical research design, and applied machine learning, while keeping delivery and platform skills in a supporting role.</p>
     </div>
 
     <div class="cv-skill-grid">
-      {% for skill_group in cv.skills %}
-        {% assign skill_name = skill_group[0] %}
-        {% assign skill_count = skill_group[1].size %}
-        {% assign skill_meta = cv.skill_emphasis[skill_name] %}
-        {% assign skill_score = skill_meta.score | default: 72 %}
-        <article class="cv-skill-card{% if skill_meta.featured %} cv-skill-card--featured{% endif %}" style="--skill-score: {{ skill_score }}%;" data-theme="{{ skill_meta.theme | default: 'default' }}" data-reveal>
+      {% for skill_group in site.data.cv_site.skill_groups %}
+        <article class="cv-skill-card{% if skill_group.featured %} cv-skill-card--featured{% endif %}" style="--skill-score: {{ skill_group.score }}%;" data-theme="{{ skill_group.theme | default: 'default' }}" data-reveal>
           <div class="cv-skill-card__header">
             <div>
-              <p class="cv-skill-card__tier">{{ skill_meta.tier | default: 'Skill cluster' }}</p>
-              <h3>{{ skill_name }}</h3>
-              <p>{{ skill_meta.summary | default: 'Technical tools and methods used across research and engineering work.' }}</p>
+              <p class="cv-skill-card__tier">{{ skill_group.tier }}</p>
+              <h3>{{ skill_group.name }}</h3>
+              <p>{{ skill_group.summary }}</p>
             </div>
-            <span class="cv-skill-card__score">{{ skill_score }}</span>
           </div>
           <div class="cv-skill-meter" aria-hidden="true">
             <span class="cv-skill-meter__fill"></span>
           </div>
-          <div class="cv-skill-card__meta">
-            <span>Priority weight {{ skill_score }}/100</span>
-            <span>{{ skill_count }} listed tools</span>
-          </div>
           <div class="tag-cloud tag-cloud--compact cv-skill-cloud">
-            {% for skill in skill_group[1] %}
+            {% for skill in skill_group.tools %}
               <span class="tag-chip">{{ skill }}</span>
             {% endfor %}
           </div>
@@ -136,7 +128,7 @@ redirect_from:
     </div>
 
     <div class="cv-record-grid cv-record-grid--stacked">
-      {% for role in cv.experience %}
+      {% for role in site.data.cv_site.experience %}
         <article class="cv-entry-card cv-entry-card--timeline" data-reveal>
           <div class="cv-entry-card__header">
             <div>
@@ -175,7 +167,7 @@ redirect_from:
     </div>
 
     <div class="cv-record-grid cv-record-grid--projects">
-      {% for project in cv.projects %}
+      {% for project in site.data.cv_site.projects %}
         <article class="cv-entry-card cv-entry-card--project" data-reveal>
           <div class="cv-entry-card__header">
             <div>
@@ -218,7 +210,7 @@ redirect_from:
     </div>
 
     <div class="cv-record-grid cv-record-grid--education">
-      {% for degree in cv.education %}
+      {% for degree in site.data.cv_site.education %}
         <article class="cv-entry-card" data-reveal>
           <div class="cv-entry-card__header">
             <div>
@@ -261,14 +253,14 @@ redirect_from:
 
       <h3 class="cv-subheading">Certifications</h3>
       <ul class="detail-list detail-list--compact">
-        {% for cert in cv.certifications %}
+        {% for cert in site.data.cv_site.certifications %}
           <li>{{ cert }}</li>
         {% endfor %}
       </ul>
 
       <h3 class="cv-subheading">Achievements</h3>
       <div class="tag-cloud tag-cloud--compact">
-        {% for achievement in cv.achievements %}
+        {% for achievement in site.data.cv_site.achievements %}
           <span class="tag-chip">{{ achievement }}</span>
         {% endfor %}
       </div>
@@ -281,7 +273,7 @@ redirect_from:
       </div>
 
       <div class="cv-record-grid cv-record-grid--service">
-        {% for role in cv.service %}
+        {% for role in site.data.cv_site.service %}
           <article class="cv-entry-card cv-entry-card--service">
             <div class="cv-entry-card__header">
               <div>
@@ -310,7 +302,7 @@ redirect_from:
       <p>Use the PDF generated from the attached TeX resume for applications, formal submissions, and offline sharing.</p>
     </div>
     <div class="page__actions">
-      <a class="button-link button-link--primary" href="{{ cv.profile.pdf_url | relative_url }}" target="_blank" rel="noopener">Open PDF</a>
+      <a class="button-link button-link--primary" href="{{ site.data.cv_site.profile.pdf_url | relative_url }}" target="_blank" rel="noopener">Open PDF</a>
     </div>
   </section>
 </section>
