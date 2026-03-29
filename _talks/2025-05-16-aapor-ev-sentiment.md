@@ -6,6 +6,7 @@ permalink: /talks/2025-aapor-ev-sentiment
 venue: "80th Annual AAPOR Conference"
 date: 2025-05-16
 location: "St. Louis, MO, USA"
+excerpt: "Presented transformer-based EV sentiment research at AAPOR, covering a 1.1M+ post pipeline, 91.6% DistilBERT accuracy, and measurable LLM sentiment bias."
 ---
 
 ## Presentation Overview

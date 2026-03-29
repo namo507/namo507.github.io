@@ -8,6 +8,42 @@ excerpt: "Instructional work in privacy, methodology, and data-driven practice."
 
 {% include base_path %}
 
-{% for post in site.teaching reversed %}
-  {% include archive-single.html %}
-{% endfor %}
+<section class="page__panel page__panel--highlight page__panel--compact" data-reveal>
+  <p class="page__eyebrow">Teaching Practice</p>
+  <h2>Instructional work spanning privacy, confidentiality, learning systems, and graduate program support.</h2>
+  <p>The teaching archive has been aligned with the rest of the site so course support, assistantship work, and instructional operations read as part of the same professional narrative.</p>
+  <div class="page__actions">
+    <a class="button-link button-link--primary" href="{{ '/cv/' | relative_url }}#service">View CV context</a>
+    <a class="button-link" href="{{ '/portfolio/' | relative_url }}">Related projects</a>
+  </div>
+</section>
+
+<section class="page__section" data-reveal>
+  <p class="page__eyebrow">Snapshot</p>
+  <div class="hero-metrics archive-metrics">
+    <article class="metric-card">
+      <span class="metric-card__value">{{ site.teaching | size }}</span>
+      <span class="metric-card__label">Teaching and support roles</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-card__value">JPSM</span>
+      <span class="metric-card__label">Graduate program context</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-card__value">2025</span>
+      <span class="metric-card__label">Current teaching window</span>
+    </article>
+  </div>
+</section>
+
+<section class="archive-section" data-reveal>
+  <div class="archive-section__heading">
+    <p class="page__eyebrow">Teaching Archive</p>
+    <h2 class="archive-section__title">Course delivery, privacy instruction, and academic infrastructure support.</h2>
+  </div>
+  <div class="archive-stack">
+    {% for post in site.teaching reversed %}
+      {% include archive-single.html %}
+    {% endfor %}
+  </div>
+</section>

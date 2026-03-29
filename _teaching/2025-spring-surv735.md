@@ -6,6 +6,7 @@ permalink: /teaching/2025-surv735-privacy
 venue: "University of Maryland, Joint Program in Survey Methodology"
 date: 2025-02-01
 location: "College Park, MD"
+excerpt: "Teaching assistantship for SURV735 supporting graduate instruction in data privacy, confidentiality, and privacy-preserving statistical methods."
 ---
 
 ## Course Overview

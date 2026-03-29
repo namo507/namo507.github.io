@@ -6,12 +6,52 @@ author_profile: true
 excerpt: "Conference presentations, invited talks, and research communication."
 ---
 
+<section class="page__panel page__panel--highlight page__panel--compact" data-reveal>
+  <p class="page__eyebrow">Presentations</p>
+  <h2>Talks that translate research methods and technical results into clear narratives.</h2>
+  <p>This page now follows the same structure as the other linked sections, with cleaner presentation metadata and direct access to the full talk writeups.</p>
+  <div class="page__actions">
+    <a class="button-link button-link--primary" href="{{ '/cv/' | relative_url }}#service">View CV context</a>
+    {% if site.talkmap_link == true %}
+      <a class="button-link" href="{{ '/talkmap.html' | relative_url }}">Talk map</a>
+    {% endif %}
+  </div>
+</section>
+
+<section class="page__section" data-reveal>
+  <p class="page__eyebrow">Snapshot</p>
+  {% assign sorted_talks = site.talks | sort: 'date' %}
+  {% assign latest_talk = sorted_talks | last %}
+  <div class="hero-metrics archive-metrics">
+    <article class="metric-card">
+      <span class="metric-card__value">{{ site.talks | size }}</span>
+      <span class="metric-card__label">Talks and presentations</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-card__value">{{ site.talks | map: 'venue' | uniq | size }}</span>
+      <span class="metric-card__label">Distinct venues</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-card__value">{{ latest_talk.date | date: '%Y' }}</span>
+      <span class="metric-card__label">Most recent presentation year</span>
+    </article>
+  </div>
+</section>
+
 {% if site.talkmap_link == true %}
 
 <p class="page__supplemental"><a href="/talkmap.html">See a map of all the places I've given a talk.</a></p>
 
 {% endif %}
 
-{% for post in site.talks reversed %}
-  {% include archive-single-talk.html %}
-{% endfor %}
+<section class="archive-section" data-reveal>
+  <div class="archive-section__heading">
+    <p class="page__eyebrow">Talk Archive</p>
+    <h2 class="archive-section__title">Conference presentations and research communication.</h2>
+  </div>
+  <div class="archive-stack">
+    {% for post in site.talks reversed %}
+      {% include archive-single-talk.html %}
+    {% endfor %}
+  </div>
+</section>

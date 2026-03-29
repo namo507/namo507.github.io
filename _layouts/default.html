@@ -11,7 +11,7 @@ layout: compress
     {% include head/custom.html %}
   </head>
 
-  <body class="layout--{{ page.layout | default: 'default' }}{% if page.url == '/' %} page-home{% endif %}">
+  <body class="layout--{{ page.layout | default: 'default' }}{% if page.collection %} collection--{{ page.collection }}{% endif %}{% if page.url == '/' %} page-home{% endif %}">
     <div class="site-background" aria-hidden="true">
       <span class="site-background__orb site-background__orb--one"></span>
       <span class="site-background__orb site-background__orb--two"></span>

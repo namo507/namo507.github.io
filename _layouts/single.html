@@ -28,6 +28,7 @@ layout: default
     {% if page.title and page.hide_title != true %}{% assign show_page_header = true %}{% endif %}
     {% if clean_page_excerpt and page.hide_excerpt != true %}{% assign show_page_header = true %}{% endif %}
     {% if page.read_time or page.modified or page.collection == 'teaching' or page.venue or page.date %}{% assign show_page_header = true %}{% endif %}
+    {% if page.collection == 'portfolio' %}{% assign show_page_header = false %}{% endif %}
 
     <div class="page__inner-wrap">
       {% unless page.header.overlay_color or page.header.overlay_image %}

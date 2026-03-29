@@ -340,6 +340,48 @@
   line-height: 1;
 }
 
+.collection--portfolio {
+  .page__content {
+    .project-header {
+      padding: 1.15rem 1.2rem !important;
+      border: 1px solid rgba(var(--global-accent-color-rgb), 0.22) !important;
+      border-radius: 1.2rem !important;
+      background: linear-gradient(135deg, rgba(var(--global-accent-color-rgb), 0.16), transparent 58%), var(--global-card-bg-color) !important;
+      box-shadow: 0 18px 40px var(--global-shadow-color) !important;
+    }
+
+    .project-header h2 {
+      display: none !important;
+    }
+
+    .project-header p {
+      margin: 0 !important;
+      color: var(--global-text-color-light) !important;
+    }
+
+    .tech-tag {
+      border: 1px solid rgba(var(--global-accent-color-rgb), 0.16) !important;
+      background: rgba(var(--global-accent-color-rgb), 0.08) !important;
+      color: var(--global-text-color) !important;
+      box-shadow: none !important;
+    }
+
+    .metric-card {
+      display: block !important;
+      padding: 1rem 1.05rem !important;
+      border: 1px solid var(--global-border-color) !important;
+      border-left: 3px solid var(--global-accent-color) !important;
+      border-radius: 1rem !important;
+      background: rgba(var(--global-accent-color-rgb), 0.05) !important;
+      box-shadow: 0 14px 28px var(--global-shadow-color) !important;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px) !important;
+    }
+  }
+}
+
 .home-hero {
   padding: 2.1rem 0 1rem;
 

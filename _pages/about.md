@@ -36,7 +36,7 @@ redirect_from:
   <p class="page__eyebrow">Links</p>
   <div class="social-link-grid">
     {% for link in site.data.cv_site.links %}
-      <a class="social-link-card" href="{{ link.url }}">{{ link.label }}</a>
+      <a class="social-link-card" href="{{ link.url }}"{% if link.url contains '://' or link.url contains 'mailto:' %} target="_blank" rel="noopener"{% endif %}>{{ link.label }}</a>
     {% endfor %}
   </div>
 </section>

@@ -6,6 +6,7 @@ permalink: /teaching/2025-canvas-lms
 venue: "University of Maryland, Joint Program in Survey Methodology"
 date: 2025-02-01
 location: "College Park, MD"
+excerpt: "Graduate assistant role focused on Canvas LMS redesign, reusable course infrastructure, and workflow support across JPSM instruction."
 ---
 
 ## Role Overview

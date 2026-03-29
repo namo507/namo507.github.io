@@ -6,31 +6,68 @@ author_profile: true
 excerpt: "Journal articles, conference papers, and scholarly research outputs."
 ---
 
-{% if site.author.googlescholar %}
-  <div class="wordwrap">You can also find my articles on <a href="{{site.author.googlescholar}}">my Google Scholar profile</a>.</div>
-{% endif %}
-
 {% include base_path %}
+
+<section class="page__panel page__panel--highlight page__panel--compact" data-reveal>
+  <p class="page__eyebrow">Research Archive</p>
+  <h2>Conference papers, scholarly publications, and research artifacts with direct access to full outputs.</h2>
+  <p>This archive brings the main publication record into the same card system used across the rest of the site, so venues, dates, abstracts, and external links stay readable without feeling cramped.</p>
+  <div class="page__actions">
+    {% if site.author.googlescholar %}
+      <a class="button-link button-link--primary" href="{{ site.author.googlescholar }}" target="_blank" rel="noopener">Google Scholar profile</a>
+    {% endif %}
+    <a class="button-link" href="{{ '/cv/' | relative_url }}#publications">View CV section</a>
+  </div>
+</section>
+
+<section class="page__section" data-reveal>
+  <p class="page__eyebrow">Snapshot</p>
+  <div class="hero-metrics archive-metrics">
+    <article class="metric-card">
+      <span class="metric-card__value">{{ site.publications | size }}</span>
+      <span class="metric-card__label">Featured publications</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-card__value">{{ site.publications | map: 'category' | uniq | size }}</span>
+      <span class="metric-card__label">Publication groupings</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-card__value">2024-25</span>
+      <span class="metric-card__label">Current publication window</span>
+    </article>
+  </div>
+</section>
 
 <!-- New style rendering if publication categories are defined -->
 {% if site.publication_category %}
   {% for category in site.publication_category  %}
-    {% assign title_shown = false %}
-    {% for post in site.publications reversed %}
-      {% if post.category != category[0] %}
-        {% continue %}
-      {% endif %}
-      {% unless title_shown %}
-        <h2>{{ category[1].title }}</h2><hr />
-        {% assign title_shown = true %}
-      {% endunless %}
-      {% include archive-single.html %}
-    {% endfor %}
+    {% assign category_posts = site.publications | where: 'category', category[0] %}
+    {% if category_posts.size > 0 %}
+      <section class="archive-section" data-reveal>
+        <div class="archive-section__heading">
+          <p class="page__eyebrow">Publication Type</p>
+          <h2 class="archive-section__title">{{ category[1].title }}</h2>
+        </div>
+        <div class="archive-stack">
+          {% for post in category_posts reversed %}
+            {% include archive-single.html %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
   {% endfor %}
 {% else %}
-  {% for post in site.publications reversed %}
-    {% include archive-single.html %}
-  {% endfor %}
+  <section class="archive-section" data-reveal>
+    <div class="archive-section__heading">
+      <p class="page__eyebrow">Publication Type</p>
+      <h2 class="archive-section__title">All publications</h2>
+    </div>
+    <div class="archive-stack">
+      {% for post in site.publications reversed %}
+        {% include archive-single.html %}
+      {% endfor %}
+    </div>
+  </section>
 {% endif %}
 
 
