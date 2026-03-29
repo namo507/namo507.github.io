@@ -1,9 +1,11 @@
 profile:
   name: Namit Shrivastava
+  headline: Graduate researcher in survey methodology, trustworthy AI, and computational social science.
   location: College Park, MD, USA
   phone: "(240)-476-8513"
   email: namit507@gmail.com
-  summary: Graduate researcher with expertise in survey methodology, causal inference, geospatial epidemiology, and advanced statistical modeling. Research agenda focuses on trustworthy data integration frameworks that fuse survey methodology with generative AI, deep learning, and privacy-preserving computational methods for automated data collection, quality assurance, and responsible measurement at scale.
+  pdf_url: /files/namit-shrivastava-cv.pdf
+  summary: Graduate researcher with proven expertise in survey methodology, causal inference, geospatial epidemiology, and advanced statistical modeling. Published survey research in peer-reviewed venues and presented at AAPOR on transformer-based sentiment analysis methodologies. Research agenda focuses on developing trustworthy data integration frameworks that fuse survey methodology principles with generative AI, deep learning architectures, and privacy-preserving computational methods to advance automated data collection, quality assurance, and responsible measurement at scale.
 
 links:
   - label: LinkedIn
@@ -241,26 +243,15 @@ projects:
       - Tuned a balanced Random Forest model with only 11 misclassifications on the held-out test set.
 
 skills:
-  Programming:
-    - Python
-    - R
-    - Java
-    - C++
-    - JavaScript
-    - TypeScript
-    - HTML/CSS
-    - Bash/Shell
-  Data & Databases:
-    - SQL
-    - PostgreSQL
-    - MySQL
-    - MongoDB
-    - Cassandra
-    - Snowflake
-    - Neo4j
-    - Pinecone
-    - Apache Spark
-    - Kafka
+  Survey & Research Methods:
+    - Survey Methodology
+    - Causal Inference
+    - Applied Sampling
+    - Total Survey Error
+    - Data Quality
+    - Experimental Design
+    - Geospatial Analysis
+    - Statistical Modeling
   AI/ML:
     - PyTorch
     - TensorFlow
@@ -273,7 +264,44 @@ skills:
     - NLTK
     - Spacy
     - Scikit-Learn
-  DevOps:
+  Core AI Systems:
+    - LLMs
+    - Generative AI
+    - RLHF/DPO
+    - Deep Learning
+    - NLP
+    - Computer Vision
+    - MLOps
+  Data & Databases:
+    - SQL
+    - PostgreSQL
+    - MySQL
+    - MongoDB
+    - Cassandra
+    - Snowflake
+    - Neo4j
+    - Pinecone
+    - Apache Spark
+    - Kafka
+  Programming:
+    - Python
+    - R
+    - Java
+    - C++
+    - JavaScript
+    - TypeScript
+    - HTML/CSS
+    - Bash/Shell
+  Cloud & Analytics:
+    - AWS
+    - Azure
+    - GCP
+    - Tableau
+    - Power BI
+    - MLFlow
+    - Qualtrics
+    - STATA
+  DevOps & Delivery:
     - Git
     - Docker
     - Kubernetes
@@ -285,25 +313,45 @@ skills:
     - React.js
     - Terraform
     - Ansible
-  Cloud:
-    - AWS
-    - Azure
-    - GCP
-    - Tableau
-    - Power BI
-    - MLFlow
-    - Qualtrics
-    - STATA
-  Core:
-    - LLMs
-    - Generative AI
-    - RLHF/DPO
-    - Deep Learning
-    - NLP
-    - Computer Vision
-    - Survey Methodology
-    - Causal Inference
-    - MLOps
+
+skill_emphasis:
+  Survey & Research Methods:
+    score: 98
+    tier: Research core
+    summary: Survey design, causal inference, sampling, and measurement quality frameworks that anchor the academic profile.
+    theme: research
+    featured: true
+  AI/ML:
+    score: 95
+    tier: Applied ML focus
+    summary: End-to-end model development across transformers, deep learning, NLP, and production-oriented ML workflows.
+    theme: ml
+    featured: true
+  Core AI Systems:
+    score: 91
+    tier: Modeling backbone
+    summary: Cross-cutting AI concepts used to connect research questions with deployable intelligent systems.
+    theme: core
+  Data & Databases:
+    score: 82
+    tier: Data infrastructure
+    summary: Storage, querying, and scalable data-processing tools supporting large analytical pipelines.
+    theme: data
+  Programming:
+    score: 84
+    tier: Analysis languages
+    summary: Primary coding stack for research computing, statistical workflows, and application development.
+    theme: engineering
+  Cloud & Analytics:
+    score: 74
+    tier: Platform support
+    summary: Cloud and BI platforms used for reporting, experimentation, and applied analytics delivery.
+    theme: cloud
+  DevOps & Delivery:
+    score: 70
+    tier: Delivery layer
+    summary: Deployment and application tooling that supports shipping data products and automation workflows.
+    theme: delivery
 
 service:
   - organization: Terrapin Leadership Institute, University of Maryland

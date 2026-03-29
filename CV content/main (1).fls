@@ -1,0 +1,161 @@
+PWD /Users/namomac/namo507.github.io/CV content
+INPUT /Users/namomac/Library/TinyTeX/texmf.cnf
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/web2c/texmf.cnf
+INPUT /Users/namomac/Library/TinyTeX/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT /Users/namomac/namo507.github.io/CV content/main (1).tex
+OUTPUT main (1).log
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/article.cls
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/article.cls
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/size11.clo
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/size11.clo
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/size11.clo
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/cm/cmr10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/inputenc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/inputenc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/fontenc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/fontenc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecrm1095.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/lmodern.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/lmodern.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/textcomp.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/base/textcomp.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/geometry/geometry.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/geometry/geometry.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics/keyval.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics/keyval.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/iftex/ifvtex.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/iftex/ifvtex.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/enumitem/enumitem.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/enumitem/enumitem.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hyperref.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hyperref.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hycolor/hycolor.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hycolor/hycolor.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/nameref.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/nameref.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/refcount/refcount.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/refcount/refcount.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/stringenc/stringenc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/stringenc/stringenc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/url/url.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/url/url.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/bitset/bitset.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/bitset/bitset.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/titlesec/titlesec.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/titlesec/titlesec.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/xcolor/xcolor.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/xcolor/xcolor.sty
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color.cfg
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color.cfg
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color.cfg
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics-def/pdftex.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics-def/pdftex.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics-def/pdftex.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics/mathcolor.ltx
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics/mathcolor.ltx
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics/mathcolor.ltx
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/t1lmr.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/t1lmr.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/t1lmr.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ec-lmr10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+INPUT ./main (1).aux
+INPUT ./main (1).aux
+INPUT main (1).aux
+OUTPUT main (1).aux
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/graphics/color.sty
+INPUT ./main (1).out
+INPUT ./main (1).out
+INPUT main (1).out
+INPUT main (1).out
+INPUT ./main (1).out
+INPUT ./main (1).out
+OUTPUT main (1).out
+OUTPUT main (1).pdf
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ec-lmr17.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ec-lmbx12.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ec-lmr12.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ec-lmbx12.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ec-lmri10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ts1-lmr10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/rm-lmr10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/rm-lmr8.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/rm-lmr6.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/lmmi10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/lmmi8.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/lmmi6.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/lmsy10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/lmsy8.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/lmsy6.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/lmex10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ts1-lmbx10.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ec-lmr8.tfm
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/tfm/public/lm/ec-lmbx8.tfm
+INPUT main (1).aux
+INPUT ./main (1).out
+INPUT ./main (1).out
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx8.pfb
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr8.pfb
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb
+INPUT /Users/namomac/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb
