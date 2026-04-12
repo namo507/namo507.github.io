@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -27,7 +28,7 @@ def read_source() -> dict:
         return json.load(handle)
 
 
-def github_request(url: str, token: str | None) -> list[dict]:
+def github_json_request(url: str, token: str | None, payload: dict | None = None) -> object:
     headers = {
         "Accept": "application/vnd.github+json",
         "User-Agent": "namo507-github-showcase-sync",
@@ -35,20 +36,62 @@ def github_request(url: str, token: str | None) -> list[dict]:
     if token:
         headers["Authorization"] = f"Bearer {token}"
 
-    request = urllib.request.Request(url, headers=headers)
+    request_data = None
+    method = "GET"
+    if payload is not None:
+        headers["Content-Type"] = "application/json"
+        request_data = json.dumps(payload).encode("utf-8")
+        method = "POST"
+
+    request = urllib.request.Request(url, headers=headers, data=request_data, method=method)
     try:
         with urllib.request.urlopen(request) as response:
-            payload = response.read().decode("utf-8")
+            response_text = response.read().decode("utf-8")
     except urllib.error.HTTPError as error:
         detail = error.read().decode("utf-8", errors="replace")
         raise GitHubSyncError(f"GitHub API request failed for {url}: {error.code} {detail}") from error
     except urllib.error.URLError as error:
         raise GitHubSyncError(f"GitHub API request failed for {url}: {error}") from error
 
-    data = json.loads(payload)
+    return json.loads(response_text)
+
+
+def github_request(url: str, token: str | None) -> list[dict]:
+    data = github_json_request(url, token)
     if not isinstance(data, list):
         raise GitHubSyncError(f"Expected a list response from {url}, received: {data}")
     return data
+
+
+def github_graphql_request(query: str, variables: dict[str, object], token: str) -> dict:
+    data = github_json_request(
+        "https://api.github.com/graphql",
+        token,
+        payload={"query": query, "variables": variables},
+    )
+    if not isinstance(data, dict):
+        raise GitHubSyncError(f"Expected a dict response from GitHub GraphQL, received: {data}")
+    if data.get("errors"):
+        raise GitHubSyncError(f"GitHub GraphQL request failed: {data['errors']}")
+    graphql_data = data.get("data")
+    if not isinstance(graphql_data, dict):
+        raise GitHubSyncError(f"GitHub GraphQL response missing data payload: {data}")
+    return graphql_data
+
+
+def github_text_request(url: str) -> str:
+    headers = {
+        "User-Agent": "namo507-github-showcase-sync",
+    }
+    request = urllib.request.Request(url, headers=headers)
+    try:
+        with urllib.request.urlopen(request) as response:
+            return response.read().decode("utf-8", errors="replace")
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode("utf-8", errors="replace")
+        raise GitHubSyncError(f"GitHub page request failed for {url}: {error.code} {detail}") from error
+    except urllib.error.URLError as error:
+        raise GitHubSyncError(f"GitHub page request failed for {url}: {error}") from error
 
 
 def format_month_year(timestamp: str) -> str:
@@ -62,6 +105,28 @@ def normalize_language(repo: dict, override: dict | None) -> str:
     return repo.get("language") or "Multi-language"
 
 
+def derive_theme(repo: dict, tags: list[str]) -> str:
+    text = " ".join(
+        [
+            repo.get("name", ""),
+            repo.get("full_name", ""),
+            repo.get("description") or "",
+            repo.get("language") or "",
+            *tags,
+        ]
+    ).lower()
+
+    if any(keyword in text for keyword in ("jekyll", "github pages", "portfolio", "academic site", "github.io")):
+        return "portfolio"
+    if any(keyword in text for keyword in ("security", "redact", "privacy", "confidential", "office.js")):
+        return "security"
+    if any(keyword in text for keyword in ("automation", "workflow", "n8n", "supabase", "orchestration")):
+        return "automation"
+    if any(keyword in text for keyword in ("cv", "resume", "latex", "pdf", "document")):
+        return "document"
+    return "research"
+
+
 def default_metrics(repo: dict) -> list[dict]:
     return [
         {"value": str(repo.get("stargazers_count", 0)), "label": "stars"},
@@ -70,20 +135,30 @@ def default_metrics(repo: dict) -> list[dict]:
     ]
 
 
-def merge_card(repo: dict, override: dict | None = None) -> dict:
+def merge_card(repo: dict, override: dict | None = None, *, badge: str | None = None, related_links: list[dict] | None = None) -> dict:
+    if override and "tags" in override:
+        card_tags = override["tags"]
+    else:
+        card_tags = (repo.get("topics") or [])[:4]
+
+    if override and "related_links" in override:
+        card_related_links = override["related_links"]
+    else:
+        card_related_links = related_links or []
+
     merged = {
         "name": repo["name"],
         "full_name": repo["full_name"],
-        "badge": (override or {}).get("badge", "Repository"),
+        "badge": (override or {}).get("badge", badge or "Repository"),
         "hero_metric": (override or {}).get("hero_metric", str(repo.get("stargazers_count", 0))),
         "hero_label": (override or {}).get("hero_label", "public stars"),
-        "theme": (override or {}).get("theme", "research"),
+        "theme": (override or {}).get("theme", derive_theme(repo, card_tags)),
         "language": normalize_language(repo, override),
         "url": repo["html_url"],
         "description": (override or {}).get("description") or repo.get("description") or "Public repository in the GitHub profile.",
         "metrics": (override or {}).get("metrics") or default_metrics(repo),
-        "tags": (override or {}).get("tags", []),
-        "related_links": (override or {}).get("related_links", []),
+        "tags": card_tags,
+        "related_links": card_related_links,
         "stars": repo.get("stargazers_count", 0),
         "forks": repo.get("forks_count", 0),
         "size": repo.get("size", 0),
@@ -113,7 +188,182 @@ def build_repository_mappings(source: dict, repo_index: dict[str, dict]) -> list
     return mappings
 
 
-def build_recent_repositories(repos: list[dict], excluded: set[str], limit: int = 6) -> list[dict]:
+def fetch_repository_topics(full_name: str, token: str | None) -> list[str]:
+    owner, repo_name = full_name.split("/", 1)
+    url = f"https://api.github.com/repos/{urllib.parse.quote(owner)}/{urllib.parse.quote(repo_name)}/topics"
+    data = github_json_request(url, token)
+    if not isinstance(data, dict) or not isinstance(data.get("names"), list):
+        raise GitHubSyncError(f"Expected a topics response for {full_name}, received: {data}")
+    return [str(name) for name in data["names"]]
+
+
+def attach_topics(repos: list[dict], token: str | None) -> list[dict]:
+    enriched_repos = []
+    for repo in repos:
+        enriched_repo = dict(repo)
+        try:
+            enriched_repo["topics"] = fetch_repository_topics(repo["full_name"], token)
+        except GitHubSyncError as error:
+            print(f"Warning: {error}", file=sys.stderr)
+            enriched_repo["topics"] = []
+        enriched_repos.append(enriched_repo)
+    return enriched_repos
+
+
+def normalize_graphql_repository(repo: dict) -> dict:
+    topics = []
+    topic_nodes = (((repo.get("repositoryTopics") or {}).get("nodes")) or [])
+    for node in topic_nodes:
+        topic = (node or {}).get("topic") or {}
+        name = topic.get("name")
+        if name:
+            topics.append(name)
+
+    primary_language = repo.get("primaryLanguage") or {}
+    return {
+        "name": repo["name"],
+        "full_name": repo["nameWithOwner"],
+        "html_url": repo["url"],
+        "description": repo.get("description"),
+        "stargazers_count": repo.get("stargazerCount", 0),
+        "forks_count": repo.get("forkCount", 0),
+        "size": repo.get("diskUsage", 0),
+        "updated_at": repo["updatedAt"],
+        "language": primary_language.get("name"),
+        "topics": topics,
+        "fork": repo.get("isFork", False),
+    }
+
+
+def fetch_pinned_repositories(username: str, token: str | None) -> list[dict]:
+    if not token:
+        return []
+
+    query = """
+    query($login: String!) {
+      user(login: $login) {
+        pinnedItems(first: 6, types: REPOSITORY) {
+          nodes {
+            ... on Repository {
+              name
+              nameWithOwner
+              description
+              url
+              stargazerCount
+              forkCount
+              diskUsage
+              updatedAt
+              isFork
+              primaryLanguage {
+                name
+              }
+              repositoryTopics(first: 8) {
+                nodes {
+                  topic {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    """
+
+    try:
+        data = github_graphql_request(query, {"login": username}, token)
+    except GitHubSyncError as error:
+        print(f"Warning: {error}", file=sys.stderr)
+        return []
+
+    user = data.get("user") or {}
+    pinned_items = user.get("pinnedItems") or {}
+    nodes = pinned_items.get("nodes") or []
+    normalized = []
+    for node in nodes:
+        if not isinstance(node, dict) or not node.get("nameWithOwner"):
+            continue
+        normalized.append(normalize_graphql_repository(node))
+    return normalized
+
+
+def fetch_pinned_repository_names_from_profile(username: str) -> list[str]:
+    profile_url = f"https://github.com/{urllib.parse.quote(username)}"
+    html = github_text_request(profile_url)
+
+    section_match = re.search(r"<ol[^>]*js-pinned-items-reorder-list.*?</ol>", html, re.DOTALL)
+    if not section_match:
+        return []
+
+    repo_pattern = re.compile(rf'href="/(?P<full_name>{re.escape(username)}/[^"/?#]+)"')
+    pinned_names = []
+    seen = set()
+    for match in repo_pattern.finditer(section_match.group(0)):
+        full_name = match.group("full_name")
+        if full_name in seen:
+            continue
+        seen.add(full_name)
+        pinned_names.append(full_name)
+    return pinned_names
+
+
+def build_featured_repositories(
+    username: str,
+    repos: list[dict],
+    repo_index: dict[str, dict],
+    token: str | None,
+    related_links_by_repo: dict[str, list[dict]],
+) -> list[dict]:
+    pinned_repositories = fetch_pinned_repositories(username, token)
+    if not pinned_repositories:
+        try:
+            pinned_names = fetch_pinned_repository_names_from_profile(username)
+        except GitHubSyncError as error:
+            print(f"Warning: {error}", file=sys.stderr)
+            pinned_names = []
+        pinned_repositories = [dict(repo_index[full_name]) for full_name in pinned_names if full_name in repo_index]
+
+    if pinned_repositories:
+        if any(not repo.get("topics") for repo in pinned_repositories):
+            pinned_repositories = attach_topics(pinned_repositories, token)
+        return [
+            merge_card(
+                repo,
+                badge="Pinned repository",
+                related_links=related_links_by_repo.get(repo["full_name"], []),
+            )
+            for repo in pinned_repositories
+        ]
+
+    repos_with_topics = attach_topics(repos, token)
+    topic_featured = [
+        repo
+        for repo in repos_with_topics
+        if any(topic.lower() in {"featured", "showcase"} for topic in repo.get("topics", []))
+    ]
+    if topic_featured:
+        return [
+            merge_card(
+                repo,
+                badge="Featured repository",
+                related_links=related_links_by_repo.get(repo["full_name"], []),
+            )
+            for repo in topic_featured[:6]
+        ]
+
+    fallback_repositories = [repo for repo in repos_with_topics if not repo.get("fork")][:3]
+    return [
+        merge_card(
+            repo,
+            badge="Recently updated",
+            related_links=related_links_by_repo.get(repo["full_name"], []),
+        )
+        for repo in fallback_repositories
+    ]
+
+
+def build_recent_repositories(repos: list[dict], excluded: set[str], limit: int = 8) -> list[dict]:
     recent = []
     for repo in repos:
         if repo["full_name"] in excluded:
@@ -190,15 +440,12 @@ def main() -> int:
 
     repo_index = {repo["full_name"]: repo for repo in repos}
     non_fork_repos = [repo for repo in repos if not repo.get("fork")]
-    featured_overrides = {item["full_name"]: item for item in source.get("featured_repositories", [])}
     spotlight_overrides = {item["full_name"]: item for item in source.get("spotlight_overrides", [])}
 
-    featured_repositories = []
-    for full_name, override in featured_overrides.items():
-        repo = repo_index.get(full_name)
-        if not repo:
-            raise GitHubSyncError(f"Configured featured repository not found in public repos: {full_name}")
-        featured_repositories.append(merge_card(repo, override))
+    repository_mappings = build_repository_mappings(source, repo_index)
+    related_links_by_repo = {mapping["full_name"]: mapping.get("projects", []) for mapping in repository_mappings}
+
+    featured_repositories = build_featured_repositories(username, repos, repo_index, token, related_links_by_repo)
 
     spotlight_priority = {full_name: index for index, full_name in enumerate(source.get("spotlight_priority", []))}
     sorted_starred = sorted(
@@ -225,7 +472,7 @@ def main() -> int:
         },
         "featured_repositories": featured_repositories,
         "spotlight_repos": spotlight_repos,
-        "repository_mappings": build_repository_mappings(source, repo_index),
+        "repository_mappings": repository_mappings,
         "recent_repositories": build_recent_repositories(non_fork_repos, featured_names),
     }
 

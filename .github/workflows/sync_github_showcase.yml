@@ -3,13 +3,12 @@ name: Sync GitHub Showcase
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 5 * * 1'
+    - cron: '17 * * * *'
   push:
     branches:
       - master
-    paths:
-      - 'scripts/sync_github_showcase.py'
-      - 'scripts/github_showcase_source.json'
+    paths-ignore:
+      - '_data/github.yml'
 
 jobs:
   sync:

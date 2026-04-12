@@ -29,6 +29,15 @@ author_profile: true
   </div>
 </section>
 
+<section class="page__section" data-reveal>
+  <div class="page__panel page__panel--compact">
+    <p class="page__eyebrow">Sync Status</p>
+    <h2>Repository counts and recent activity refresh automatically from GitHub.</h2>
+    <p>Top-level stats, language mix, featured cards, and the recently updated repository list sync from the GitHub API on each push to this site repository and on an hourly scheduled workflow. Featured cards follow your pinned repositories when available, then fall back to repos tagged <strong>featured</strong> or <strong>showcase</strong>. Repository mappings remain curated so project links stay intentional.</p>
+    <p><strong>Last refresh:</strong> {{ site.data.github.generated_at | date: "%B %-d, %Y at %H:%M UTC" }}</p>
+  </div>
+</section>
+
 <section class="page__section page__section--split" data-reveal>
   <article class="page__panel">
     <p class="page__eyebrow">Language Mix</p>
@@ -106,7 +115,7 @@ author_profile: true
 </section>
 
 <section class="page__section" data-reveal>
-  <p class="page__eyebrow">Recent Repositories</p>
+  <p class="page__eyebrow">Recently Updated Repositories</p>
   <div class="github-repo-list">
     {% for repo in site.data.github.recent_repositories %}
       <a class="github-repo-list__item" href="{{ repo.url }}" target="_blank" rel="noopener">
