@@ -35,10 +35,10 @@
     margin-right: auto;
     margin-top: 1em;
     max-width: 100%;
-    padding: 0 1em 1em;
+    padding: 0 clamp(0.85rem, 1.8vw, 1.75rem) 1em;
 
     @include breakpoint($x-large) {
-      max-width: $x-large;
+      max-width: $site-shell-max-width;
     }
   }
 
