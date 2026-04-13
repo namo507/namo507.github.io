@@ -42,15 +42,60 @@ redirect_from:
 </section>
 
 <section class="page__section page__section--split" data-reveal>
-  <article class="page__panel page__panel--highlight">
+  <article class="page__panel page__panel--highlight focus-panel">
     <p class="page__eyebrow">Research Focus</p>
     <h2>Turning complex data pipelines into reliable measurement systems.</h2>
-    <p>My work centers on building trustworthy data integration frameworks that connect survey methodology with modern AI systems, so automated collection, classification, and inference stay interpretable and empirically grounded.</p>
-    <ul class="detail-list">
-      <li>Survey-aware AI workflows for data collection and quality assurance.</li>
-      <li>Geospatial and epidemiological modeling over large-scale public datasets.</li>
-      <li>Privacy-preserving and responsible measurement in applied ML systems.</li>
-    </ul>
+    <p class="focus-panel__lead">My work centers on building trustworthy data integration frameworks that connect survey methodology with modern AI systems, so automated collection, classification, and inference stay interpretable and empirically grounded.</p>
+
+    <div class="focus-card-stack">
+      <article class="focus-card" style="--focus-accent: #69d7c3; --reveal-delay: 80ms;" data-reveal>
+        <span class="focus-card__step">01 • Collect</span>
+        <h3>Survey-aware acquisition and quality control</h3>
+        <p>Designing multimode collection systems, response-monitoring logic, and missing-data adjustment plans so inference starts from defensible measurement foundations.</p>
+        <div class="focus-card__meta">
+          <span>Survey design</span>
+          <span>Missing data</span>
+          <span>Quality assurance</span>
+        </div>
+      </article>
+
+      <article class="focus-card" style="--focus-accent: #8fb6ff; --reveal-delay: 160ms;" data-reveal>
+        <span class="focus-card__step">02 • Model</span>
+        <h3>Large-scale spatial and social inference</h3>
+        <p>Connecting administrative, geospatial, and behavioral signals into modeling pipelines that stay readable across public-health, survey, and computational social-science settings.</p>
+        <div class="focus-card__meta">
+          <span>Geospatial modeling</span>
+          <span>Epidemiology</span>
+          <span>Causal inference</span>
+        </div>
+      </article>
+
+      <article class="focus-card" style="--focus-accent: #f1b76a; --reveal-delay: 240ms;" data-reveal>
+        <span class="focus-card__step">03 • Govern</span>
+        <h3>Responsible AI and privacy-preserving deployment</h3>
+        <p>Embedding confidentiality, interpretability, and auditability into NLP and machine-learning systems so automation can scale without weakening measurement trust.</p>
+        <div class="focus-card__meta">
+          <span>Transformer NLP</span>
+          <span>Privacy</span>
+          <span>Responsible AI</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="focus-signal-grid">
+      <article class="focus-signal" style="--reveal-delay: 300ms;" data-reveal>
+        <span class="focus-signal__value">18</span>
+        <span class="focus-signal__label">datasets automated through CKAN lifecycle tooling</span>
+      </article>
+      <article class="focus-signal" style="--reveal-delay: 360ms;" data-reveal>
+        <span class="focus-signal__value">129,572</span>
+        <span class="focus-signal__label">census tracts integrated in public-data research</span>
+      </article>
+      <article class="focus-signal" style="--reveal-delay: 420ms;" data-reveal>
+        <span class="focus-signal__value">1.1M+</span>
+        <span class="focus-signal__label">social posts modeled in transformer sentiment work</span>
+      </article>
+    </div>
   </article>
 
   <article class="page__panel workflow-panel">

@@ -484,6 +484,166 @@
   overflow: hidden;
 }
 
+.focus-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.focus-panel::after {
+  content: "";
+  position: absolute;
+  right: -5rem;
+  bottom: -5rem;
+  width: 16rem;
+  height: 16rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(var(--global-accent-color-rgb), 0.22), transparent 72%);
+  pointer-events: none;
+}
+
+.focus-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.focus-panel__lead {
+  margin-bottom: 0;
+  color: var(--global-text-color-light);
+}
+
+.focus-card-stack {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.3rem;
+}
+
+.focus-card {
+  --focus-accent: var(--global-accent-color);
+  position: relative;
+  padding: 1rem 1rem 1rem 1.15rem;
+  border: 1px solid rgba(var(--global-accent-color-rgb), 0.12);
+  border-radius: 1.15rem;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--focus-accent) 16%, transparent), transparent 72%), rgba(255, 255, 255, 0.03);
+  box-shadow: 0 16px 32px var(--global-shadow-color);
+  transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+  overflow: hidden;
+}
+
+.focus-card::before {
+  content: "";
+  position: absolute;
+  top: 1.05rem;
+  left: -0.1rem;
+  width: 0.82rem;
+  height: 0.82rem;
+  border-radius: 999px;
+  background: var(--focus-accent);
+  box-shadow: 0 0 0 0.45rem color-mix(in srgb, var(--focus-accent) 18%, transparent);
+  animation: focus-orb-pulse 3.8s ease-in-out infinite;
+}
+
+.focus-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--focus-accent) 55%, var(--global-border-color));
+  box-shadow: 0 24px 44px var(--global-shadow-color);
+}
+
+.focus-card:hover::before {
+  box-shadow: 0 0 0 0.7rem color-mix(in srgb, var(--focus-accent) 24%, transparent);
+}
+
+.focus-card__step {
+  display: inline-flex;
+  margin-bottom: 0.55rem;
+  padding-left: 1rem;
+  color: var(--focus-accent);
+  font-family: $monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.focus-card h3 {
+  margin-bottom: 0.45rem;
+  font-size: 1.14rem;
+}
+
+.focus-card p {
+  margin-bottom: 0;
+  color: var(--global-text-color-light);
+}
+
+.focus-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.focus-card__meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.9rem;
+  padding: 0.32rem 0.68rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--global-text-color-light);
+  font-size: 0.78rem;
+  line-height: 1.1;
+}
+
+.focus-signal-grid {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.focus-signal {
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(var(--global-accent-color-rgb), 0.12);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 14px 28px var(--global-shadow-color);
+  transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+}
+
+.focus-signal:hover {
+  transform: translateY(-3px);
+  border-color: rgba(var(--global-accent-color-rgb), 0.32);
+  background: rgba(var(--global-accent-color-rgb), 0.08);
+}
+
+.focus-signal__value {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--global-accent-color);
+  font-size: clamp(1.45rem, 3vw, 1.95rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.focus-signal__label {
+  color: var(--global-text-color-light);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+@keyframes focus-orb-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0.45rem color-mix(in srgb, var(--focus-accent) 18%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 0.68rem color-mix(in srgb, var(--focus-accent) 24%, transparent);
+  }
+}
+
 .workflow-panel__lead {
   max-width: 42rem;
   color: var(--global-text-color-light);
