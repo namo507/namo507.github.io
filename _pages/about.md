@@ -11,24 +11,99 @@ redirect_from:
 ---
 
 <section class="home-hero" data-reveal>
-  <p class="page__eyebrow">Survey Methodology • Data Science • Responsible AI</p>
-  <h1 class="home-hero__title">Designing rigorous measurement systems for AI-enabled research.</h1>
-  <p class="home-hero__lead">{{ site.data.cv_site.profile.summary }}</p>
+  <div class="home-hero__grid">
+    <div class="home-hero__content">
+      <p class="page__eyebrow">Survey Methodology • Data Science • Responsible AI</p>
+      <p class="home-hero__typewriter" aria-label="Currently building survey-aware AI systems, geospatial measurement pipelines, privacy-preserving research workflows, and reliable public-data infrastructure.">
+        <span class="home-hero__typewriter-label">Currently building</span>
+        <span class="home-hero__typewriter-text" data-typewriter-words='["survey-aware AI systems", "geospatial measurement pipelines", "privacy-preserving research workflows", "reliable public-data infrastructure"]' data-typewriter-pause="1700" aria-hidden="true">survey-aware AI systems</span>
+      </p>
+      <h1 class="home-hero__title">Designing rigorous measurement systems for AI-enabled research.</h1>
+      <p class="home-hero__lead">{{ site.data.cv_site.profile.summary }}</p>
 
-  <div class="page__actions">
-    <a class="button-link button-link--primary" href="{{ '/cv/' | relative_url }}">View CV</a>
-    <a class="button-link" href="{{ '/publications/' | relative_url }}">Publications</a>
-    <a class="button-link" href="{{ '/portfolio/' | relative_url }}">Projects</a>
-    <a class="button-link" href="{{ '/github/' | relative_url }}">GitHub</a>
-  </div>
+      <div class="page__actions">
+        <a class="button-link button-link--primary" href="{{ '/cv/' | relative_url }}">View CV</a>
+        <a class="button-link" href="{{ '/publications/' | relative_url }}">Publications</a>
+        <a class="button-link" href="{{ '/portfolio/' | relative_url }}">Projects</a>
+        <a class="button-link" href="{{ '/github/' | relative_url }}">GitHub</a>
+      </div>
 
-  <div class="hero-metrics">
-    {% for metric in site.data.cv_site.hero_metrics %}
-      <article class="metric-card">
-        <span class="metric-card__value">{{ metric.value }}</span>
-        <span class="metric-card__label">{{ metric.label }}</span>
-      </article>
-    {% endfor %}
+      <div class="hero-metrics">
+        {% for metric in site.data.cv_site.hero_metrics %}
+          <article class="metric-card">
+            <span class="metric-card__value">{{ metric.value }}</span>
+            <span class="metric-card__label">{{ metric.label }}</span>
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+
+    <aside class="hero-visual" data-reveal data-interactive-glow>
+      <div class="hero-visual__backdrop" aria-hidden="true">
+        <span class="hero-visual__grid"></span>
+        <span class="hero-visual__orb hero-visual__orb--one"></span>
+        <span class="hero-visual__orb hero-visual__orb--two"></span>
+        <span class="hero-visual__orb hero-visual__orb--three"></span>
+        <span class="hero-visual__orbit hero-visual__orbit--outer"></span>
+        <span class="hero-visual__orbit hero-visual__orbit--inner"></span>
+        <span class="hero-visual__pulse hero-visual__pulse--one"></span>
+        <span class="hero-visual__pulse hero-visual__pulse--two"></span>
+        <span class="hero-visual__beam hero-visual__beam--one"></span>
+        <span class="hero-visual__beam hero-visual__beam--two"></span>
+      </div>
+
+      <div class="hero-visual__content">
+        <p class="hero-visual__eyebrow">Research System Map</p>
+        <h2 class="hero-visual__title">Collect. Model. Govern.</h2>
+        <p class="hero-visual__lead">A compact view of how survey design, machine learning, and data governance connect across active research and engineering work.</p>
+
+        <div class="hero-lane-grid">
+          <article class="hero-lane hero-lane--collect">
+            <span class="hero-lane__step">01 • Collect</span>
+            <strong>Survey ops + quality control</strong>
+            <p>Automating acquisition, metadata checks, and missing-data strategy before inference begins.</p>
+          </article>
+          <article class="hero-lane hero-lane--model">
+            <span class="hero-lane__step">02 • Model</span>
+            <strong>Spatial + behavioral inference</strong>
+            <p>Linking tract-level, platform, and social signals into interpretable analytical pipelines.</p>
+          </article>
+          <article class="hero-lane hero-lane--govern">
+            <span class="hero-lane__step">03 • Govern</span>
+            <strong>Privacy-aware deployment</strong>
+            <p>Keeping large-scale automation auditable, reproducible, and defensible under real constraints.</p>
+          </article>
+        </div>
+
+        <div class="hero-insight-grid">
+          <article class="hero-insight">
+            <span class="hero-insight__value">18</span>
+            <span class="hero-insight__label">datasets automated through CKAN lifecycle tooling</span>
+          </article>
+          <article class="hero-insight">
+            <span class="hero-insight__value">129,572</span>
+            <span class="hero-insight__label">census tracts integrated in public-data research</span>
+          </article>
+          <article class="hero-insight">
+            <span class="hero-insight__value">1.1M+</span>
+            <span class="hero-insight__label">social posts modeled in transformer sentiment work</span>
+          </article>
+          <article class="hero-insight">
+            <span class="hero-insight__value">91.6%</span>
+            <span class="hero-insight__label">best classification accuracy in current sentiment pipelines</span>
+          </article>
+        </div>
+
+        <div class="hero-visual__tags" aria-label="Active research areas">
+          <span>CKAN automation</span>
+          <span>Survey methodology</span>
+          <span>Transformer NLP</span>
+          <span>Geospatial epidemiology</span>
+          <span>Responsible AI</span>
+          <span>Causal inference</span>
+        </div>
+      </div>
+    </aside>
   </div>
 </section>
 
