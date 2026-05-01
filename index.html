@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Namit Shrivastava — Animated Portfolio</title>
+  <meta name="description" content="Graduate Researcher | Survey Methodology & Data Science | University of Maryland" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+  <link rel="alternate icon" href="/images/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-180x180.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/cosmic/styles.css" />
+</head>
+<body data-screen-label="portfolio">
+  <canvas id="bg-canvas"></canvas>
+  <div id="app"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+  <script src="/assets/cosmic/data.js"></script>
+  <script src="/assets/cosmic/bg-circles.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script type="text/babel" data-presets="react" src="/assets/cosmic/app.jsx"></script>
+  <script src="/assets/cosmic/three-scene.js" defer></script>
+  <script src="/assets/cosmic/interactions-3d.js" defer></script>
+</body>
+</html>
