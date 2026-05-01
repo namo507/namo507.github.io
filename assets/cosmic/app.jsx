@@ -470,7 +470,16 @@ function App() {
     <>
       <nav className="nav">
         <div className="nav__brand">
-          <div className="nav__brand-mark" />
+          <div className={"nav__brand-mark" + (data.profile.avatarUrl ? " nav__brand-mark--photo" : "") }>
+            {data.profile.avatarUrl ? (
+              <img
+                src={data.profile.avatarUrl}
+                alt={data.profile.name + " profile portrait"}
+                loading="eager"
+                fetchPriority="high"
+              />
+            ) : null}
+          </div>
           <div className="nav__brand-text">Namit Shrivastava <span>· Survey Methodology · Data Science</span></div>
         </div>
         <div className="nav__links">
