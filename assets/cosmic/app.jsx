@@ -84,6 +84,87 @@ function SectionTitle({ num, eyebrow, title, lead }) {
   );
 }
 
+function HeroConnectWorkflow({ data, onJump }) {
+  const workflowLinks = [
+    {
+      label: "Email",
+      url: "mailto:" + data.profile.email,
+      meta: "reply first",
+      accent: true,
+    },
+    {
+      label: "LinkedIn",
+      url: "https://www.linkedin.com/in/namit-shrivastava-baab47204/",
+      meta: "network",
+    },
+    {
+      label: "GitHub",
+      url: "https://github.com/namo507",
+      meta: "code",
+    },
+    {
+      label: "Scholar",
+      url: "https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en",
+      meta: "papers",
+    },
+  ];
+
+  return (
+    <div className="hero-connect card reveal">
+      <div className="hero-connect__header">
+        <div>
+          <p className="eyebrow">Connect workflow</p>
+          <h3 className="h-card hero-connect__title">Follow the signal, not the scavenger hunt.</h3>
+        </div>
+        <button className="hero-connect__jump" onClick={() => onJump("contact")}>Open contact</button>
+      </div>
+
+      <p className="hero-connect__copy">Start with email, then branch into code, papers, or the professional internet.</p>
+
+      <div className="hero-connect__map">
+        <svg className="hero-connect__svg" viewBox="0 0 520 280" aria-hidden="true" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="workflow-line" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="rgba(127,230,210,0.12)" />
+              <stop offset="45%" stopColor="rgba(127,230,210,0.9)" />
+              <stop offset="100%" stopColor="rgba(168,197,255,0.75)" />
+            </linearGradient>
+          </defs>
+          <path d="M 110 140 C 170 140, 208 92, 298 70" />
+          <path d="M 110 140 C 170 140, 208 128, 298 116" />
+          <path d="M 110 140 C 170 140, 208 164, 298 164" />
+          <path d="M 110 140 C 170 140, 208 206, 298 210" />
+          <circle cx="110" cy="140" r="9" />
+        </svg>
+
+        <div className="hero-connect__hub">
+          <span className="hero-connect__hub-label">Start here</span>
+          <strong>Connect</strong>
+          <span className="hero-connect__hub-meta">survey + ML + applied systems</span>
+        </div>
+
+        {workflowLinks.map((link, index) => (
+          <a
+            key={link.label}
+            className={"hero-connect__node hero-connect__node--" + (index + 1) + (link.accent ? " hero-connect__node--accent" : "")}
+            href={link.url}
+            target={link.url.startsWith("mailto:") ? undefined : "_blank"}
+            rel={link.url.startsWith("mailto:") ? undefined : "noopener"}
+          >
+            <span className="hero-connect__node-label">{link.label}</span>
+            <span className="hero-connect__node-meta">{link.meta}</span>
+          </a>
+        ))}
+      </div>
+
+      <div className="hero-connect__footer">
+        <span>{data.profile.location}</span>
+        <span>{data.profile.phone}</span>
+      </div>
+    </div>
+  );
+}
+
 // ── Sections ────────────────────────────────────────────────────────────────
 function Hero({ data, onJump }) {
   const word = useTypewriter(data.profile.typingWords);
@@ -111,14 +192,17 @@ function Hero({ data, onJump }) {
             </div>
           </div>
 
-          <div className="orb-stage reveal">
-            <div className="orb-ring"><div className="orb-ring__node" style={{"--col":"#69d7c3"}} /></div>
-            <div className="orb-ring orb-ring--2"><div className="orb-ring__node" style={{"--col":"#8fb6ff", left:"30%"}} /></div>
-            <div className="orb-ring orb-ring--3"><div className="orb-ring__node" style={{"--col":"#f1b76a", left:"70%"}} /></div>
-            <div className="orb orb--core" />
-            <div className="orb" style={{ "--col": "#8fb6ff", inset: "5% 70% 70% 5%", animationDelay: "-3s" }} />
-            <div className="orb" style={{ "--col": "#f1b76a", inset: "65% 8% 12% 70%", animationDelay: "-7s" }} />
-            <div className="orb" style={{ "--col": "#ff8a9b", inset: "55% 65% 18% 18%", animationDelay: "-11s" }} />
+          <div className="hero__visuals">
+            <div className="orb-stage reveal">
+              <div className="orb-ring"><div className="orb-ring__node" style={{"--col":"#69d7c3"}} /></div>
+              <div className="orb-ring orb-ring--2"><div className="orb-ring__node" style={{"--col":"#8fb6ff", left:"30%"}} /></div>
+              <div className="orb-ring orb-ring--3"><div className="orb-ring__node" style={{"--col":"#f1b76a", left:"70%"}} /></div>
+              <div className="orb orb--core" />
+              <div className="orb" style={{ "--col": "#8fb6ff", inset: "5% 70% 70% 5%", animationDelay: "-3s" }} />
+              <div className="orb" style={{ "--col": "#f1b76a", inset: "65% 8% 12% 70%", animationDelay: "-7s" }} />
+              <div className="orb" style={{ "--col": "#ff8a9b", inset: "55% 65% 18% 18%", animationDelay: "-11s" }} />
+            </div>
+            <HeroConnectWorkflow data={data} onJump={onJump} />
           </div>
         </div>
 
@@ -431,11 +515,11 @@ function ContactSection({ data }) {
   return (
     <section id="contact" className="section" style={{paddingBottom: 120}}>
       <div className="section__container">
-        <SectionTitle num="07" eyebrow="Get in touch" title="Open to research collaboration, applied data science, and good conversations." />
+        <SectionTitle num="07" eyebrow="Get in touch" title="Good work usually starts with a sharp hello." />
 
         <div className="contact-card reveal">
           <p className="eyebrow">Connect</p>
-          <h2 className="h-section" style={{maxWidth:780}}>Reach out for survey methodology, ML/NLP, geospatial work, or thoughtful research conversations.</h2>
+          <h2 className="h-section" style={{maxWidth:780}}>Bring survey puzzles, ML tangles, geospatial detours, or just a well-aimed note.</h2>
           <div className="btn-row" style={{marginTop:18}}>
             <a className="btn btn--primary" href={"mailto:"+data.profile.email}>Email · {data.profile.email}</a>
             <a className="btn" href="https://www.linkedin.com/in/namit-shrivastava-baab47204/" target="_blank" rel="noopener">LinkedIn ↗</a>
@@ -476,7 +560,7 @@ function App() {
                 src={data.profile.avatarUrl}
                 alt={data.profile.name + " profile portrait"}
                 loading="eager"
-                fetchPriority="high"
+                fetchpriority="high"
               />
             ) : null}
           </div>
