@@ -1022,3 +1022,160 @@ a:hover { color: var(--accent); }
   .metric-grid { grid-template-columns: repeat(2, 1fr); }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
 }
+
+/* ── Tile creatures ──────────────────────────────────────────────────────────
+ * Tiny pseudo-3D SVG figures that animate inside every content tile.
+ * Position: absolute corner, mix-blend-mode: screen so they fuse with the
+ * panel tint instead of fighting text. Hover lifts opacity + scale.
+ * No per-tile WebGL — pure SVG + CSS keyframes for buttery smooth playback.
+ * Reduced-motion users get static figures (animations cancelled below). */
+.creature {
+  position: absolute;
+  pointer-events: none;
+  width: clamp(78px, 19%, 112px);
+  aspect-ratio: 90 / 70;
+  color: var(--c, var(--accent));
+  opacity: 0.34;
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,0.45));
+  mix-blend-mode: screen;
+  transform-style: preserve-3d;
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(.16,.84,.44,1), filter 0.35s ease;
+  will-change: transform, opacity;
+}
+.creature--br { right: 14px; bottom: 14px; }
+.creature--bl { left: 14px;  bottom: 14px; }
+.creature--tr { right: 14px; top: 60px; }
+.creature__svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.creature__shadow { fill: rgba(0,0,0,0.35); filter: blur(1.4px); }
+
+/* Push creatures behind text but above card background. The host
+ * .card > * rule already sets z-index:1 + translateZ(20px) on every direct
+ * child, so we explicitly override here with a -12px Z so the figure visually
+ * recedes while the text stays forward. */
+.card > .creature,
+.project > .creature,
+.repo > .creature,
+.skill > .creature,
+.contact-card > .creature {
+  z-index: 0;
+  transform: perspective(420px) rotateY(-14deg) rotateX(6deg) translateZ(-12px);
+}
+.card:hover > .creature,
+.project:hover > .creature,
+.repo:hover > .creature,
+.skill:hover > .creature,
+.contact-card:hover > .creature {
+  opacity: 0.84;
+  transform: perspective(420px) rotateY(-4deg) rotateX(2deg) translateZ(10px) scale(1.08);
+  filter: drop-shadow(0 14px 22px rgba(0,0,0,0.55));
+}
+/* Lift content above the creature even though both share .card > * */
+.card > *:not(.creature):not(.card__circle),
+.project > *:not(.creature):not(.project__circle),
+.repo > *:not(.creature):not(.card__circle):not(.project__circle),
+.skill > *:not(.creature):not(.card__circle) {
+  z-index: 2;
+}
+
+/* ── Keyframes ── */
+@keyframes cr-bob          { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.4px); } }
+@keyframes cr-flicker      { 0%,100% { opacity: 0.34; } 50% { opacity: 0.78; } }
+@keyframes cr-arm-type-l   { 0%,100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(1.4px) rotate(5deg); } 75% { transform: translateY(-1px) rotate(-4deg); } }
+@keyframes cr-arm-type-r   { 0%,100% { transform: translateY(0) rotate(0); } 20% { transform: translateY(-1px) rotate(-4deg); } 60% { transform: translateY(1.6px) rotate(6deg); } }
+@keyframes cr-bar-pulse    { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.22); } }
+@keyframes cr-arm-point    { 0%,100% { transform: translate(0,0) rotate(0); } 50% { transform: translate(2px,-2px) rotate(-7deg); } }
+@keyframes cr-spin         { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+@keyframes cr-page         { 0%,55% { transform: rotateY(0); opacity: 0.85; } 65% { transform: rotateY(-160deg); opacity: 0.35; } 100% { transform: rotateY(0); opacity: 0.85; } }
+@keyframes cr-line-write   { 0% { stroke-dasharray: 0 100; opacity: 0.6; } 55% { stroke-dasharray: 100 0; opacity: 0.85; } 100% { stroke-dasharray: 100 0; opacity: 0.55; } }
+@keyframes cr-hammer       { 0%,100% { transform: rotate(0deg); } 40% { transform: rotate(-34deg); } 65% { transform: rotate(10deg); } }
+@keyframes cr-cube-spin    { 0%,100% { transform: rotate3d(1,1,0,0deg) translateY(0); } 50% { transform: rotate3d(1,1,0,22deg) translateY(-2px); } }
+@keyframes cr-cursor       { 0%,50% { opacity: 1; } 51%,100% { opacity: 0; } }
+@keyframes cr-commit-dot   { 0% { transform: translateY(8px); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateY(-14px); opacity: 0; } }
+@keyframes cr-pointer      { 0%,100% { transform: translate(0,0) rotate(0); } 50% { transform: translate(2px,1px) rotate(-5deg); } }
+@keyframes cr-slide-cycle  { 0%,25% { opacity: 0.85; } 38%,58% { opacity: 0.2; } 72%,100% { opacity: 0.85; } }
+@keyframes cr-chalk-draw   { 0% { stroke-dasharray: 0 60; opacity: 0.85; } 55% { stroke-dasharray: 60 0; opacity: 0.85; } 95%,100% { stroke-dasharray: 60 0; opacity: 0; } }
+@keyframes cr-wave-arm     { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-26deg); } 75% { transform: rotate(20deg); } }
+
+/* ── Per-kind animation hooks (transform-box: fill-box keeps SVG transform-origin
+ *    relative to the element's own bbox rather than the SVG canvas origin) ── */
+.creature [class^="creature__"] { transform-box: fill-box; }
+
+.creature__person--type        { animation: cr-bob 1.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
+.creature__person--type .creature__arm-l { transform-origin: 25px 38px; animation: cr-arm-type-l 0.55s ease-in-out infinite; animation-delay: var(--d, 0s); }
+.creature__person--type .creature__arm-r { transform-origin: 31px 38px; animation: cr-arm-type-r 0.62s ease-in-out infinite; animation-delay: calc(var(--d, 0s) + 0.1s); }
+.creature__screen              { animation: cr-flicker 1.6s ease-in-out infinite; animation-delay: var(--d, 0s); }
+
+.creature__bar                 { transform-origin: bottom; animation: cr-bar-pulse 2.2s ease-in-out infinite; }
+.creature__bar--1              { animation-delay: 0s; }
+.creature__bar--2              { animation-delay: 0.25s; }
+.creature__bar--3              { animation-delay: 0.5s; }
+.creature__person--point       { animation: cr-bob 2s ease-in-out infinite; }
+.creature__arm-point           { transform-origin: 29px 36px; animation: cr-arm-point 2s ease-in-out infinite; }
+
+.creature__gear                { transform-origin: center; animation: cr-spin 8s linear infinite; }
+.creature__person--turn        { animation: cr-bob 1.6s ease-in-out infinite; }
+
+.creature__person--read        { animation: cr-bob 2.4s ease-in-out infinite; }
+.creature__page                { transform-origin: left; animation: cr-page 4s ease-in-out infinite; }
+
+.creature__line                { stroke-linecap: round; opacity: 0.55; }
+.creature__line--1             { animation: cr-line-write 3.6s ease-in-out infinite; animation-delay: 0s; }
+.creature__line--2             { animation: cr-line-write 3.6s ease-in-out infinite; animation-delay: 0.4s; }
+.creature__line--3             { animation: cr-line-write 3.6s ease-in-out infinite; animation-delay: 0.8s; }
+.creature__line--4             { animation: cr-line-write 3.6s ease-in-out infinite; animation-delay: 1.2s; }
+.creature__person--review      { animation: cr-bob 2.2s ease-in-out infinite; }
+.creature__arm-pen             { transform-origin: 31px 34px; animation: cr-arm-point 1.8s ease-in-out infinite; }
+
+.creature__hammer-arm          { transform-origin: left center; animation: cr-hammer 1s cubic-bezier(.5,0,.5,1) infinite; }
+.creature__cube                { transform-origin: center; animation: cr-cube-spin 4s ease-in-out infinite; }
+.creature__person--hammer      { animation: cr-bob 1s ease-in-out infinite; }
+
+.creature__cursor              { animation: cr-cursor 0.9s steps(2) infinite; font-weight: 700; }
+.creature__commit-dot          { transform-origin: center; animation: cr-commit-dot 2.6s ease-out infinite; animation-delay: var(--d, 0s); }
+
+.creature__person--present     { animation: cr-bob 2.4s ease-in-out infinite; }
+.creature__arm-pointer         { transform-origin: 25px 40px; animation: cr-pointer 2.4s ease-in-out infinite; }
+.creature__slide-line          { stroke-linecap: round; }
+.creature__slide-line--1       { animation: cr-slide-cycle 5s ease-in-out infinite; }
+.creature__slide-line--2       { animation: cr-slide-cycle 5s ease-in-out infinite; animation-delay: 0.3s; }
+.creature__slide-line--3       { animation: cr-slide-cycle 5s ease-in-out infinite; animation-delay: 0.6s; }
+
+.creature__chalk               { stroke-linecap: round; }
+.creature__chalk--1            { animation: cr-chalk-draw 4.5s ease-in-out infinite; }
+.creature__chalk--2            { animation: cr-chalk-draw 4.5s ease-in-out infinite; animation-delay: 1.5s; }
+.creature__person--teach       { animation: cr-bob 1.8s ease-in-out infinite; }
+.creature__arm-write           { transform-origin: 29px 38px; animation: cr-arm-point 1.4s ease-in-out infinite; }
+
+.creature__wave-arm            { transform-origin: 52px 32px; animation: cr-wave-arm 1.4s ease-in-out infinite; }
+.creature__person--wave        { animation: cr-bob 2.2s ease-in-out infinite; }
+
+/* Smaller tile types get a slightly smaller creature so they don't crowd metrics */
+.repo .creature   { width: clamp(58px, 22%, 84px); right: 10px; bottom: 10px; }
+.skill .creature  { width: clamp(70px, 18%, 96px); }
+.metric .creature { display: none; }
+
+/* Reduced motion: freeze creatures but keep silhouette visible */
+@media (prefers-reduced-motion: reduce) {
+  .creature [class*="cr-"], .creature * { animation: none !important; }
+  .creature, .card:hover > .creature, .project:hover > .creature,
+  .repo:hover > .creature, .skill:hover > .creature, .contact-card:hover > .creature {
+    transition: none;
+  }
+}
+
+/* Mobile: shrink, dim, and snap into the corner so tile copy still breathes */
+@media (max-width: 880px) {
+  .card > .creature, .project > .creature, .repo > .creature,
+  .skill > .creature, .contact-card > .creature {
+    width: 56px;
+    opacity: 0.26;
+    right: 8px;
+    bottom: 8px;
+  }
+  .card:hover > .creature, .project:hover > .creature, .repo:hover > .creature,
+  .skill:hover > .creature, .contact-card:hover > .creature {
+    opacity: 0.55;
+    transform: perspective(420px) rotateY(0) translateZ(0) scale(1.04);
+  }
+}
+

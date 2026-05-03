@@ -69,6 +69,227 @@ function Metric({ v, k, color }) {
   );
 }
 
+// ── TileCreature ────────────────────────────────────────────────────────────
+// Tiny pseudo-3D SVG figures dropped into every content tile. Each `kind`
+// renders a self-contained scene (person + prop) with looping CSS animations
+// keyed off classNames defined in styles.css. `position` selects the corner
+// (br = bottom-right, default), `delay` desyncs neighbouring tiles so the
+// grid never animates in lockstep.
+function TileCreature({ kind, color, delay = 0, position = "br" }) {
+  const styleVars = { "--c": color || "var(--accent)", "--d": (delay || 0) + "s" };
+  const cls = "creature creature--" + kind + " creature--" + position;
+
+  let body = null;
+
+  if (kind === "desk") {
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="30" ry="3" /></g>
+        <rect x="46" y="22" width="30" height="20" rx="2" fill="none" stroke="currentColor" strokeWidth="1.4" />
+        <rect className="creature__screen" x="49" y="25" width="24" height="14" fill="currentColor" />
+        <line x1="46" y1="42" x2="76" y2="42" stroke="currentColor" strokeWidth="1.4" />
+        <line x1="61" y1="42" x2="61" y2="48" stroke="currentColor" strokeWidth="1.4" />
+        <rect x="56" y="48" width="10" height="2" fill="currentColor" />
+        <rect x="14" y="50" width="60" height="2" fill="currentColor" opacity="0.55" />
+        <g className="creature__person creature__person--type">
+          <circle cx="28" cy="30" r="5" fill="currentColor" />
+          <rect x="24" y="34" width="8" height="14" rx="2" fill="currentColor" />
+          <line x1="28" y1="48" x2="25" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="28" y1="48" x2="32" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line className="creature__arm-l" x1="25" y1="38" x2="36" y2="44" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line className="creature__arm-r" x1="31" y1="38" x2="42" y2="46" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </g>
+      </svg>
+    );
+  } else if (kind === "chart") {
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="32" ry="3" /></g>
+        <line x1="14" y1="56" x2="80" y2="56" stroke="currentColor" strokeWidth="1.4" opacity="0.55" />
+        <rect className="creature__bar creature__bar--1" x="48" y="42" width="6" height="14" fill="currentColor" opacity="0.7" />
+        <rect className="creature__bar creature__bar--2" x="58" y="34" width="6" height="22" fill="currentColor" opacity="0.7" />
+        <rect className="creature__bar creature__bar--3" x="68" y="22" width="6" height="34" fill="currentColor" opacity="0.7" />
+        <g className="creature__person creature__person--point">
+          <circle cx="26" cy="28" r="5" fill="currentColor" />
+          <rect x="22" y="32" width="8" height="14" rx="2" fill="currentColor" />
+          <line x1="26" y1="46" x2="22" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="26" y1="46" x2="30" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="23" y1="36" x2="18" y2="42" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line className="creature__arm-point" x1="29" y1="36" x2="44" y2="28" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </g>
+      </svg>
+    );
+  } else if (kind === "gear") {
+    const teeth = [0, 45, 90, 135, 180, 225, 270, 315];
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="30" ry="3" /></g>
+        <g className="creature__gear">
+          <circle cx="60" cy="36" r="11" fill="none" stroke="currentColor" strokeWidth="1.6" />
+          <circle cx="60" cy="36" r="3" fill="currentColor" />
+          {teeth.map((a) => (
+            <rect key={a} x="58.5" y="22" width="3" height="5" fill="currentColor" transform={"rotate(" + a + " 60 36)"} />
+          ))}
+        </g>
+        <g className="creature__person creature__person--turn">
+          <circle cx="26" cy="28" r="5" fill="currentColor" />
+          <rect x="22" y="32" width="8" height="14" rx="2" fill="currentColor" />
+          <line x1="26" y1="46" x2="22" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="26" y1="46" x2="30" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="23" y1="36" x2="18" y2="42" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="29" y1="36" x2="46" y2="38" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </g>
+      </svg>
+    );
+  } else if (kind === "read") {
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="28" ry="3" /></g>
+        <g className="creature__person creature__person--read">
+          <polygon points="34,18 54,18 44,12" fill="currentColor" />
+          <line x1="44" y1="12" x2="50" y2="14" stroke="currentColor" strokeWidth="1.4" />
+          <circle cx="44" cy="24" r="6" fill="currentColor" />
+          <rect x="38" y="30" width="12" height="18" rx="2" fill="currentColor" />
+          <line x1="44" y1="48" x2="40" y2="60" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+          <line x1="44" y1="48" x2="48" y2="60" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+        </g>
+        <g className="creature__book">
+          <path d="M52 44 L60 42 L60 56 L52 58 Z" fill="currentColor" opacity="0.55" />
+          <path className="creature__page" d="M60 42 L68 44 L68 58 L60 56 Z" fill="currentColor" opacity="0.85" />
+        </g>
+      </svg>
+    );
+  } else if (kind === "paper") {
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="30" ry="3" /></g>
+        <g className="creature__paper">
+          <rect x="46" y="22" width="28" height="34" rx="1" fill="currentColor" opacity="0.18" />
+          <line className="creature__line creature__line--1" x1="50" y1="28" x2="70" y2="28" stroke="currentColor" strokeWidth="1.2" />
+          <line className="creature__line creature__line--2" x1="50" y1="34" x2="68" y2="34" stroke="currentColor" strokeWidth="1.2" />
+          <line className="creature__line creature__line--3" x1="50" y1="40" x2="66" y2="40" stroke="currentColor" strokeWidth="1.2" />
+          <line className="creature__line creature__line--4" x1="50" y1="46" x2="70" y2="46" stroke="currentColor" strokeWidth="1.2" />
+        </g>
+        <g className="creature__person creature__person--review">
+          <circle cx="28" cy="26" r="5" fill="currentColor" />
+          <rect x="24" y="30" width="8" height="14" rx="2" fill="currentColor" />
+          <line x1="28" y1="44" x2="24" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="28" y1="44" x2="32" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="25" y1="34" x2="20" y2="40" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line className="creature__arm-pen" x1="31" y1="34" x2="48" y2="38" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </g>
+      </svg>
+    );
+  } else if (kind === "build") {
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="30" ry="3" /></g>
+        <g className="creature__cube">
+          <path d="M54 30 L62 26 L70 30 L70 44 L62 48 L54 44 Z" fill="none" stroke="currentColor" strokeWidth="1.4" />
+          <line x1="54" y1="30" x2="62" y2="34" stroke="currentColor" strokeWidth="1.2" />
+          <line x1="62" y1="34" x2="70" y2="30" stroke="currentColor" strokeWidth="1.2" />
+          <line x1="62" y1="34" x2="62" y2="48" stroke="currentColor" strokeWidth="1.2" />
+        </g>
+        <g className="creature__person creature__person--hammer">
+          <circle cx="26" cy="28" r="5" fill="currentColor" />
+          <rect x="22" y="32" width="8" height="14" rx="2" fill="currentColor" />
+          <line x1="26" y1="46" x2="22" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="26" y1="46" x2="30" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <g className="creature__hammer-arm">
+            <line x1="29" y1="36" x2="44" y2="34" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+            <rect x="42" y="30" width="6" height="8" fill="currentColor" />
+          </g>
+        </g>
+      </svg>
+    );
+  } else if (kind === "commit") {
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="32" ry="3" /></g>
+        <rect x="40" y="20" width="38" height="22" rx="2" fill="none" stroke="currentColor" strokeWidth="1.4" />
+        <text x="44" y="32" fontFamily="monospace" fontSize="6" fill="currentColor" opacity="0.75">$ git</text>
+        <text x="44" y="40" fontFamily="monospace" fontSize="6" fill="currentColor" opacity="0.6">
+          commit<tspan className="creature__cursor">_</tspan>
+        </text>
+        <rect x="40" y="42" width="38" height="2" fill="currentColor" />
+        <g className="creature__person creature__person--type">
+          <circle cx="22" cy="28" r="5" fill="currentColor" />
+          <rect x="18" y="32" width="8" height="14" rx="2" fill="currentColor" />
+          <line x1="22" y1="46" x2="18" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="22" y1="46" x2="26" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line className="creature__arm-l" x1="19" y1="36" x2="32" y2="44" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line className="creature__arm-r" x1="25" y1="36" x2="36" y2="46" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </g>
+        <g className="creature__commit-dot">
+          <circle cx="78" cy="14" r="3" fill="currentColor" />
+        </g>
+      </svg>
+    );
+  } else if (kind === "present") {
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="32" ry="3" /></g>
+        <rect x="46" y="14" width="32" height="22" rx="1" fill="none" stroke="currentColor" strokeWidth="1.4" />
+        <line className="creature__slide-line creature__slide-line--1" x1="50" y1="20" x2="74" y2="20" stroke="currentColor" strokeWidth="1.2" />
+        <line className="creature__slide-line creature__slide-line--2" x1="50" y1="26" x2="68" y2="26" stroke="currentColor" strokeWidth="1.2" />
+        <line className="creature__slide-line creature__slide-line--3" x1="50" y1="32" x2="72" y2="32" stroke="currentColor" strokeWidth="1.2" />
+        <line x1="46" y1="36" x2="78" y2="36" stroke="currentColor" strokeWidth="1.4" />
+        <line x1="62" y1="36" x2="62" y2="42" stroke="currentColor" strokeWidth="1.4" />
+        <g className="creature__person creature__person--present">
+          <circle cx="22" cy="32" r="5" fill="currentColor" />
+          <rect x="18" y="36" width="8" height="14" rx="2" fill="currentColor" />
+          <line x1="22" y1="50" x2="18" y2="60" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="22" y1="50" x2="26" y2="60" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="19" y1="40" x2="14" y2="46" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line className="creature__arm-pointer" x1="25" y1="40" x2="44" y2="26" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </g>
+      </svg>
+    );
+  } else if (kind === "teach") {
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="32" ry="3" /></g>
+        <rect x="44" y="14" width="34" height="26" rx="2" fill="currentColor" opacity="0.18" />
+        <rect x="44" y="14" width="34" height="26" rx="2" fill="none" stroke="currentColor" strokeWidth="1.2" />
+        <path className="creature__chalk creature__chalk--1" d="M48 22 q4 4 8 0 q4 -4 8 0" fill="none" stroke="currentColor" strokeWidth="1.2" />
+        <path className="creature__chalk creature__chalk--2" d="M48 30 q3 -3 6 0 q3 3 6 0 q3 -3 6 0" fill="none" stroke="currentColor" strokeWidth="1.2" />
+        <g className="creature__person creature__person--teach">
+          <circle cx="26" cy="30" r="5" fill="currentColor" />
+          <rect x="22" y="34" width="8" height="14" rx="2" fill="currentColor" />
+          <line x1="26" y1="48" x2="22" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="26" y1="48" x2="30" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="23" y1="38" x2="18" y2="44" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <line className="creature__arm-write" x1="29" y1="38" x2="44" y2="32" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </g>
+      </svg>
+    );
+  } else {
+    // wave (default)
+    body = (
+      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
+        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="22" ry="3" /></g>
+        <g className="creature__person creature__person--wave">
+          <circle cx="46" cy="22" r="6" fill="currentColor" />
+          <rect x="40" y="28" width="12" height="18" rx="2" fill="currentColor" />
+          <line x1="46" y1="46" x2="40" y2="60" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+          <line x1="46" y1="46" x2="52" y2="60" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+          <line x1="40" y1="32" x2="34" y2="42" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+          <g className="creature__wave-arm">
+            <line x1="52" y1="32" x2="60" y2="20" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+            <circle cx="60" cy="18" r="2" fill="currentColor" />
+          </g>
+        </g>
+      </svg>
+    );
+  }
+
+  return (
+    <span className={cls} style={styleVars} aria-hidden="true">
+      {body}
+    </span>
+  );
+}
+
 function SectionTitle({ num, eyebrow, title, lead }) {
   return (
     <div className="reveal">
@@ -235,66 +456,82 @@ function CVSection({ data }) {
 
         {/* Impact */}
         <div className="grid-4 reveal">
-          {data.results.map((r, i) => (
-            <div className="card" key={i}>
-              <span className="card__circle" style={{"--col": ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b"][i]}} />
-              <p className="card__meta">Impact</p>
-              <div className="metric__v" style={{fontSize:36}}>{r.metric}</div>
-              <h3 className="h-card" style={{marginTop:8}}>{r.title}</h3>
-              <p className="card__sub">{r.detail}</p>
-            </div>
-          ))}
+          {data.results.map((r, i) => {
+            const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b"][i];
+            return (
+              <div className="card" key={i}>
+                <span className="card__circle" style={{"--col": c}} />
+                <p className="card__meta">Impact</p>
+                <div className="metric__v" style={{fontSize:36}}>{r.metric}</div>
+                <h3 className="h-card" style={{marginTop:8}}>{r.title}</h3>
+                <p className="card__sub">{r.detail}</p>
+                <TileCreature kind="chart" color={c} delay={i * 0.18} />
+              </div>
+            );
+          })}
         </div>
 
         {/* Experience timeline */}
         <h3 className="h-card reveal" style={{marginTop:48, marginBottom:16, fontSize:22}}>Professional Experience</h3>
         <div className="grid-2">
-          {data.experience.map((r, i) => (
-            <div className="card reveal" key={i}>
-              <span className="card__circle" style={{"--col": ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff"][i % 6]}} />
-              <p className="card__meta">{r.dates} · {r.location}</p>
-              <h4 className="h-card">{r.role}</h4>
-              <p className="card__sub" style={{color:"var(--accent)"}}>{r.org}</p>
-              <ul className="card__bullets">
-                {r.bullets.map((b, j) => <li key={j}>{b}</li>)}
-              </ul>
-            </div>
-          ))}
+          {data.experience.map((r, i) => {
+            const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff"][i % 6];
+            return (
+              <div className="card reveal" key={i}>
+                <span className="card__circle" style={{"--col": c}} />
+                <p className="card__meta">{r.dates} · {r.location}</p>
+                <h4 className="h-card">{r.role}</h4>
+                <p className="card__sub" style={{color:"var(--accent)"}}>{r.org}</p>
+                <ul className="card__bullets">
+                  {r.bullets.map((b, j) => <li key={j}>{b}</li>)}
+                </ul>
+                <TileCreature kind="desk" color={c} delay={i * 0.22} />
+              </div>
+            );
+          })}
         </div>
 
         {/* Skills */}
         <h3 className="h-card reveal" style={{marginTop:48, marginBottom:16, fontSize:22}}>Technical Skills</h3>
         <div className="grid-2">
-          {data.skills.map((s, i) => (
-            <div className="skill reveal" key={s.name}>
-              <span className="card__circle" style={{"--col": ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff","#7ad6ff"][i % 7]}} />
-              <div className="skill__head">
-                <div>
-                  <div className="skill__tier">{s.tier}</div>
-                  <div className="h-card" style={{marginTop:4}}>{s.name}</div>
+          {data.skills.map((s, i) => {
+            const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff","#7ad6ff"][i % 7];
+            return (
+              <div className="skill reveal" key={s.name}>
+                <span className="card__circle" style={{"--col": c}} />
+                <div className="skill__head">
+                  <div>
+                    <div className="skill__tier">{s.tier}</div>
+                    <div className="h-card" style={{marginTop:4}}>{s.name}</div>
+                  </div>
+                  <div className="metric__v" style={{fontSize:24, color: s.featured ? "var(--accent)" : "var(--ink)"}}>{s.score}%</div>
                 </div>
-                <div className="metric__v" style={{fontSize:24, color: s.featured ? "var(--accent)" : "var(--ink)"}}>{s.score}%</div>
+                <p className="card__sub">{s.summary}</p>
+                <div className="skill__bar"><div className="skill__fill" style={{"--w": s.score/100}} /></div>
+                <div>{s.tools.map((t) => <Tag key={t}>{t}</Tag>)}</div>
+                <TileCreature kind="gear" color={c} delay={i * 0.15} />
               </div>
-              <p className="card__sub">{s.summary}</p>
-              <div className="skill__bar"><div className="skill__fill" style={{"--w": s.score/100}} /></div>
-              <div>{s.tools.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Education */}
         <h3 className="h-card reveal" style={{marginTop:48, marginBottom:16, fontSize:22}}>Education</h3>
         <div className="grid-2">
-          {data.education.map((e, i) => (
-            <div className="card reveal" key={i}>
-              <span className="card__circle" style={{"--col": ["#8fb6ff","#f1b76a"][i]}} />
-              <p className="card__meta">{e.dates} · {e.location}</p>
-              <h4 className="h-card">{e.degree}</h4>
-              <p className="card__sub" style={{color:"var(--accent)"}}>{e.institution}</p>
-              <div style={{marginTop:10}}>{e.highlights.map((h) => <Tag key={h} accent>{h}</Tag>)}</div>
-              <div style={{marginTop:10}}>{e.coursework.map((c) => <Tag key={c}>{c}</Tag>)}</div>
-            </div>
-          ))}
+          {data.education.map((e, i) => {
+            const c = ["#8fb6ff","#f1b76a"][i];
+            return (
+              <div className="card reveal" key={i}>
+                <span className="card__circle" style={{"--col": c}} />
+                <p className="card__meta">{e.dates} · {e.location}</p>
+                <h4 className="h-card">{e.degree}</h4>
+                <p className="card__sub" style={{color:"var(--accent)"}}>{e.institution}</p>
+                <div style={{marginTop:10}}>{e.highlights.map((h) => <Tag key={h} accent>{h}</Tag>)}</div>
+                <div style={{marginTop:10}}>{e.coursework.map((c2) => <Tag key={c2}>{c2}</Tag>)}</div>
+                <TileCreature kind="read" color={c} delay={i * 0.3} />
+              </div>
+            );
+          })}
         </div>
 
         {/* Achievements + Service */}
@@ -302,12 +539,14 @@ function CVSection({ data }) {
           <div className="card">
             <p className="card__meta">Achievements</p>
             <ul className="card__bullets">{data.achievements.map((a) => <li key={a}>{a}</li>)}</ul>
+            <TileCreature kind="wave" color="#bcd86c" delay={0} />
           </div>
           <div className="card">
             <p className="card__meta">Service & Leadership</p>
             <ul className="card__bullets">
               {data.service.map((s) => <li key={s.org}><b>{s.role}</b> · {s.org} <span style={{color:"var(--ink-mute)"}}>({s.dates})</span><br/>{s.note}</li>)}
             </ul>
+            <TileCreature kind="wave" color="#c8a4ff" delay={0.4} />
           </div>
         </div>
 
@@ -326,25 +565,29 @@ function PublicationsSection({ data }) {
       <div className="section__container">
         <SectionTitle num="02" eyebrow="Research Output" title="Publications, papers, and scholarly work." lead="Peer-reviewed and conference research at the intersection of survey methodology, NLP, and applied AI." />
         <div className="grid-2">
-          {data.publications.map((p, i) => (
-            <a className="card reveal" key={i} href={p.url} target="_blank" rel="noopener" style={{display:"block"}}>
-              <span className="card__circle" style={{"--col": ["#8fb6ff","#ff8a9b"][i]}} />
-              <p className="card__meta">{p.category} · {p.date}</p>
-              <h3 className="h-card">{p.title}</h3>
-              <p className="card__sub" style={{color:"var(--accent)"}}>{p.venue}</p>
-              <p className="card__sub" style={{marginTop:10}}>{p.excerpt}</p>
-              <div className="grid-3" style={{marginTop:16, gap:8}}>
-                {p.stats.map((s) => (
-                  <div key={s.k} style={{padding:"10px 12px", background:"rgba(255,255,255,0.04)", borderRadius:12}}>
-                    <div className="metric__v" style={{fontSize:22, color:"var(--accent-cool)"}}>{s.v}</div>
-                    <div className="metric__k">{s.k}</div>
-                  </div>
-                ))}
-              </div>
-              <p style={{marginTop:14, color:"var(--ink-mute)", fontSize:12, fontFamily:"var(--mono)"}}>{p.citation}</p>
-              <div style={{marginTop:14, color:"var(--accent)"}}>Read paper ↗</div>
-            </a>
-          ))}
+          {data.publications.map((p, i) => {
+            const c = ["#8fb6ff","#ff8a9b"][i];
+            return (
+              <a className="card reveal" key={i} href={p.url} target="_blank" rel="noopener" style={{display:"block"}}>
+                <span className="card__circle" style={{"--col": c}} />
+                <p className="card__meta">{p.category} · {p.date}</p>
+                <h3 className="h-card">{p.title}</h3>
+                <p className="card__sub" style={{color:"var(--accent)"}}>{p.venue}</p>
+                <p className="card__sub" style={{marginTop:10}}>{p.excerpt}</p>
+                <div className="grid-3" style={{marginTop:16, gap:8}}>
+                  {p.stats.map((s) => (
+                    <div key={s.k} style={{padding:"10px 12px", background:"rgba(255,255,255,0.04)", borderRadius:12}}>
+                      <div className="metric__v" style={{fontSize:22, color:"var(--accent-cool)"}}>{s.v}</div>
+                      <div className="metric__k">{s.k}</div>
+                    </div>
+                  ))}
+                </div>
+                <p style={{marginTop:14, color:"var(--ink-mute)", fontSize:12, fontFamily:"var(--mono)"}}>{p.citation}</p>
+                <div style={{marginTop:14, color:"var(--accent)"}}>Read paper ↗</div>
+                <TileCreature kind="paper" color={c} delay={i * 0.35} />
+              </a>
+            );
+          })}
         </div>
 
         <div className="btn-row reveal" style={{marginTop:24}}>
@@ -381,17 +624,21 @@ function ProjectsSection({ data }) {
         </div>
 
         <div className="project-grid">
-          {visible.map((p, i) => (
-            <a className="project reveal" key={p.id} href={p.url} target="_blank" rel="noopener">
-              <span className="project__circle" style={{"--col": colors[i % colors.length], "--ang": (i*48)+"deg"}} />
-              <p className="project__id">PROJECT · {p.id}</p>
-              <h3 className="h-card" style={{marginTop:10}}>{p.title}</h3>
-              <p className="card__meta" style={{marginTop:6}}>{p.type} · {p.date} · {p.venue}</p>
-              <p className="card__sub" style={{marginTop:10}}>{p.excerpt}</p>
-              <div style={{marginTop:14}}>{p.tags.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-              <div style={{marginTop:14, color:"var(--accent)", fontSize:13, fontFamily:"var(--display)"}}>Open ↗</div>
-            </a>
-          ))}
+          {visible.map((p, i) => {
+            const c = colors[i % colors.length];
+            return (
+              <a className="project reveal" key={p.id} href={p.url} target="_blank" rel="noopener">
+                <span className="project__circle" style={{"--col": c, "--ang": (i*48)+"deg"}} />
+                <p className="project__id">PROJECT · {p.id}</p>
+                <h3 className="h-card" style={{marginTop:10}}>{p.title}</h3>
+                <p className="card__meta" style={{marginTop:6}}>{p.type} · {p.date} · {p.venue}</p>
+                <p className="card__sub" style={{marginTop:10}}>{p.excerpt}</p>
+                <div style={{marginTop:14}}>{p.tags.map((t) => <Tag key={t}>{t}</Tag>)}</div>
+                <div style={{marginTop:14, color:"var(--accent)", fontSize:13, fontFamily:"var(--display)"}}>Open ↗</div>
+                <TileCreature kind="build" color={c} delay={(i % 5) * 0.18} />
+              </a>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -415,6 +662,7 @@ function GitHubSection({ data }) {
             <div style={{marginTop:10}}>
               {g.languageMix.map((l) => <Tag key={l.lang}>{l.lang} · {l.count}</Tag>)}
             </div>
+            <TileCreature kind="gear" color="#7ad6ff" delay={0} />
           </div>
           <div className="card">
             <p className="card__meta">What this code covers</p>
@@ -423,20 +671,25 @@ function GitHubSection({ data }) {
               <li>Applied AI prototypes: Office add-ins, n8n workflows, simulation frameworks.</li>
               <li>Repository docs that link source code back to portfolio work and CV artifacts.</li>
             </ul>
+            <TileCreature kind="commit" color="#c8a4ff" delay={0.4} />
           </div>
         </div>
 
         <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>Featured Repositories</h3>
         <div className="grid-3">
-          {g.featured.map((r, i) => (
-            <a className="repo reveal" key={r.name} href={r.url} target="_blank" rel="noopener">
-              <span className="card__circle" style={{"--col": ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff","#7ad6ff"][i % 7]}} />
-              <p className="repo__lang">● {r.lang}</p>
-              <h4 className="repo__name">{r.name}</h4>
-              <p className="repo__desc">{r.desc}</p>
-              <div className="repo__metric"><b>{r.metric}</b> {r.metricLabel}</div>
-            </a>
-          ))}
+          {g.featured.map((r, i) => {
+            const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff","#7ad6ff"][i % 7];
+            return (
+              <a className="repo reveal" key={r.name} href={r.url} target="_blank" rel="noopener">
+                <span className="card__circle" style={{"--col": c}} />
+                <p className="repo__lang">● {r.lang}</p>
+                <h4 className="repo__name">{r.name}</h4>
+                <p className="repo__desc">{r.desc}</p>
+                <div className="repo__metric"><b>{r.metric}</b> {r.metricLabel}</div>
+                <TileCreature kind="commit" color={c} delay={i * 0.2} />
+              </a>
+            );
+          })}
         </div>
 
         <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>Recently Updated</h3>
@@ -475,12 +728,14 @@ function TalksSection({ data }) {
               <p className="card__sub" style={{color:"var(--accent-pop)"}}>{t.venue}</p>
               <p className="card__sub" style={{marginTop:12}}>{t.excerpt}</p>
               <div style={{marginTop:14, color:"var(--accent-pop)"}}>Conference page ↗</div>
+              <TileCreature kind="present" color="#ff8a9b" delay={i * 0.25} />
             </a>
           ))}
           <div className="card reveal" style={{display:"flex",flexDirection:"column",justifyContent:"center"}}>
             <p className="card__meta">Snapshot</p>
             <h3 className="h-card">{data.talks.length} talk · 1 distinct venue · 2025</h3>
             <p className="card__sub">Most recent presentation: AAPOR 2025, St. Louis, MO. Looking ahead to AAPOR 2026 and methods workshops in 2026.</p>
+            <TileCreature kind="chart" color="#a8c5ff" delay={0.5} />
           </div>
         </div>
       </div>
@@ -495,16 +750,20 @@ function TeachingSection({ data }) {
         <SectionTitle num="06" eyebrow="Teaching Practice" title="Course delivery, privacy instruction, and academic infrastructure." lead="Teaching and graduate-assistantship work across the Joint Program in Survey Methodology (JPSM) at the University of Maryland." />
 
         <div className="grid-2">
-          {data.teaching.map((t, i) => (
-            <div className="card reveal" key={i}>
-              <span className="card__circle" style={{"--col": ["#bcd86c","#c8a4ff"][i]}} />
-              <p className="card__meta">{t.type} · {t.date}</p>
-              <h3 className="h-card">{t.title}</h3>
-              <p className="card__sub" style={{color:"var(--accent)"}}>{t.venue}</p>
-              <p className="card__sub" style={{marginTop:10}}>{t.excerpt}</p>
-              <ul className="card__bullets">{t.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
-            </div>
-          ))}
+          {data.teaching.map((t, i) => {
+            const c = ["#bcd86c","#c8a4ff"][i];
+            return (
+              <div className="card reveal" key={i}>
+                <span className="card__circle" style={{"--col": c}} />
+                <p className="card__meta">{t.type} · {t.date}</p>
+                <h3 className="h-card">{t.title}</h3>
+                <p className="card__sub" style={{color:"var(--accent)"}}>{t.venue}</p>
+                <p className="card__sub" style={{marginTop:10}}>{t.excerpt}</p>
+                <ul className="card__bullets">{t.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
+                <TileCreature kind="teach" color={c} delay={i * 0.3} />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -528,6 +787,7 @@ function ContactSection({ data }) {
             <a className="btn" href="https://orcid.org/0009-0005-7920-8350" target="_blank" rel="noopener">ORCID ↗</a>
           </div>
           <p style={{marginTop:30, color:"var(--ink-mute)", fontSize:13, fontFamily:"var(--mono)"}}>{data.profile.location} · {data.profile.phone}</p>
+          <TileCreature kind="wave" color="#7fe6d2" delay={0.2} />
         </div>
 
         <p style={{marginTop:60, color:"var(--ink-mute)", fontSize:12, fontFamily:"var(--mono)", textAlign:"center"}}>
