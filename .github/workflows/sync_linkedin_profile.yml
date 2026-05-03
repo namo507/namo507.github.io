@@ -1,0 +1,79 @@
+name: Sync LinkedIn Profile
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 6 */5 * *'
+
+concurrency:
+  group: sync-linkedin-profile
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install LinkedIn sync dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r scripts/requirements-linkedin-sync.txt
+
+      - name: Refresh LinkedIn-generated portfolio data
+        run: python scripts/sync_linkedin_content.py --verbose
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Verify site build
+        run: bundle exec jekyll build
+
+      - name: Commit generated data if changed
+        run: |
+          changed="$(git diff --name-only -- \
+            _data/linkedin_profile.yml \
+            _data/linkedin_experience.yml \
+            _data/linkedin_featured.yml \
+            _data/linkedin_updates.yml \
+            _data/linkedin_sync_meta.yml \
+            _data/linkedin_snapshot.json \
+            assets/cosmic/linkedin.generated.js)"
+
+          if [[ -z "$changed" ]]; then
+            echo "No LinkedIn changes to commit"
+            exit 0
+          fi
+
+          message="chore: sync LinkedIn-derived portfolio content"
+          if echo "$changed" | grep -q '^_data/linkedin_updates.yml$'; then
+            message="chore: refresh LinkedIn activity cards"
+          elif echo "$changed" | grep -q '^_data/linkedin_experience.yml$'; then
+            message="chore: refresh LinkedIn experience data"
+          elif echo "$changed" | grep -q '^_data/linkedin_profile.yml$'; then
+            message="chore: sync LinkedIn profile summary"
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            _data/linkedin_profile.yml \
+            _data/linkedin_experience.yml \
+            _data/linkedin_featured.yml \
+            _data/linkedin_updates.yml \
+            _data/linkedin_sync_meta.yml \
+            _data/linkedin_snapshot.json \
+            assets/cosmic/linkedin.generated.js
+          git commit -m "$message"
+          git push

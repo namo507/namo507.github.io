@@ -143,6 +143,73 @@ The GitHub showcase data is generated automatically rather than maintained by ha
 - Refresh locally with `python3 scripts/sync_github_showcase.py`
 - Scheduled refresh runs via `.github/workflows/sync_github_showcase.yml`
 
+## LinkedIn Portfolio Sync
+
+The LinkedIn integration is machine-managed and intentionally conservative.
+
+- Target profile URL resolves from `_config.yml` `author.linkedin` unless `--profile-url` is passed.
+- Public-profile fetch, parse, and schema validation run through `scripts/sync_linkedin_content.py`.
+- Generated site data is written to `_data/linkedin_profile.yml`, `_data/linkedin_experience.yml`, `_data/linkedin_featured.yml`, `_data/linkedin_updates.yml`, `_data/linkedin_sync_meta.yml`, and `_data/linkedin_snapshot.json`.
+- The animated homepage consumes `assets/cosmic/linkedin.generated.js`, which is generated from the same validated snapshot and loaded through a no-cache script loader before the React app mounts.
+- Existing generated data is preserved when LinkedIn returns a blocked or unavailable response such as HTTP `999`, an auth wall, a short response, or suspiciously empty content.
+
+Current site surfaces consuming LinkedIn-derived data:
+
+- `_pages/about.md` loads `_includes/linkedin-sync-classic.html` for the classic/about view.
+- `_pages/cv.md` loads `_includes/linkedin-sync-cv.html` for the CV page.
+- `index.html` loads `assets/cosmic/linkedin.generated.js`, and `assets/cosmic/app.jsx` only renders the LinkedIn section when the validated sync status is `ok`.
+
+Generated files:
+
+- `_data/linkedin_profile.yml`
+- `_data/linkedin_experience.yml`
+- `_data/linkedin_featured.yml`
+- `_data/linkedin_updates.yml`
+- `_data/linkedin_sync_meta.yml`
+- `_data/linkedin_snapshot.json`
+- `assets/cosmic/linkedin.generated.js`
+
+Refresh locally:
+
+```bash
+python3 -m pip install -r scripts/requirements-linkedin-sync.txt
+python3 scripts/sync_linkedin_content.py
+python3 scripts/sync_linkedin_content.py --dry-run
+python3 scripts/sync_linkedin_content.py --verbose
+python3 scripts/sync_linkedin_content.py --no-write
+python3 scripts/sync_linkedin_content.py --bootstrap-placeholders
+python3 scripts/sync_linkedin_content.py --source-file scripts/fixtures/linkedin_public_profile.sample.html --dry-run --verbose
+```
+
+Useful flags:
+
+- `--no-write` validates fetch, parse, diff, and schema output without touching generated files.
+- `--source-file` lets you parse a saved HTML or JSON response for offline testing.
+- `--bootstrap-placeholders` writes the machine-managed files once so templates and the homepage script can load safely before the first successful live sync.
+
+Layout-safety protections:
+
+- LinkedIn content is normalized into a strict internal schema before templates read it.
+- Generated preview fields are capped (`headline_short`, `about_short`, `description_short`, `summary_short`) so long public text cannot blow out cards or headings.
+- Reusable card styles clamp preview text, enable `overflow-wrap:anywhere`, and keep grids stable even when item counts vary.
+- The Jekyll includes and the animated homepage gate rendering on `linkedin_sync_meta.sync_status == ok`, so blocked or partial data never creates malformed UI.
+- The GitHub Actions workflow runs `bundle exec jekyll build` before any commit, so invalid generated data never lands if the site stops building.
+
+Fail-safe behavior:
+
+- Fetch failures keep the current machine-managed files unchanged.
+- Parse or schema-validation failures keep the current machine-managed files unchanged.
+- Suspiciously empty responses are rejected when they collapse too far relative to the previous validated snapshot.
+- Whitespace-only or equivalent normalized content changes do not produce a commit.
+- The workflow commits only generated LinkedIn files, and only after a successful Jekyll build.
+
+Automation details:
+
+- Scheduled refresh runs every five days via `.github/workflows/sync_linkedin_profile.yml`.
+- The workflow only commits generated LinkedIn files after `bundle exec jekyll build` succeeds.
+- There is no push trigger, so the workflow cannot create a commit loop.
+- Disable the automation by turning off the `Sync LinkedIn Profile` workflow in the GitHub Actions UI or by removing the schedule from `.github/workflows/sync_linkedin_profile.yml`.
+
 ## Contact & Connect
 
 - 📧 **Email**: [namit507@gmail.com](mailto:namit507@gmail.com)

@@ -1,0 +1,71 @@
+{% assign linkedin_meta = site.data.linkedin_sync_meta.linkedin_sync_meta %}
+{% assign linkedin_profile = site.data.linkedin_profile.linkedin_profile %}
+{% assign linkedin_featured = site.data.linkedin_featured.linkedin_featured %}
+{% assign linkedin_updates = site.data.linkedin_updates.linkedin_updates %}
+
+{% if linkedin_meta and linkedin_meta.sync_status == 'ok' and linkedin_profile and linkedin_profile.about_short != blank %}
+  <section class="page__section page__section--split" data-reveal>
+    <article class="page__panel page__panel--highlight linkedin-sync-card">
+      <p class="page__eyebrow">LinkedIn Sync</p>
+      <h2>Public-profile changes, normalized before they touch the layout.</h2>
+      <p class="linkedin-sync-card__summary">{{ linkedin_profile.about_short }}</p>
+
+      {% if linkedin_profile.top_skills and linkedin_profile.top_skills.size > 0 %}
+        <div class="tag-cloud tag-cloud--compact linkedin-sync-chip-row">
+          {% for skill in linkedin_profile.top_skills limit:6 %}
+            <span class="tag-chip">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <p class="linkedin-sync-card__meta">
+        {{ linkedin_profile.current_role }}{% if linkedin_profile.organization != blank %} • {{ linkedin_profile.organization }}{% endif %}{% if linkedin_profile.location != blank %} • {{ linkedin_profile.location }}{% endif %}
+      </p>
+      <p class="linkedin-sync-card__meta">Last successful sync: {{ linkedin_meta.last_successful_sync_at | date: "%b %-d, %Y" }}</p>
+
+      <div class="page__actions">
+        <a class="button-link button-link--primary" href="{{ linkedin_profile.profile_url }}" target="_blank" rel="noopener">Open LinkedIn</a>
+        <a class="button-link" href="{{ '/cv/' | relative_url }}">Open full CV</a>
+      </div>
+    </article>
+
+    <article class="page__panel linkedin-sync-card">
+      <p class="page__eyebrow">Latest LinkedIn Updates</p>
+      <h2>{{ linkedin_profile.headline_short }}</h2>
+
+      {% if linkedin_updates and linkedin_updates.size > 0 %}
+        <div class="linkedin-sync-list">
+          {% for update in linkedin_updates limit:2 %}
+            <a class="linkedin-sync-list__item" href="{{ update.canonical_url | default: linkedin_profile.profile_url }}" target="_blank" rel="noopener">
+              <strong>{{ update.title }}</strong>
+              {% if update.posted_relative != blank %}
+                <span class="linkedin-sync-list__meta">{{ update.posted_relative }}</span>
+              {% endif %}
+              <span>{{ update.summary_short }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="linkedin-sync-empty">Validated LinkedIn data is available, but the public profile did not expose recent activity cards on the last successful sync.</p>
+      {% endif %}
+    </article>
+  </section>
+
+  {% if linkedin_featured and linkedin_featured.size > 0 %}
+    <section class="page__section" data-reveal>
+      <p class="page__eyebrow">LinkedIn Featured</p>
+      <div class="linkedin-sync-grid linkedin-sync-grid--triple">
+        {% for item in linkedin_featured limit:3 %}
+          <article class="page__panel linkedin-sync-card">
+            <p class="linkedin-sync-card__meta">{{ item.type | capitalize }}{% if item.subtitle != blank %} • {{ item.subtitle }}{% endif %}</p>
+            <h3>{{ item.title }}</h3>
+            <p class="linkedin-sync-card__summary">{{ item.summary_short }}</p>
+            <div class="page__actions linkedin-sync-card__actions">
+              <a class="button-link" href="{{ item.url | default: linkedin_profile.profile_url }}" target="_blank" rel="noopener">Open item</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endif %}

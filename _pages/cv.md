@@ -91,6 +91,10 @@ redirect_from:
     </div>
   </section>
 
+  {% comment %}MACHINE-MANAGED: LinkedIn sync block start{% endcomment %}
+  {% include linkedin-sync-cv.html %}
+  {% comment %}MACHINE-MANAGED: LinkedIn sync block end{% endcomment %}
+
   <section class="cv-section-block" id="skills" data-reveal>
     <div class="cv-section-heading">
       <p class="page__eyebrow">Technical Skills</p>

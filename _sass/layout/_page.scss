@@ -2441,6 +2441,114 @@
   text-transform: uppercase;
 }
 
+.linkedin-sync-grid {
+  --linkedin-sync-columns: 1;
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  @include breakpoint($medium) {
+    grid-template-columns: repeat(var(--linkedin-sync-columns), minmax(0, 1fr));
+  }
+}
+
+.linkedin-sync-grid--duo {
+  --linkedin-sync-columns: 2;
+}
+
+.linkedin-sync-grid--triple {
+  --linkedin-sync-columns: 3;
+}
+
+.linkedin-sync-grid--experience {
+  margin-top: 1.25rem;
+}
+
+.linkedin-sync-card {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  h2,
+  h3,
+  p,
+  li,
+  strong,
+  span,
+  a {
+    overflow-wrap: anywhere;
+  }
+}
+
+.linkedin-sync-card__summary {
+  display: -webkit-box;
+  margin-top: 0.35rem;
+  color: var(--global-text-color-light);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.linkedin-sync-card__meta,
+.linkedin-sync-list__meta {
+  color: var(--global-muted-color);
+  font-family: $monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.linkedin-sync-chip-row {
+  margin-top: 1rem;
+}
+
+.linkedin-sync-list {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.35rem;
+}
+
+.linkedin-sync-list__item {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--global-border-color);
+  border-radius: 1rem;
+  background: rgba(var(--global-accent-color-rgb), 0.05);
+  box-shadow: inset 0 0 0 1px rgba(var(--global-accent-color-rgb), 0.04);
+  text-decoration: none;
+
+  strong {
+    color: var(--global-text-color);
+    font-size: 1.02rem;
+  }
+
+  span:last-child {
+    display: -webkit-box;
+    color: var(--global-text-color-light);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(var(--global-accent-color-rgb), 0.34);
+    box-shadow: 0 18px 36px var(--global-shadow-color);
+    text-decoration: none;
+  }
+}
+
+.linkedin-sync-card__actions {
+  margin-top: auto;
+}
+
+.linkedin-sync-empty {
+  color: var(--global-text-color-light);
+  margin-top: 0.5rem;
+}
+
 .detail-list {
   margin: 1rem 0 0;
   padding-left: 1.1rem;

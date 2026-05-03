@@ -55,6 +55,36 @@ function useActiveSection(ids) {
   return active;
 }
 
+function normalizeLinkedInSync(sync) {
+  if (!sync || !sync.meta || sync.meta.sync_status !== "ok") return null;
+  if (!sync.profile || (!sync.profile.headline_short && !sync.profile.about_short)) return null;
+  return {
+    meta: sync.meta,
+    profile: sync.profile,
+    experience: Array.isArray(sync.experience) ? sync.experience.slice(0, 2) : [],
+    featured: Array.isArray(sync.featured) ? sync.featured.slice(0, 2) : [],
+    updates: Array.isArray(sync.updates) ? sync.updates.slice(0, 2) : [],
+  };
+}
+
+function mergeLinkedInIntoSite(baseData, sync) {
+  const linkedin = normalizeLinkedInSync(sync);
+  if (!linkedin) return baseData;
+
+  const links = (baseData.links || []).map((link) => {
+    if (link.label === "LinkedIn" && linkedin.profile.profile_url) {
+      return { ...link, url: linkedin.profile.profile_url };
+    }
+    return link;
+  });
+
+  return {
+    ...baseData,
+    links,
+    linkedin,
+  };
+}
+
 // ── Atoms ───────────────────────────────────────────────────────────────────
 function Tag({ children, accent }) {
   return <span className={"tag" + (accent ? " tag--accent" : "")}>{children}</span>;
@@ -713,11 +743,96 @@ function GitHubSection({ data }) {
   );
 }
 
+function LinkedInSection({ data }) {
+  const linkedin = data.linkedin;
+  if (!linkedin) return null;
+
+  return (
+    <section id="linkedin-signals" className="section">
+      <div className="section__container">
+        <SectionTitle
+          num="05"
+          eyebrow="LinkedIn Signals"
+          title="Public profile changes, normalized before they touch the layout."
+          lead="Machine-managed cards rendered only when public LinkedIn data passes fetch, parse, diff, and schema validation."
+        />
+
+        <div className="grid-2">
+          <div className="card linkedin-card reveal" style={{display:"flex", flexDirection:"column"}}>
+            <p className="card__meta">Current public snapshot</p>
+            <h3 className="h-card">{linkedin.profile.headline_short}</h3>
+            <p className="linkedin-card__summary">{linkedin.profile.about_short}</p>
+            <div className="linkedin-card__tags">
+              {(linkedin.profile.top_skills || []).slice(0, 6).map((skill) => <Tag key={skill}>{skill}</Tag>)}
+            </div>
+            <p className="linkedin-card__meta-line">
+              {[linkedin.profile.current_role, linkedin.profile.organization, linkedin.profile.location].filter(Boolean).join(" · ")}
+            </p>
+            <div className="btn-row linkedin-card__actions">
+              <a className="btn btn--primary" href={linkedin.profile.profile_url} target="_blank" rel="noopener">Open LinkedIn ↗</a>
+            </div>
+          </div>
+
+          <div className="card linkedin-card reveal" style={{display:"flex", flexDirection:"column"}}>
+            <p className="card__meta">Latest public updates</p>
+            <div className="linkedin-card__stack">
+              {linkedin.updates.length ? linkedin.updates.map((item) => (
+                <a className="linkedin-card__item" key={item.id} href={item.canonical_url || linkedin.profile.profile_url} target="_blank" rel="noopener">
+                  <span>{item.posted_relative || item.kind}</span>
+                  <strong>{item.title}</strong>
+                  <p>{item.summary_short}</p>
+                </a>
+              )) : (
+                <p className="linkedin-card__empty">Validated LinkedIn data is available, but the public profile did not expose recent activity cards on the last successful sync.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {linkedin.experience.length ? (
+          <>
+            <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>Recent LinkedIn Experience</h3>
+            <div className="grid-2">
+              {linkedin.experience.map((item) => (
+                <div className="card linkedin-card reveal" key={item.id}>
+                  <p className="card__meta">{[item.date_range, item.location].filter(Boolean).join(" · ")}</p>
+                  <h3 className="h-card">{item.role}</h3>
+                  <p className="card__sub" style={{color:"var(--accent)"}}>{item.organization}</p>
+                  <ul className="card__bullets">
+                    {(item.bullets && item.bullets.length ? item.bullets : [item.description_short]).slice(0, 2).map((bullet) => <li key={bullet}>{bullet}</li>)}
+                  </ul>
+                  {item.canonical_url ? <div className="btn-row linkedin-card__actions"><a className="btn" href={item.canonical_url} target="_blank" rel="noopener">Open source item ↗</a></div> : null}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : null}
+
+        {linkedin.featured.length ? (
+          <>
+            <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>Featured from LinkedIn</h3>
+            <div className="grid-2">
+              {linkedin.featured.map((item) => (
+                <a className="card linkedin-card reveal" key={item.id} href={item.url || linkedin.profile.profile_url} target="_blank" rel="noopener" style={{display:"flex", flexDirection:"column"}}>
+                  <p className="card__meta">{[item.type, item.subtitle].filter(Boolean).join(" · ")}</p>
+                  <h3 className="h-card">{item.title}</h3>
+                  <p className="linkedin-card__summary">{item.summary_short}</p>
+                  <div className="linkedin-card__open">Open item ↗</div>
+                </a>
+              ))}
+            </div>
+          </>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 function TalksSection({ data }) {
   return (
     <section id="talks" className="section">
       <div className="section__container">
-        <SectionTitle num="05" eyebrow="Talks & Presentations" title="Communicating research methods and technical results." lead="Conference presentations translating transformer-based methods, sentiment analysis, and survey workflows." />
+        <SectionTitle num="06" eyebrow="Talks & Presentations" title="Communicating research methods and technical results." lead="Conference presentations translating transformer-based methods, sentiment analysis, and survey workflows." />
 
         <div className="grid-2">
           {data.talks.map((t, i) => (
@@ -747,7 +862,7 @@ function TeachingSection({ data }) {
   return (
     <section id="teaching" className="section">
       <div className="section__container">
-        <SectionTitle num="06" eyebrow="Teaching Practice" title="Course delivery, privacy instruction, and academic infrastructure." lead="Teaching and graduate-assistantship work across the Joint Program in Survey Methodology (JPSM) at the University of Maryland." />
+        <SectionTitle num="07" eyebrow="Teaching Practice" title="Course delivery, privacy instruction, and academic infrastructure." lead="Teaching and graduate-assistantship work across the Joint Program in Survey Methodology (JPSM) at the University of Maryland." />
 
         <div className="grid-2">
           {data.teaching.map((t, i) => {
@@ -771,17 +886,18 @@ function TeachingSection({ data }) {
 }
 
 function ContactSection({ data }) {
+  const linkedinUrl = data.linkedin?.profile?.profile_url || "https://www.linkedin.com/in/namit-shrivastava-baab47204/";
   return (
     <section id="contact" className="section" style={{paddingBottom: 120}}>
       <div className="section__container">
-        <SectionTitle num="07" eyebrow="Get in touch" title="Good work usually starts with a sharp hello." />
+        <SectionTitle num="08" eyebrow="Get in touch" title="Good work usually starts with a sharp hello." />
 
         <div className="contact-card reveal">
           <p className="eyebrow">Connect</p>
           <h2 className="h-section" style={{maxWidth:780}}>Bring survey puzzles, ML tangles, geospatial detours, or just a well-aimed note.</h2>
           <div className="btn-row" style={{marginTop:18}}>
             <a className="btn btn--primary" href={"mailto:"+data.profile.email}>Email · {data.profile.email}</a>
-            <a className="btn" href="https://www.linkedin.com/in/namit-shrivastava-baab47204/" target="_blank" rel="noopener">LinkedIn ↗</a>
+            <a className="btn" href={linkedinUrl} target="_blank" rel="noopener">LinkedIn ↗</a>
             <a className="btn" href="https://github.com/namo507" target="_blank" rel="noopener">GitHub ↗</a>
             <a className="btn" href="https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar ↗</a>
             <a className="btn" href="https://orcid.org/0009-0005-7920-8350" target="_blank" rel="noopener">ORCID ↗</a>
@@ -800,7 +916,7 @@ function ContactSection({ data }) {
 
 // ── Top-level App ───────────────────────────────────────────────────────────
 function App() {
-  const data = window.SITE;
+  const data = useMemo(() => mergeLinkedInIntoSite(window.SITE, window.LINKEDIN_SYNC), []);
   const navIds = data.navigation.map((n) => n.id);
   const active = useActiveSection(navIds);
   useReveal();
@@ -841,6 +957,7 @@ function App() {
       <PublicationsSection data={data} />
       <ProjectsSection data={data} />
       <GitHubSection data={data} />
+      <LinkedInSection data={data} />
       <TalksSection data={data} />
       <TeachingSection data={data} />
       <ContactSection data={data} />
@@ -848,5 +965,14 @@ function App() {
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById("app"));
-root.render(<App />);
+const mountApp = () => {
+  const root = ReactDOM.createRoot(document.getElementById("app"));
+  root.render(<App />);
+};
+
+const linkedInSyncReady = window.LINKEDIN_SYNC_READY;
+if (linkedInSyncReady && typeof linkedInSyncReady.then === "function") {
+  linkedInSyncReady.finally(mountApp);
+} else {
+  mountApp();
+}

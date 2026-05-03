@@ -115,6 +115,10 @@ redirect_from:
   </div>
 </section>
 
+{% comment %}MACHINE-MANAGED: LinkedIn sync block start{% endcomment %}
+{% include linkedin-sync-classic.html %}
+{% comment %}MACHINE-MANAGED: LinkedIn sync block end{% endcomment %}
+
 <section class="page__section page__section--split" data-reveal>
   <article class="page__panel page__panel--highlight focus-panel">
     <p class="page__eyebrow">Research Focus</p>
