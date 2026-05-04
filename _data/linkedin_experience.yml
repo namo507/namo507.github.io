@@ -6,40 +6,40 @@ linkedin_experience:
   organization: Social Data Science Center, University of Maryland
   date_range: Jan 2026 - May 2026
   location: College Park, MD, USA
-  description_full: Engineered Python automation over the CKAN REST API to manage
-    the lifecycle of 18 datasets while maintaining 100% resource accessibility. Reworked
-    repository taxonomy into hierarchical thematic groups, improving search discoverability
-    by 35%. Reduced manual metadata maintenance by 90% through schema-safe bulk update
-    tooling.
-  description_short: Engineered Python automation over the CKAN REST API to manage
-    the lifecycle of 18 datasets while maintaining 100% resource accessibility.
+  description_full: Built CKAN lifecycle automation for 18 university datasets while
+    preserving full resource accessibility. Redesigned repository taxonomy into thematic
+    hierarchies that lifted search discoverability by 35%. Cut manual metadata upkeep
+    by 90% with schema-safe bulk update tooling.
+  description_short: Built CKAN lifecycle automation for 18 university datasets while
+    preserving full resource accessibility. Redesigned repository taxonomy into thematic
+    hierarchies that lifted search discoverability by 35%.
   bullets:
-  - Engineered Python automation over the CKAN REST API to manage the lifecycle of
-    18 datasets while maintaining 100% resource accessibility.
-  - Reworked repository taxonomy into hierarchical thematic groups, improving search
-    discoverability by 35%.
-  - Reduced manual metadata maintenance by 90% through schema-safe bulk update tooling.
-  canonical_url: /cv/
+  - Built CKAN lifecycle automation for 18 university datasets while preserving full
+    resource accessibility.
+  - Redesigned repository taxonomy into thematic hierarchies that lifted search discoverability
+    by 35%.
+  - Cut manual metadata upkeep by 90% with schema-safe bulk update tooling.
+  canonical_url: /cv/#experience
   source: linkedin
 - id: experience-research-assistant-institute-for-social-research-uni-0fe76493
   role: Research Assistant
   organization: Institute for Social Research, University of Michigan
   date_range: May 2025 - Dec 2025
   location: Ann Arbor, MI, USA
-  description_full: Built a production geospatial integration pipeline spanning 129,572
-    U.S. census tracts and 3 RUCA strata. Recovered 28.6% baseline missingness while
-    achieving full broadband data completeness. Designed a QA framework that surfaced
-    15% spatial-clustering violations and strengthened temporal completeness checks.
-  description_short: Built a production geospatial integration pipeline spanning 129,572
-    U.S. census tracts and 3 RUCA strata. Recovered 28.6% baseline missingness while
-    achieving full broadband data completeness.
+  description_full: Built a geospatial integration pipeline across 129,572 U.S. census
+    tracts and 3 RUCA strata. Recovered 28.6% baseline missingness while reaching
+    full broadband data completeness. Designed QA checks that flagged 15% spatial-clustering
+    violations and strengthened temporal completeness.
+  description_short: Built a geospatial integration pipeline across 129,572 U.S. census
+    tracts and 3 RUCA strata. Recovered 28.6% baseline missingness while reaching
+    full broadband data completeness.
   bullets:
-  - Built a production geospatial integration pipeline spanning 129,572 U.S. census
-    tracts and 3 RUCA strata.
-  - Recovered 28.6% baseline missingness while achieving full broadband data completeness.
-  - Designed a QA framework that surfaced 15% spatial-clustering violations and strengthened
-    temporal completeness checks.
-  canonical_url: /cv/
+  - Built a geospatial integration pipeline across 129,572 U.S. census tracts and
+    3 RUCA strata.
+  - Recovered 28.6% baseline missingness while reaching full broadband data completeness.
+  - Designed QA checks that flagged 15% spatial-clustering violations and strengthened
+    temporal completeness.
+  canonical_url: /cv/#experience
   source: linkedin
 - id: experience-teaching-and-graduate-assistant-joint-program-in-sur-040ed0ce
   role: Teaching and Graduate Assistant
@@ -47,14 +47,14 @@ linkedin_experience:
   date_range: Feb 2025 - May 2026
   location: College Park, MD, USA
   description_full: Supported SURV735 on data privacy and confidentiality for 23 graduate
-    students. Reengineered Canvas LMS workflows for 10+ instructors and 125+ students,
+    students. Rebuilt Canvas LMS workflows for 10+ instructors and 125+ students,
     improving setup speed and course satisfaction.
   description_short: Supported SURV735 on data privacy and confidentiality for 23
-    graduate students. Reengineered Canvas LMS workflows for 10+ instructors and 125+
-    students, improving setup speed and course satisfaction.
+    graduate students. Rebuilt Canvas LMS workflows for 10+ instructors and 125+ students,
+    improving setup speed and course satisfaction.
   bullets:
   - Supported SURV735 on data privacy and confidentiality for 23 graduate students.
-  - Reengineered Canvas LMS workflows for 10+ instructors and 125+ students, improving
+  - Rebuilt Canvas LMS workflows for 10+ instructors and 125+ students, improving
     setup speed and course satisfaction.
-  canonical_url: /cv/
+  canonical_url: /cv/#experience
   source: linkedin

@@ -1,11 +1,11 @@
 profile:
   full_name: Namit Shrivastava
-  headline: Graduate Researcher at the University of Maryland focused on survey methodology, trustworthy AI, and computational social science.
+  headline: Graduate Researcher in Survey Methodology, Trustworthy AI, and Computational Social Science
   location: College Park, MD, USA
   organization: University of Maryland
   current_role: Graduate Researcher
   profile_url: https://www.linkedin.com/in/namit-shrivastava-baab47204/
-  about: Graduate researcher building rigorous measurement systems for AI-enabled research. Current work spans survey methodology, causal inference, geospatial epidemiology, statistical modeling, and trustworthy automation for public-data infrastructure. Published survey research in peer-reviewed venues and presented transformer-based sentiment analysis work at AAPOR.
+  about: Graduate researcher designing rigorous measurement systems for AI-enabled research. Current work connects survey methodology, causal inference, geospatial epidemiology, and trustworthy automation for public-data infrastructure. Published peer-reviewed survey research and presented transformer-based sentiment analysis findings at AAPOR.
   top_skills:
     - Survey Methodology
     - Causal Inference
@@ -21,18 +21,18 @@ experience:
     location: College Park, MD, USA
     canonical_url: /cv/#experience
     bullets:
-      - Engineered Python automation over the CKAN REST API to manage the lifecycle of 18 datasets while maintaining 100% resource accessibility.
-      - Reworked repository taxonomy into hierarchical thematic groups, improving search discoverability by 35%.
-      - Reduced manual metadata maintenance by 90% through schema-safe bulk update tooling.
+      - Built CKAN lifecycle automation for 18 university datasets while preserving full resource accessibility.
+      - Redesigned repository taxonomy into thematic hierarchies that lifted search discoverability by 35%.
+      - Cut manual metadata upkeep by 90% with schema-safe bulk update tooling.
   - role: Research Assistant
     organization: Institute for Social Research, University of Michigan
     date_range: May 2025 - Dec 2025
     location: Ann Arbor, MI, USA
     canonical_url: /cv/#experience
     bullets:
-      - Built a production geospatial integration pipeline spanning 129,572 U.S. census tracts and 3 RUCA strata.
-      - Recovered 28.6% baseline missingness while achieving full broadband data completeness.
-      - Designed a QA framework that surfaced 15% spatial-clustering violations and strengthened temporal completeness checks.
+      - Built a geospatial integration pipeline across 129,572 U.S. census tracts and 3 RUCA strata.
+      - Recovered 28.6% baseline missingness while reaching full broadband data completeness.
+      - Designed QA checks that flagged 15% spatial-clustering violations and strengthened temporal completeness.
   - role: Teaching and Graduate Assistant
     organization: Joint Program in Survey Methodology (JPSM)
     date_range: Feb 2025 - May 2026
@@ -40,38 +40,38 @@ experience:
     canonical_url: /cv/#experience
     bullets:
       - Supported SURV735 on data privacy and confidentiality for 23 graduate students.
-      - Reengineered Canvas LMS workflows for 10+ instructors and 125+ students, improving setup speed and course satisfaction.
+      - Rebuilt Canvas LMS workflows for 10+ instructors and 125+ students, improving setup speed and course satisfaction.
 
 featured:
   - type: project
     title: Analyzing Public Sentiments of EVs in the Era of Sustainable Transformation
     subtitle: 80th AAPOR Annual Conference
-    summary: Transformer-based sentiment analysis across 1.1M+ social posts, comparing Groq LLM variants with observed public sentiment patterns.
+    summary: Transformer-based sentiment analysis across 1.1M+ social posts, mapping how Groq LLM variants diverge from observed EV sentiment.
     url: https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714
   - type: link
     title: Achieving Sustainability in Supply Chain during Disruption Times
     subtitle: Springer publication
-    summary: Survey-based supply chain research connecting Industry 4.0 adoption, green practices, and disruption resilience.
+    summary: Survey-based supply chain research connecting Industry 4.0 adoption, green operations, and disruption resilience.
     url: https://www.springerprofessional.de/en/achieving-sustainability-in-supply-chain-during-disruption-times/26762004
   - type: project
     title: Player Market Value Analysis in Elite European Football
     subtitle: Graduate research project
-    summary: Cross-classified multilevel modeling over 7,023 player-season observations to explain elite football market valuation dynamics.
+    summary: Cross-classified multilevel modeling over 7,023 player-season observations to explain valuation signals in elite football.
     url: https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/
 
 updates:
   - kind: milestone
-    title: Built CKAN lifecycle automation for 18 university datasets
-    posted_relative: Current role
-    summary: Delivered schema-safe automation that preserved resource accessibility, improved repository taxonomy, and cut metadata maintenance overhead by 90%.
+    title: Shipped CKAN lifecycle automation across 18 university datasets
+    posted_relative: Current research
+    summary: Rolled out schema-safe automation that preserved resource accessibility, improved taxonomy, and reduced metadata maintenance by 90%.
     canonical_url: /cv/#experience
   - kind: announcement
-    title: Presented EV sentiment analysis research at AAPOR 2025
-    posted_relative: Conference research
+    title: Presented EV sentiment findings at AAPOR 2025
+    posted_relative: Conference presentation
     summary: Shared transformer-based analysis of 1.1M+ social posts and benchmarked multiple LLM variants against observed public EV sentiment.
     canonical_url: https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714
   - kind: milestone
     title: Integrated broadband and public-health data across 129,572 census tracts
-    posted_relative: Research pipeline
+    posted_relative: Geospatial research
     summary: Built a geospatial integration workflow that recovered missingness, reached full broadband completeness, and surfaced rural inflection points in downstream analysis.
     canonical_url: /cv/#experience

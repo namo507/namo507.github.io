@@ -9,9 +9,9 @@
     <article class="page__panel page__panel--highlight linkedin-sync-card linkedin-sync-card--hero">
       <div class="linkedin-sync-card__eyebrow-row">
         <p class="page__eyebrow">{% if linkedin_seeded %}LinkedIn Snapshot{% else %}LinkedIn Sync{% endif %}</p>
-        <span class="linkedin-sync-badge">{% if linkedin_seeded %}Curated seed{% else %}Public sync{% endif %}</span>
+        <span class="linkedin-sync-badge">{% if linkedin_seeded %}Curated snapshot{% else %}Public sync{% endif %}</span>
       </div>
-      <h2>{% if linkedin_seeded %}Validated LinkedIn cards are live now, even before the first public fetch succeeds.{% else %}Public-profile changes, normalized before they touch the layout.{% endif %}</h2>
+      <h2>{% if linkedin_seeded %}A curated LinkedIn snapshot, rendered safely while live sync catches up.{% else %}Public-profile changes, normalized before they touch the layout.{% endif %}</h2>
       <p class="linkedin-sync-card__summary">{{ linkedin_profile.about_short }}</p>
 
       <p class="linkedin-sync-card__source-note">
@@ -45,7 +45,7 @@
 
     <article class="page__panel linkedin-sync-card">
       <div class="linkedin-sync-card__eyebrow-row">
-        <p class="page__eyebrow">{% if linkedin_seeded %}Recent curated highlights{% else %}Latest LinkedIn Updates{% endif %}</p>
+        <p class="page__eyebrow">{% if linkedin_seeded %}Recent highlights{% else %}Latest LinkedIn Updates{% endif %}</p>
         <span class="linkedin-sync-badge linkedin-sync-badge--muted">{{ linkedin_updates.size | default: 0 }} cards</span>
       </div>
       <h2>{{ linkedin_profile.headline_short }}</h2>
@@ -70,7 +70,7 @@
 
   {% if linkedin_featured and linkedin_featured.size > 0 %}
     <section class="page__section" data-reveal>
-      <p class="page__eyebrow">{% if linkedin_seeded %}Featured links in rotation{% else %}LinkedIn Featured{% endif %}</p>
+      <p class="page__eyebrow">{% if linkedin_seeded %}Featured work{% else %}LinkedIn Featured{% endif %}</p>
       <div class="linkedin-sync-grid linkedin-sync-grid--triple">
         {% for item in linkedin_featured limit:3 %}
           <article class="page__panel linkedin-sync-card">

@@ -101,7 +101,7 @@ def load_curated_seed(seed_path: Path, profile_url: str, *, verbose: bool) -> tu
     checked_at = dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat()
     payload = load_seed_payload(seed_path, profile_url, checked_at, verbose=verbose)
     effective_profile_url = payload["linkedin_profile"].get("profile_url") or profile_url
-    warning = "Rendering a validated curated LinkedIn seed until the first live public sync succeeds."
+    warning = "Showing a curated LinkedIn snapshot sourced from portfolio-owned profile data until the first live public sync succeeds."
     return payload, effective_profile_url, checked_at, warning
 
 

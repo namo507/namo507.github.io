@@ -10,10 +10,10 @@
     <div class="cv-section-heading">
       <div class="linkedin-sync-card__eyebrow-row">
         <p class="page__eyebrow">{% if linkedin_seeded %}LinkedIn Snapshot{% else %}LinkedIn Sync{% endif %}</p>
-        <span class="linkedin-sync-badge">{% if linkedin_seeded %}Curated seed{% else %}Public sync{% endif %}</span>
+        <span class="linkedin-sync-badge">{% if linkedin_seeded %}Curated snapshot{% else %}Public sync{% endif %}</span>
       </div>
-      <h2>{% if linkedin_seeded %}Validated LinkedIn cards are live on the CV before the first public fetch succeeds.{% else %}Public-profile changes, normalized before they reach the CV.{% endif %}</h2>
-      <p>{% if linkedin_seeded %}The CV is rendering a validated curated LinkedIn seed while live public fetches are still blocked. This keeps the section populated without letting unvalidated content distort the layout.{% else %}Machine-managed public LinkedIn content renders here only after fetch, parse, diff, and schema validation complete successfully.{% endif %} {% if linkedin_meta.last_successful_sync_at != blank %}Last validated snapshot: {{ linkedin_meta.last_successful_sync_at | date: "%b %-d, %Y" }}.{% endif %}</p>
+      <h2>{% if linkedin_seeded %}A curated LinkedIn snapshot keeps the CV complete while live sync catches up.{% else %}Public-profile changes, normalized before they reach the CV.{% endif %}</h2>
+      <p>{% if linkedin_seeded %}This section is currently driven by a curated, validated snapshot so the CV stays complete while live public LinkedIn fetches are rate-limited.{% else %}Machine-managed public LinkedIn content renders here only after fetch, parse, diff, and schema validation complete successfully.{% endif %} {% if linkedin_meta.last_successful_sync_at != blank %}Last validated snapshot: {{ linkedin_meta.last_successful_sync_at | date: "%b %-d, %Y" }}.{% endif %}</p>
     </div>
 
     <div class="page__section--split">
@@ -48,7 +48,7 @@
 
       <article class="page__panel linkedin-sync-card">
         <div class="linkedin-sync-card__eyebrow-row">
-          <p class="page__eyebrow">{% if linkedin_seeded %}Recent curated highlights{% else %}Recent public updates{% endif %}</p>
+          <p class="page__eyebrow">{% if linkedin_seeded %}Recent highlights{% else %}Recent public updates{% endif %}</p>
           <span class="linkedin-sync-badge linkedin-sync-badge--muted">{{ linkedin_updates.size | default: 0 }} cards</span>
         </div>
         {% if linkedin_updates and linkedin_updates.size > 0 %}

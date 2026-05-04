@@ -335,7 +335,7 @@ def strip_tracking_url(value: str | None) -> str | None:
             continue
         filtered_pairs.append((key, item_value))
     query = urlencode(filtered_pairs, doseq=True)
-    return urlunsplit((parts.scheme, parts.netloc, parts.path, query, ""))
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, query, parts.fragment))
 
 
 def unique_preserve(values: list[str], limit: int, *, max_length: int = 40) -> list[str]:

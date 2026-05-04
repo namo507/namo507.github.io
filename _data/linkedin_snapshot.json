@@ -1,15 +1,15 @@
 {
   "linkedin_profile": {
     "full_name": "Namit Shrivastava",
-    "headline": "Graduate Researcher at the University of Maryland focused on survey methodology, trustworthy AI, and computational social science.",
-    "headline_short": "Graduate Researcher at the University of Maryland focused on survey methodology, trustworthy AI...",
+    "headline": "Graduate Researcher in Survey Methodology, Trustworthy AI, and Computational Social Science",
+    "headline_short": "Graduate Researcher in Survey Methodology, Trustworthy AI, and Computational Social Science",
     "location": "College Park, MD, USA",
     "organization": "University of Maryland",
     "current_role": "Graduate Researcher",
     "profile_url": "https://www.linkedin.com/in/namit-shrivastava-baab47204/",
     "profile_image_url": "",
-    "about_full": "Graduate researcher building rigorous measurement systems for AI-enabled research. Current work spans survey methodology, causal inference, geospatial epidemiology, statistical modeling, and trustworthy automation for public-data infrastructure. Published survey research in peer-reviewed venues and presented transformer-based sentiment analysis work at AAPOR.",
-    "about_short": "Graduate researcher building rigorous measurement systems for AI-enabled research. Current work spans survey methodology, causal inference, geospatial epidemiology, statistical modeling, and trustworthy automation for public-data infrastructure.",
+    "about_full": "Graduate researcher designing rigorous measurement systems for AI-enabled research. Current work connects survey methodology, causal inference, geospatial epidemiology, and trustworthy automation for public-data infrastructure. Published peer-reviewed survey research and presented transformer-based sentiment analysis findings at AAPOR.",
+    "about_short": "Graduate researcher designing rigorous measurement systems for AI-enabled research. Current work connects survey methodology, causal inference, geospatial epidemiology, and trustworthy automation for public-data infrastructure.",
     "top_skills": [
       "Survey Methodology",
       "Causal Inference",
@@ -18,7 +18,7 @@
       "Statistical Modeling",
       "Responsible AI"
     ],
-    "last_synced_at": "2026-05-04T16:22:42+00:00",
+    "last_synced_at": "2026-05-04T20:07:55+00:00",
     "source": "linkedin"
   },
   "linkedin_experience": [
@@ -28,14 +28,14 @@
       "organization": "Social Data Science Center, University of Maryland",
       "date_range": "Jan 2026 - May 2026",
       "location": "College Park, MD, USA",
-      "description_full": "Engineered Python automation over the CKAN REST API to manage the lifecycle of 18 datasets while maintaining 100% resource accessibility. Reworked repository taxonomy into hierarchical thematic groups, improving search discoverability by 35%. Reduced manual metadata maintenance by 90% through schema-safe bulk update tooling.",
-      "description_short": "Engineered Python automation over the CKAN REST API to manage the lifecycle of 18 datasets while maintaining 100% resource accessibility.",
+      "description_full": "Built CKAN lifecycle automation for 18 university datasets while preserving full resource accessibility. Redesigned repository taxonomy into thematic hierarchies that lifted search discoverability by 35%. Cut manual metadata upkeep by 90% with schema-safe bulk update tooling.",
+      "description_short": "Built CKAN lifecycle automation for 18 university datasets while preserving full resource accessibility. Redesigned repository taxonomy into thematic hierarchies that lifted search discoverability by 35%.",
       "bullets": [
-        "Engineered Python automation over the CKAN REST API to manage the lifecycle of 18 datasets while maintaining 100% resource accessibility.",
-        "Reworked repository taxonomy into hierarchical thematic groups, improving search discoverability by 35%.",
-        "Reduced manual metadata maintenance by 90% through schema-safe bulk update tooling."
+        "Built CKAN lifecycle automation for 18 university datasets while preserving full resource accessibility.",
+        "Redesigned repository taxonomy into thematic hierarchies that lifted search discoverability by 35%.",
+        "Cut manual metadata upkeep by 90% with schema-safe bulk update tooling."
       ],
-      "canonical_url": "/cv/",
+      "canonical_url": "/cv/#experience",
       "source": "linkedin"
     },
     {
@@ -44,14 +44,14 @@
       "organization": "Institute for Social Research, University of Michigan",
       "date_range": "May 2025 - Dec 2025",
       "location": "Ann Arbor, MI, USA",
-      "description_full": "Built a production geospatial integration pipeline spanning 129,572 U.S. census tracts and 3 RUCA strata. Recovered 28.6% baseline missingness while achieving full broadband data completeness. Designed a QA framework that surfaced 15% spatial-clustering violations and strengthened temporal completeness checks.",
-      "description_short": "Built a production geospatial integration pipeline spanning 129,572 U.S. census tracts and 3 RUCA strata. Recovered 28.6% baseline missingness while achieving full broadband data completeness.",
+      "description_full": "Built a geospatial integration pipeline across 129,572 U.S. census tracts and 3 RUCA strata. Recovered 28.6% baseline missingness while reaching full broadband data completeness. Designed QA checks that flagged 15% spatial-clustering violations and strengthened temporal completeness.",
+      "description_short": "Built a geospatial integration pipeline across 129,572 U.S. census tracts and 3 RUCA strata. Recovered 28.6% baseline missingness while reaching full broadband data completeness.",
       "bullets": [
-        "Built a production geospatial integration pipeline spanning 129,572 U.S. census tracts and 3 RUCA strata.",
-        "Recovered 28.6% baseline missingness while achieving full broadband data completeness.",
-        "Designed a QA framework that surfaced 15% spatial-clustering violations and strengthened temporal completeness checks."
+        "Built a geospatial integration pipeline across 129,572 U.S. census tracts and 3 RUCA strata.",
+        "Recovered 28.6% baseline missingness while reaching full broadband data completeness.",
+        "Designed QA checks that flagged 15% spatial-clustering violations and strengthened temporal completeness."
       ],
-      "canonical_url": "/cv/",
+      "canonical_url": "/cv/#experience",
       "source": "linkedin"
     },
     {
@@ -60,13 +60,13 @@
       "organization": "Joint Program in Survey Methodology (JPSM)",
       "date_range": "Feb 2025 - May 2026",
       "location": "College Park, MD, USA",
-      "description_full": "Supported SURV735 on data privacy and confidentiality for 23 graduate students. Reengineered Canvas LMS workflows for 10+ instructors and 125+ students, improving setup speed and course satisfaction.",
-      "description_short": "Supported SURV735 on data privacy and confidentiality for 23 graduate students. Reengineered Canvas LMS workflows for 10+ instructors and 125+ students, improving setup speed and course satisfaction.",
+      "description_full": "Supported SURV735 on data privacy and confidentiality for 23 graduate students. Rebuilt Canvas LMS workflows for 10+ instructors and 125+ students, improving setup speed and course satisfaction.",
+      "description_short": "Supported SURV735 on data privacy and confidentiality for 23 graduate students. Rebuilt Canvas LMS workflows for 10+ instructors and 125+ students, improving setup speed and course satisfaction.",
       "bullets": [
         "Supported SURV735 on data privacy and confidentiality for 23 graduate students.",
-        "Reengineered Canvas LMS workflows for 10+ instructors and 125+ students, improving setup speed and course satisfaction."
+        "Rebuilt Canvas LMS workflows for 10+ instructors and 125+ students, improving setup speed and course satisfaction."
       ],
-      "canonical_url": "/cv/",
+      "canonical_url": "/cv/#experience",
       "source": "linkedin"
     }
   ],
@@ -76,8 +76,8 @@
       "type": "project",
       "title": "Analyzing Public Sentiments of EVs in the Era of Sustainable Transformation",
       "subtitle": "80th AAPOR Annual Conference",
-      "summary_full": "Transformer-based sentiment analysis across 1.1M+ social posts, comparing Groq LLM variants with observed public sentiment patterns.",
-      "summary_short": "Transformer-based sentiment analysis across 1.1M+ social posts, comparing Groq LLM variants with observed public sentiment patterns.",
+      "summary_full": "Transformer-based sentiment analysis across 1.1M+ social posts, mapping how Groq LLM variants diverge from observed EV sentiment.",
+      "summary_short": "Transformer-based sentiment analysis across 1.1M+ social posts, mapping how Groq LLM variants diverge from observed EV sentiment.",
       "url": "https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714",
       "source": "linkedin"
     },
@@ -86,8 +86,8 @@
       "type": "link",
       "title": "Achieving Sustainability in Supply Chain during Disruption Times",
       "subtitle": "Springer publication",
-      "summary_full": "Survey-based supply chain research connecting Industry 4.0 adoption, green practices, and disruption resilience.",
-      "summary_short": "Survey-based supply chain research connecting Industry 4.0 adoption, green practices, and disruption resilience.",
+      "summary_full": "Survey-based supply chain research connecting Industry 4.0 adoption, green operations, and disruption resilience.",
+      "summary_short": "Survey-based supply chain research connecting Industry 4.0 adoption, green operations, and disruption resilience.",
       "url": "https://www.springerprofessional.de/en/achieving-sustainability-in-supply-chain-during-disruption-times/26762004",
       "source": "linkedin"
     },
@@ -96,41 +96,41 @@
       "type": "project",
       "title": "Player Market Value Analysis in Elite European Football",
       "subtitle": "Graduate research project",
-      "summary_full": "Cross-classified multilevel modeling over 7,023 player-season observations to explain elite football market valuation dynamics.",
-      "summary_short": "Cross-classified multilevel modeling over 7,023 player-season observations to explain elite football market valuation dynamics.",
+      "summary_full": "Cross-classified multilevel modeling over 7,023 player-season observations to explain valuation signals in elite football.",
+      "summary_short": "Cross-classified multilevel modeling over 7,023 player-season observations to explain valuation signals in elite football.",
       "url": "https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/",
       "source": "linkedin"
     }
   ],
   "linkedin_updates": [
     {
-      "id": "update-built-ckan-lifecycle-automation-for-18-university-datase-67462693",
+      "id": "update-shipped-ckan-lifecycle-automation-across-18-university-d-156f2858",
       "kind": "milestone",
-      "title": "Built CKAN lifecycle automation for 18 university datasets",
-      "summary_full": "Delivered schema-safe automation that preserved resource accessibility, improved repository taxonomy, and cut metadata maintenance overhead by 90%.",
-      "summary_short": "Delivered schema-safe automation that preserved resource accessibility, improved repository taxonomy, and cut metadata maintenance overhead by 90%.",
-      "posted_relative": "Current role",
-      "canonical_url": "/cv/",
+      "title": "Shipped CKAN lifecycle automation across 18 university datasets",
+      "summary_full": "Rolled out schema-safe automation that preserved resource accessibility, improved taxonomy, and reduced metadata maintenance by 90%.",
+      "summary_short": "Rolled out schema-safe automation that preserved resource accessibility, improved taxonomy, and reduced metadata maintenance by 90%.",
+      "posted_relative": "Current research",
+      "canonical_url": "/cv/#experience",
       "source": "linkedin"
     },
     {
-      "id": "update-presented-ev-sentiment-analysis-research-at-aapor-2025-c-4dc93755",
+      "id": "update-presented-ev-sentiment-findings-at-aapor-2025-conference-7ea57540",
       "kind": "announcement",
-      "title": "Presented EV sentiment analysis research at AAPOR 2025",
+      "title": "Presented EV sentiment findings at AAPOR 2025",
       "summary_full": "Shared transformer-based analysis of 1.1M+ social posts and benchmarked multiple LLM variants against observed public EV sentiment.",
       "summary_short": "Shared transformer-based analysis of 1.1M+ social posts and benchmarked multiple LLM variants against observed public EV sentiment.",
-      "posted_relative": "Conference research",
+      "posted_relative": "Conference presentation",
       "canonical_url": "https://aapor.confex.com/aapor/2025/meetingapp.cgi/Paper/3714",
       "source": "linkedin"
     },
     {
-      "id": "update-integrated-broadband-and-public-health-data-across-129-5-96cd6b12",
+      "id": "update-integrated-broadband-and-public-health-data-across-129-5-7e668e07",
       "kind": "milestone",
       "title": "Integrated broadband and public-health data across 129,572 census tracts",
       "summary_full": "Built a geospatial integration workflow that recovered missingness, reached full broadband completeness, and surfaced rural inflection points in downstream analysis.",
       "summary_short": "Built a geospatial integration workflow that recovered missingness, reached full broadband completeness, and surfaced rural inflection points in downstream analysis.",
-      "posted_relative": "Research pipeline",
-      "canonical_url": "/cv/",
+      "posted_relative": "Geospatial research",
+      "canonical_url": "/cv/#experience",
       "source": "linkedin"
     }
   ],
@@ -139,13 +139,13 @@
     "source": "linkedin-curated-seed",
     "profile_url": "https://www.linkedin.com/in/namit-shrivastava-baab47204/",
     "schema_version": 2,
-    "last_attempted_sync_at": "2026-05-04T16:22:42+00:00",
-    "last_successful_sync_at": "2026-05-04T16:22:42+00:00",
-    "last_meaningful_change_at": "2026-05-04T16:22:42+00:00",
-    "generated_asset_version": "linkedin-seed-2026-05-04T1622-3d5b7b10",
-    "content_hash": "3d5b7b104abc37430537c2d355c517990ae555685ed2f3aab254484167982f50",
+    "last_attempted_sync_at": "2026-05-04T20:07:55+00:00",
+    "last_successful_sync_at": "2026-05-04T20:07:55+00:00",
+    "last_meaningful_change_at": "2026-05-04T20:07:55+00:00",
+    "generated_asset_version": "linkedin-seed-2026-05-04T2007-20574858",
+    "content_hash": "205748584cb84deb4256e5533ecbd2d90c0d357ace5c3b0e8602ba25cac3fbf8",
     "generator": "scripts/sync_linkedin_content.py",
-    "warning": "Rendering a validated curated LinkedIn seed until the first live public sync succeeds."
+    "warning": "Showing a curated LinkedIn snapshot sourced from portfolio-owned profile data until the first live public sync succeeds."
   },
   "_machine_managed": true
 }

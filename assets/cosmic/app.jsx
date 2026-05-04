@@ -98,20 +98,20 @@ function getLinkedInSourceView(meta) {
   return {
     eyebrow: seeded ? "LinkedIn Snapshot" : "LinkedIn Signals",
     title: seeded
-      ? "Validated LinkedIn cards are live now, even before the first public fetch succeeds."
+      ? "A curated LinkedIn snapshot, rendered safely while live sync catches up."
       : "Public profile changes, normalized before they touch the layout.",
     lead: seeded
-      ? "The section is currently powered by a validated curated seed, keeping the portfolio visually complete while public LinkedIn fetches are still blocked."
+      ? "This section is driven by a curated, validated snapshot that keeps the portfolio complete while public LinkedIn fetches are rate-limited."
       : "Machine-managed cards rendered only when public LinkedIn data passes fetch, parse, diff, and schema validation.",
-    badge: seeded ? "Curated seed" : "Public sync",
-    snapshotLabel: seeded ? "Curated profile snapshot" : "Current public snapshot",
-    updatesLabel: seeded ? "Recent curated highlights" : "Latest public updates",
-    experienceLabel: seeded ? "LinkedIn-ready experience" : "Recent LinkedIn Experience",
-    featuredLabel: seeded ? "Featured links in rotation" : "Featured from LinkedIn",
+    badge: seeded ? "Curated snapshot" : "Public sync",
+    snapshotLabel: seeded ? "Profile snapshot" : "Current public snapshot",
+    updatesLabel: seeded ? "Recent highlights" : "Latest public updates",
+    experienceLabel: seeded ? "Experience in focus" : "Recent LinkedIn Experience",
+    featuredLabel: seeded ? "Featured work" : "Featured from LinkedIn",
     note: meta && meta.warning
       ? meta.warning
       : seeded
-        ? "Validated from repository-owned seed data while live public fetch is unavailable."
+        ? "Curated from portfolio-owned profile data and validated against the same schema as the live sync."
         : "Live public LinkedIn data is currently driving these cards.",
     metaLine: validatedDate
       ? `Last validated snapshot · ${validatedDate}`
