@@ -2,13 +2,27 @@
 {% assign linkedin_profile = site.data.linkedin_profile.linkedin_profile %}
 {% assign linkedin_featured = site.data.linkedin_featured.linkedin_featured %}
 {% assign linkedin_updates = site.data.linkedin_updates.linkedin_updates %}
+{% assign linkedin_seeded = linkedin_meta.source == 'linkedin-curated-seed' %}
 
 {% if linkedin_meta and linkedin_meta.sync_status == 'ok' and linkedin_profile and linkedin_profile.about_short != blank %}
   <section class="page__section page__section--split" data-reveal>
-    <article class="page__panel page__panel--highlight linkedin-sync-card">
-      <p class="page__eyebrow">LinkedIn Sync</p>
-      <h2>Public-profile changes, normalized before they touch the layout.</h2>
+    <article class="page__panel page__panel--highlight linkedin-sync-card linkedin-sync-card--hero">
+      <div class="linkedin-sync-card__eyebrow-row">
+        <p class="page__eyebrow">{% if linkedin_seeded %}LinkedIn Snapshot{% else %}LinkedIn Sync{% endif %}</p>
+        <span class="linkedin-sync-badge">{% if linkedin_seeded %}Curated seed{% else %}Public sync{% endif %}</span>
+      </div>
+      <h2>{% if linkedin_seeded %}Validated LinkedIn cards are live now, even before the first public fetch succeeds.{% else %}Public-profile changes, normalized before they touch the layout.{% endif %}</h2>
       <p class="linkedin-sync-card__summary">{{ linkedin_profile.about_short }}</p>
+
+      <p class="linkedin-sync-card__source-note">
+        {% if linkedin_meta.warning != blank %}
+          {{ linkedin_meta.warning }}
+        {% elsif linkedin_seeded %}
+          Validated from a curated seed while the first live public LinkedIn sync is still blocked.
+        {% else %}
+          Public LinkedIn data is currently driving these cards.
+        {% endif %}
+      </p>
 
       {% if linkedin_profile.top_skills and linkedin_profile.top_skills.size > 0 %}
         <div class="tag-cloud tag-cloud--compact linkedin-sync-chip-row">
@@ -21,7 +35,7 @@
       <p class="linkedin-sync-card__meta">
         {{ linkedin_profile.current_role }}{% if linkedin_profile.organization != blank %} • {{ linkedin_profile.organization }}{% endif %}{% if linkedin_profile.location != blank %} • {{ linkedin_profile.location }}{% endif %}
       </p>
-      <p class="linkedin-sync-card__meta">Last successful sync: {{ linkedin_meta.last_successful_sync_at | date: "%b %-d, %Y" }}</p>
+      <p class="linkedin-sync-card__meta">{% if linkedin_seeded %}Last validated snapshot{% else %}Last successful sync{% endif %}: {{ linkedin_meta.last_successful_sync_at | date: "%b %-d, %Y" }}</p>
 
       <div class="page__actions">
         <a class="button-link button-link--primary" href="{{ linkedin_profile.profile_url }}" target="_blank" rel="noopener">Open LinkedIn</a>
@@ -30,7 +44,10 @@
     </article>
 
     <article class="page__panel linkedin-sync-card">
-      <p class="page__eyebrow">Latest LinkedIn Updates</p>
+      <div class="linkedin-sync-card__eyebrow-row">
+        <p class="page__eyebrow">{% if linkedin_seeded %}Recent curated highlights{% else %}Latest LinkedIn Updates{% endif %}</p>
+        <span class="linkedin-sync-badge linkedin-sync-badge--muted">{{ linkedin_updates.size | default: 0 }} cards</span>
+      </div>
       <h2>{{ linkedin_profile.headline_short }}</h2>
 
       {% if linkedin_updates and linkedin_updates.size > 0 %}
@@ -46,14 +63,14 @@
           {% endfor %}
         </div>
       {% else %}
-        <p class="linkedin-sync-empty">Validated LinkedIn data is available, but the public profile did not expose recent activity cards on the last successful sync.</p>
+        <p class="linkedin-sync-empty">{% if linkedin_seeded %}The curated snapshot is live, but no highlight cards were defined in the current seed data.{% else %}Validated LinkedIn data is available, but the public profile did not expose recent activity cards on the last successful sync.{% endif %}</p>
       {% endif %}
     </article>
   </section>
 
   {% if linkedin_featured and linkedin_featured.size > 0 %}
     <section class="page__section" data-reveal>
-      <p class="page__eyebrow">LinkedIn Featured</p>
+      <p class="page__eyebrow">{% if linkedin_seeded %}Featured links in rotation{% else %}LinkedIn Featured{% endif %}</p>
       <div class="linkedin-sync-grid linkedin-sync-grid--triple">
         {% for item in linkedin_featured limit:3 %}
           <article class="page__panel linkedin-sync-card">

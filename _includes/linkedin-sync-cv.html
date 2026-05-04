@@ -3,20 +3,34 @@
 {% assign linkedin_experience = site.data.linkedin_experience.linkedin_experience %}
 {% assign linkedin_featured = site.data.linkedin_featured.linkedin_featured %}
 {% assign linkedin_updates = site.data.linkedin_updates.linkedin_updates %}
+{% assign linkedin_seeded = linkedin_meta.source == 'linkedin-curated-seed' %}
 
 {% if linkedin_meta and linkedin_meta.sync_status == 'ok' and linkedin_profile and linkedin_profile.about_short != blank %}
   <section class="cv-section-block" id="linkedin-sync" data-reveal>
     <div class="cv-section-heading">
-      <p class="page__eyebrow">LinkedIn Sync</p>
-      <h2>Public-profile changes, normalized before they reach the CV.</h2>
-      <p>Machine-managed public LinkedIn content renders here only after fetch, parse, diff, and schema validation complete successfully. Last successful sync: {{ linkedin_meta.last_successful_sync_at | date: "%b %-d, %Y" }}.</p>
+      <div class="linkedin-sync-card__eyebrow-row">
+        <p class="page__eyebrow">{% if linkedin_seeded %}LinkedIn Snapshot{% else %}LinkedIn Sync{% endif %}</p>
+        <span class="linkedin-sync-badge">{% if linkedin_seeded %}Curated seed{% else %}Public sync{% endif %}</span>
+      </div>
+      <h2>{% if linkedin_seeded %}Validated LinkedIn cards are live on the CV before the first public fetch succeeds.{% else %}Public-profile changes, normalized before they reach the CV.{% endif %}</h2>
+      <p>{% if linkedin_seeded %}The CV is rendering a validated curated LinkedIn seed while live public fetches are still blocked. This keeps the section populated without letting unvalidated content distort the layout.{% else %}Machine-managed public LinkedIn content renders here only after fetch, parse, diff, and schema validation complete successfully.{% endif %} {% if linkedin_meta.last_successful_sync_at != blank %}Last validated snapshot: {{ linkedin_meta.last_successful_sync_at | date: "%b %-d, %Y" }}.{% endif %}</p>
     </div>
 
     <div class="page__section--split">
-      <article class="page__panel page__panel--highlight linkedin-sync-card">
-        <p class="page__eyebrow">Current public snapshot</p>
+      <article class="page__panel page__panel--highlight linkedin-sync-card linkedin-sync-card--hero">
+        <p class="page__eyebrow">{% if linkedin_seeded %}Curated profile snapshot{% else %}Current public snapshot{% endif %}</p>
         <h3>{{ linkedin_profile.headline_short }}</h3>
         <p class="linkedin-sync-card__summary">{{ linkedin_profile.about_short }}</p>
+
+        <p class="linkedin-sync-card__source-note">
+          {% if linkedin_meta.warning != blank %}
+            {{ linkedin_meta.warning }}
+          {% elsif linkedin_seeded %}
+            Validated from a curated seed while the first live public LinkedIn sync is still blocked.
+          {% else %}
+            Public LinkedIn data is currently driving these cards.
+          {% endif %}
+        </p>
 
         {% if linkedin_profile.top_skills and linkedin_profile.top_skills.size > 0 %}
           <div class="tag-cloud tag-cloud--compact linkedin-sync-chip-row">
@@ -33,7 +47,10 @@
       </article>
 
       <article class="page__panel linkedin-sync-card">
-        <p class="page__eyebrow">Recent public updates</p>
+        <div class="linkedin-sync-card__eyebrow-row">
+          <p class="page__eyebrow">{% if linkedin_seeded %}Recent curated highlights{% else %}Recent public updates{% endif %}</p>
+          <span class="linkedin-sync-badge linkedin-sync-badge--muted">{{ linkedin_updates.size | default: 0 }} cards</span>
+        </div>
         {% if linkedin_updates and linkedin_updates.size > 0 %}
           <div class="linkedin-sync-list">
             {% for update in linkedin_updates limit:2 %}
@@ -47,7 +64,7 @@
             {% endfor %}
           </div>
         {% else %}
-          <p class="linkedin-sync-empty">Validated LinkedIn data is available, but the public profile did not expose recent activity cards on the last successful sync.</p>
+          <p class="linkedin-sync-empty">{% if linkedin_seeded %}The curated snapshot is live, but no highlight cards were defined in the current seed data.{% else %}Validated LinkedIn data is available, but the public profile did not expose recent activity cards on the last successful sync.{% endif %}</p>
         {% endif %}
       </article>
     </div>

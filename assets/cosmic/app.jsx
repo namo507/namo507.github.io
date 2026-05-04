@@ -85,6 +85,43 @@ function mergeLinkedInIntoSite(baseData, sync) {
   };
 }
 
+function formatLinkedInDate(value) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(parsed);
+}
+
+function getLinkedInSourceView(meta) {
+  const seeded = meta && meta.source === "linkedin-curated-seed";
+  const validatedDate = formatLinkedInDate(meta && meta.last_successful_sync_at);
+  return {
+    eyebrow: seeded ? "LinkedIn Snapshot" : "LinkedIn Signals",
+    title: seeded
+      ? "Validated LinkedIn cards are live now, even before the first public fetch succeeds."
+      : "Public profile changes, normalized before they touch the layout.",
+    lead: seeded
+      ? "The section is currently powered by a validated curated seed, keeping the portfolio visually complete while public LinkedIn fetches are still blocked."
+      : "Machine-managed cards rendered only when public LinkedIn data passes fetch, parse, diff, and schema validation.",
+    badge: seeded ? "Curated seed" : "Public sync",
+    snapshotLabel: seeded ? "Curated profile snapshot" : "Current public snapshot",
+    updatesLabel: seeded ? "Recent curated highlights" : "Latest public updates",
+    experienceLabel: seeded ? "LinkedIn-ready experience" : "Recent LinkedIn Experience",
+    featuredLabel: seeded ? "Featured links in rotation" : "Featured from LinkedIn",
+    note: meta && meta.warning
+      ? meta.warning
+      : seeded
+        ? "Validated from repository-owned seed data while live public fetch is unavailable."
+        : "Live public LinkedIn data is currently driving these cards.",
+    metaLine: validatedDate
+      ? `Last validated snapshot · ${validatedDate}`
+      : seeded
+        ? "Validated curated snapshot"
+        : "Validated public snapshot",
+    seeded,
+  };
+}
+
 // ── Atoms ───────────────────────────────────────────────────────────────────
 function Tag({ children, accent }) {
   return <span className={"tag" + (accent ? " tag--accent" : "")}>{children}</span>;
@@ -746,35 +783,44 @@ function GitHubSection({ data }) {
 function LinkedInSection({ data }) {
   const linkedin = data.linkedin;
   if (!linkedin) return null;
+  const sourceView = getLinkedInSourceView(linkedin.meta);
 
   return (
     <section id="linkedin-signals" className="section">
       <div className="section__container">
         <SectionTitle
           num="05"
-          eyebrow="LinkedIn Signals"
-          title="Public profile changes, normalized before they touch the layout."
-          lead="Machine-managed cards rendered only when public LinkedIn data passes fetch, parse, diff, and schema validation."
+          eyebrow={sourceView.eyebrow}
+          title={sourceView.title}
+          lead={sourceView.lead}
         />
 
         <div className="grid-2">
-          <div className="card linkedin-card reveal" style={{display:"flex", flexDirection:"column"}}>
-            <p className="card__meta">Current public snapshot</p>
+          <div className="card linkedin-card linkedin-card--hero reveal" style={{display:"flex", flexDirection:"column"}}>
+            <div className="linkedin-card__eyebrow-row">
+              <p className="card__meta">{sourceView.snapshotLabel}</p>
+              <span className="linkedin-card__badge">{sourceView.badge}</span>
+            </div>
             <h3 className="h-card">{linkedin.profile.headline_short}</h3>
             <p className="linkedin-card__summary">{linkedin.profile.about_short}</p>
+            <p className="linkedin-card__source-note">{sourceView.note}</p>
             <div className="linkedin-card__tags">
               {(linkedin.profile.top_skills || []).slice(0, 6).map((skill) => <Tag key={skill}>{skill}</Tag>)}
             </div>
             <p className="linkedin-card__meta-line">
               {[linkedin.profile.current_role, linkedin.profile.organization, linkedin.profile.location].filter(Boolean).join(" · ")}
             </p>
+            <p className="linkedin-card__meta-line linkedin-card__meta-line--secondary">{sourceView.metaLine}</p>
             <div className="btn-row linkedin-card__actions">
               <a className="btn btn--primary" href={linkedin.profile.profile_url} target="_blank" rel="noopener">Open LinkedIn ↗</a>
             </div>
           </div>
 
           <div className="card linkedin-card reveal" style={{display:"flex", flexDirection:"column"}}>
-            <p className="card__meta">Latest public updates</p>
+            <div className="linkedin-card__eyebrow-row">
+              <p className="card__meta">{sourceView.updatesLabel}</p>
+              <span className="linkedin-card__badge linkedin-card__badge--muted">{linkedin.updates.length} cards</span>
+            </div>
             <div className="linkedin-card__stack">
               {linkedin.updates.length ? linkedin.updates.map((item) => (
                 <a className="linkedin-card__item" key={item.id} href={item.canonical_url || linkedin.profile.profile_url} target="_blank" rel="noopener">
@@ -783,7 +829,7 @@ function LinkedInSection({ data }) {
                   <p>{item.summary_short}</p>
                 </a>
               )) : (
-                <p className="linkedin-card__empty">Validated LinkedIn data is available, but the public profile did not expose recent activity cards on the last successful sync.</p>
+                <p className="linkedin-card__empty">{sourceView.seeded ? "The curated snapshot is live, but no highlight cards were defined in the current seed data." : "Validated LinkedIn data is available, but the public profile did not expose recent activity cards on the last successful sync."}</p>
               )}
             </div>
           </div>
@@ -791,7 +837,7 @@ function LinkedInSection({ data }) {
 
         {linkedin.experience.length ? (
           <>
-            <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>Recent LinkedIn Experience</h3>
+            <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>{sourceView.experienceLabel}</h3>
             <div className="grid-2">
               {linkedin.experience.map((item) => (
                 <div className="card linkedin-card reveal" key={item.id}>
@@ -810,7 +856,7 @@ function LinkedInSection({ data }) {
 
         {linkedin.featured.length ? (
           <>
-            <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>Featured from LinkedIn</h3>
+            <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>{sourceView.featuredLabel}</h3>
             <div className="grid-2">
               {linkedin.featured.map((item) => (
                 <a className="card linkedin-card reveal" key={item.id} href={item.url || linkedin.profile.profile_url} target="_blank" rel="noopener" style={{display:"flex", flexDirection:"column"}}>

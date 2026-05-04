@@ -2466,9 +2466,23 @@
 
 .linkedin-sync-card {
   min-height: 100%;
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background:
+    radial-gradient(circle at top right, rgba(var(--global-accent-color-rgb), 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: auto 1.2rem 0.95rem 1.2rem;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(var(--global-accent-color-rgb), 0), rgba(var(--global-accent-color-rgb), 0.42), rgba(var(--global-accent-color-rgb), 0));
+    opacity: 0.55;
+    pointer-events: none;
+  }
 
   h2,
   h3,
@@ -2479,6 +2493,51 @@
   a {
     overflow-wrap: anywhere;
   }
+}
+
+.linkedin-sync-card--hero {
+  background:
+    radial-gradient(circle at top right, rgba(var(--global-accent-color-rgb), 0.18), transparent 36%),
+    linear-gradient(140deg, rgba(var(--global-accent-color-rgb), 0.12), rgba(255, 255, 255, 0.03) 56%, rgba(255, 255, 255, 0.015));
+}
+
+.linkedin-sync-card__eyebrow-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.linkedin-sync-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.38rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--global-accent-color-rgb), 0.22);
+  background: rgba(var(--global-accent-color-rgb), 0.09);
+  color: var(--global-accent-color);
+  font-family: $monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.linkedin-sync-badge--muted {
+  border-color: var(--global-border-color);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--global-muted-color);
+}
+
+.linkedin-sync-card__source-note {
+  margin-top: 0.9rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(var(--global-accent-color-rgb), 0.14);
+  border-radius: 1rem;
+  background: rgba(var(--global-accent-color-rgb), 0.06);
+  color: var(--global-text-color-light);
+  font-size: 0.95rem;
+  line-height: 1.58;
 }
 
 .linkedin-sync-card__summary {

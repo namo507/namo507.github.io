@@ -1181,6 +1181,55 @@ a:hover { color: var(--accent); }
 
 .linkedin-card {
   overflow: hidden;
+  position: relative;
+  background:
+    radial-gradient(circle at top right, rgba(127,230,210,0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
+}
+
+.linkedin-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 18px 14px 18px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(127,230,210,0), rgba(127,230,210,0.42), rgba(127,230,210,0));
+  opacity: 0.58;
+  pointer-events: none;
+}
+
+.linkedin-card--hero {
+  background:
+    radial-gradient(circle at top right, rgba(127,230,210,0.18), transparent 36%),
+    linear-gradient(140deg, rgba(127,230,210,0.1), rgba(255,255,255,0.025) 58%, rgba(255,255,255,0.012));
+}
+
+.linkedin-card__eyebrow-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.linkedin-card__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(127,230,210,0.22);
+  background: rgba(127,230,210,0.09);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.linkedin-card__badge--muted {
+  border-color: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.045);
+  color: var(--ink-mute);
+}
 }
 
 .linkedin-card__summary,
@@ -1194,6 +1243,17 @@ a:hover { color: var(--accent); }
   margin-top: 10px;
   color: var(--ink-soft);
   -webkit-line-clamp: 4;
+}
+
+.linkedin-card__source-note {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(127,230,210,0.14);
+  background: rgba(127,230,210,0.06);
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.58;
 }
 
 .linkedin-card__tags {
@@ -1217,6 +1277,11 @@ a:hover { color: var(--accent); }
 .linkedin-card__meta-line {
   margin-top: 18px;
   text-transform: uppercase;
+}
+
+.linkedin-card__meta-line--secondary {
+  margin-top: 8px;
+  color: var(--accent);
 }
 
 .linkedin-card__stack {

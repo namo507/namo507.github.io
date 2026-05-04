@@ -149,9 +149,11 @@ The LinkedIn integration is machine-managed and intentionally conservative.
 
 - Target profile URL resolves from `_config.yml` `author.linkedin` unless `--profile-url` is passed.
 - Public-profile fetch, parse, and schema validation run through `scripts/sync_linkedin_content.py`.
+- If `scripts/linkedin_seed.yml` is present, the sync command can promote that curated seed into the first successful validated snapshot when live public fetches are blocked.
 - Generated site data is written to `_data/linkedin_profile.yml`, `_data/linkedin_experience.yml`, `_data/linkedin_featured.yml`, `_data/linkedin_updates.yml`, `_data/linkedin_sync_meta.yml`, and `_data/linkedin_snapshot.json`.
 - The animated homepage consumes `assets/cosmic/linkedin.generated.js`, which is generated from the same validated snapshot and loaded through a no-cache script loader before the React app mounts.
 - Existing generated data is preserved when LinkedIn returns a blocked or unavailable response such as HTTP `999`, an auth wall, a short response, or suspiciously empty content.
+- Once a real public snapshot succeeds, blocked fetches stop overwriting it with the curated seed; the seed is only there to establish and maintain the first validated fallback path.
 
 Current site surfaces consuming LinkedIn-derived data:
 
@@ -169,6 +171,10 @@ Generated files:
 - `_data/linkedin_snapshot.json`
 - `assets/cosmic/linkedin.generated.js`
 
+Curated fallback seed:
+
+- `scripts/linkedin_seed.yml`
+
 Refresh locally:
 
 ```bash
@@ -178,6 +184,7 @@ python3 scripts/sync_linkedin_content.py --dry-run
 python3 scripts/sync_linkedin_content.py --verbose
 python3 scripts/sync_linkedin_content.py --no-write
 python3 scripts/sync_linkedin_content.py --bootstrap-placeholders
+python3 scripts/sync_linkedin_content.py --seed-file scripts/linkedin_seed.yml --dry-run --verbose
 python3 scripts/sync_linkedin_content.py --source-file scripts/fixtures/linkedin_public_profile.sample.html --dry-run --verbose
 ```
 
@@ -185,6 +192,7 @@ Useful flags:
 
 - `--no-write` validates fetch, parse, diff, and schema output without touching generated files.
 - `--source-file` lets you parse a saved HTML or JSON response for offline testing.
+- `--seed-file` points to a curated YAML or JSON seed used only when live public fetches cannot produce the first successful validated snapshot.
 - `--bootstrap-placeholders` writes the machine-managed files once so templates and the homepage script can load safely before the first successful live sync.
 
 Layout-safety protections:
@@ -200,6 +208,7 @@ Fail-safe behavior:
 - Fetch failures keep the current machine-managed files unchanged.
 - Parse or schema-validation failures keep the current machine-managed files unchanged.
 - Suspiciously empty responses are rejected when they collapse too far relative to the previous validated snapshot.
+- If no validated public snapshot exists yet, the workflow can fall back to `scripts/linkedin_seed.yml` so the LinkedIn section stays populated without trusting blocked public responses.
 - Whitespace-only or equivalent normalized content changes do not produce a commit.
 - The workflow commits only generated LinkedIn files, and only after a successful Jekyll build.
 
