@@ -17,6 +17,7 @@
 
   let canvas, ctx, w, h, dpr;
   let sprites = [];
+  let disabled = false;
   let state = { section: "home", t: 0, pointerX: 0.5, pointerY: 0.5, paletteT: 0, prev: "home" };
 
   function rand(a, b) { return a + Math.random() * (b - a); }
@@ -52,6 +53,7 @@
   }
 
   function draw(now) {
+    if (disabled) return;
     const dt = Math.min(0.05, (now - (draw._last || now)) / 1000);
     draw._last = now;
     state.t += dt;
@@ -182,6 +184,9 @@
       state.prev = state.section;
       state.section = name;
       state.paletteT = 0;
+    },
+    disable() {
+      disabled = true;
     },
   };
 

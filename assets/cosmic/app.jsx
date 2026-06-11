@@ -127,9 +127,9 @@ function Tag({ children, accent }) {
   return <span className={"tag" + (accent ? " tag--accent" : "")}>{children}</span>;
 }
 
-function Metric({ v, k, color }) {
+function Metric({ v, k, color, onMouseEnter, onMouseLeave }) {
   return (
-    <div className="metric reveal">
+    <div className="metric reveal" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <span className="metric__v" style={{ color: color || undefined }}>{v}</span>
       <span className="metric__k">{k}</span>
     </div>
@@ -476,7 +476,20 @@ function Hero({ data, onJump }) {
               <a className="btn" href={data.github.profileUrl} target="_blank" rel="noopener">GitHub ↗</a>
             </div>
             <div className="metric-grid">
-              {data.metrics.map((m, i) => <Metric key={i} v={m.value} k={m.label} />)}
+              {data.metrics.map((m, i) => {
+                const metricFacts = [
+                  "Geospatial integration across all 129,572 US census tracts at U. Michigan ISR — 100% broadband completeness achieved.",
+                  "Multi-source NLP pipeline: 1.1M+ Reddit posts + 40 NYT articles using DistilBERT. Presented at AAPOR 2025.",
+                  "Logo-similarity detection at Legistify — 2.4M images processed at 92% precision, cutting manual review by 70%.",
+                  "DistilBERT at 91.6% accuracy topped all 10 model comparisons on the EV sentiment analysis task.",
+                ];
+                return (
+                  <Metric key={i} v={m.value} k={m.label}
+                    onMouseEnter={() => window.BUDDY_SHOW?.({ title: m.value + " · " + m.label, fact: metricFacts[i] })}
+                    onMouseLeave={() => window.BUDDY_CLEAR?.()}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -526,7 +539,10 @@ function CVSection({ data }) {
           {data.results.map((r, i) => {
             const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b"][i];
             return (
-              <div className="card" key={i}>
+              <div className="card" key={i}
+                onMouseEnter={() => window.BUDDY_SHOW?.({ title: r.metric + " — " + r.title, fact: r.detail })}
+                onMouseLeave={() => window.BUDDY_CLEAR?.()}
+              >
                 <span className="card__circle" style={{"--col": c}} />
                 <p className="card__meta">Impact</p>
                 <div className="metric__v" style={{fontSize:36}}>{r.metric}</div>
@@ -544,7 +560,10 @@ function CVSection({ data }) {
           {data.experience.map((r, i) => {
             const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff"][i % 6];
             return (
-              <div className="card reveal" key={i}>
+              <div className="card reveal" key={i}
+                onMouseEnter={() => window.BUDDY_SHOW?.({ title: r.role + " @ " + r.org, fact: r.bullets[0] })}
+                onMouseLeave={() => window.BUDDY_CLEAR?.()}
+              >
                 <span className="card__circle" style={{"--col": c}} />
                 <p className="card__meta">{r.dates} · {r.location}</p>
                 <h4 className="h-card">{r.role}</h4>
@@ -564,7 +583,10 @@ function CVSection({ data }) {
           {data.skills.map((s, i) => {
             const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff","#7ad6ff"][i % 7];
             return (
-              <div className="skill reveal" key={s.name}>
+              <div className="skill reveal" key={s.name}
+                onMouseEnter={() => window.BUDDY_SHOW?.({ title: s.name + " · " + s.score + "%", fact: s.summary + " · Tools: " + s.tools.slice(0, 4).join(", ") })}
+                onMouseLeave={() => window.BUDDY_CLEAR?.()}
+              >
                 <span className="card__circle" style={{"--col": c}} />
                 <div className="skill__head">
                   <div>
@@ -588,7 +610,10 @@ function CVSection({ data }) {
           {data.education.map((e, i) => {
             const c = ["#8fb6ff","#f1b76a"][i];
             return (
-              <div className="card reveal" key={i}>
+              <div className="card reveal" key={i}
+                onMouseEnter={() => window.BUDDY_SHOW?.({ title: e.degree, fact: e.institution + " · " + e.dates + " · " + e.highlights.join(", ") })}
+                onMouseLeave={() => window.BUDDY_CLEAR?.()}
+              >
                 <span className="card__circle" style={{"--col": c}} />
                 <p className="card__meta">{e.dates} · {e.location}</p>
                 <h4 className="h-card">{e.degree}</h4>
@@ -635,7 +660,10 @@ function PublicationsSection({ data }) {
           {data.publications.map((p, i) => {
             const c = ["#8fb6ff","#ff8a9b"][i];
             return (
-              <a className="card reveal" key={i} href={p.url} target="_blank" rel="noopener" style={{display:"block"}}>
+              <a className="card reveal" key={i} href={p.url} target="_blank" rel="noopener" style={{display:"block"}}
+                onMouseEnter={() => window.BUDDY_SHOW?.({ title: p.category + " · " + p.date, fact: p.excerpt })}
+                onMouseLeave={() => window.BUDDY_CLEAR?.()}
+              >
                 <span className="card__circle" style={{"--col": c}} />
                 <p className="card__meta">{p.category} · {p.date}</p>
                 <h3 className="h-card">{p.title}</h3>
@@ -694,7 +722,10 @@ function ProjectsSection({ data }) {
           {visible.map((p, i) => {
             const c = colors[i % colors.length];
             return (
-              <a className="project reveal" key={p.id} href={p.url} target="_blank" rel="noopener">
+              <a className="project reveal" key={p.id} href={p.url} target="_blank" rel="noopener"
+                onMouseEnter={() => window.BUDDY_SHOW?.({ title: "PROJECT " + p.id + " · " + p.type, fact: p.excerpt + " Tags: " + p.tags.join(", ") + "." })}
+                onMouseLeave={() => window.BUDDY_CLEAR?.()}
+              >
                 <span className="project__circle" style={{"--col": c, "--ang": (i*48)+"deg"}} />
                 <p className="project__id">PROJECT · {p.id}</p>
                 <h3 className="h-card" style={{marginTop:10}}>{p.title}</h3>
@@ -720,7 +751,20 @@ function GitHubSection({ data }) {
         <SectionTitle num="04" eyebrow="Code Portfolio" title="Public repositories, automation workflows, and starred builds." lead="Repository showcase across research code, NLP, multilevel modeling, automation prototypes, and the source for this very site." />
 
         <div className="metric-grid reveal">
-          {g.stats.map((s) => <Metric key={s.k} v={s.v} k={s.k} color="var(--accent-cool)" />)}
+          {g.stats.map((s) => {
+            const ghFacts = {
+              "Public repositories": "41 public repos built across NLP, ML, survey methodology, and web development — all at github.com/namo507.",
+              "Original builds": "28 repos built from scratch, not forks. Full ownership of design, code, and documentation.",
+              "Starred spotlight": "7 repositories pinned as featured work: AAPOR EV Sentiment, Moneyball FC, office-doc-redactor, and more.",
+              "Total accessible": "57 total accessible repositories including collaborations, class projects, and forks.",
+            };
+            return (
+              <Metric key={s.k} v={s.v} k={s.k} color="var(--accent-cool)"
+                onMouseEnter={() => window.BUDDY_SHOW?.({ title: s.v + " " + s.k, fact: ghFacts[s.k] || "GitHub @namo507 — 57 total repositories." })}
+                onMouseLeave={() => window.BUDDY_CLEAR?.()}
+              />
+            );
+          })}
         </div>
 
         <div className="grid-2 reveal" style={{marginTop:32}}>
@@ -747,7 +791,10 @@ function GitHubSection({ data }) {
           {g.featured.map((r, i) => {
             const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff","#7ad6ff"][i % 7];
             return (
-              <a className="repo reveal" key={r.name} href={r.url} target="_blank" rel="noopener">
+              <a className="repo reveal" key={r.name} href={r.url} target="_blank" rel="noopener"
+                onMouseEnter={() => window.BUDDY_SHOW?.({ title: r.name + " · " + r.lang, fact: r.desc + (r.metric ? " · " + r.metricLabel + ": " + r.metric : "") })}
+                onMouseLeave={() => window.BUDDY_CLEAR?.()}
+              >
                 <span className="card__circle" style={{"--col": c}} />
                 <p className="repo__lang">● {r.lang}</p>
                 <h4 className="repo__name">{r.name}</h4>
@@ -882,7 +929,10 @@ function TalksSection({ data }) {
 
         <div className="grid-2">
           {data.talks.map((t, i) => (
-            <a className="card reveal" key={i} href={t.url} target="_blank" rel="noopener" style={{display:"block"}}>
+            <a className="card reveal" key={i} href={t.url} target="_blank" rel="noopener" style={{display:"block"}}
+              onMouseEnter={() => window.BUDDY_SHOW?.({ title: t.type + " · " + t.date, fact: t.excerpt })}
+              onMouseLeave={() => window.BUDDY_CLEAR?.()}
+            >
               <span className="card__circle" style={{"--col": "#ff8a9b"}} />
               <p className="card__meta">{t.type} · {t.date} · {t.location}</p>
               <h3 className="h-card">{t.title}</h3>
@@ -914,7 +964,10 @@ function TeachingSection({ data }) {
           {data.teaching.map((t, i) => {
             const c = ["#bcd86c","#c8a4ff"][i];
             return (
-              <div className="card reveal" key={i}>
+              <div className="card reveal" key={i}
+                onMouseEnter={() => window.BUDDY_SHOW?.({ title: t.title + " · " + t.type, fact: t.excerpt + " · " + t.bullets.join(" · ") })}
+                onMouseLeave={() => window.BUDDY_CLEAR?.()}
+              >
                 <span className="card__circle" style={{"--col": c}} />
                 <p className="card__meta">{t.type} · {t.date}</p>
                 <h3 className="h-card">{t.title}</h3>
@@ -957,6 +1010,267 @@ function ContactSection({ data }) {
         </p>
       </div>
     </section>
+  );
+}
+
+// ── AI Buddy helpers ─────────────────────────────────────────────────────────
+function getPrecomputedResponse(query, data) {
+  const q = query.toLowerCase();
+  if (q.match(/publish|paper|article|research|journal|conference|scholar/)) {
+    return "Namit has 2 research outputs: a Springer journal article on supply chain sustainability using fuzzy-AHP with 200+ experts (2024), and an AAPOR 2025 conference paper on EV sentiment analysis using DistilBERT at 91.6% accuracy over 1.1M+ posts.";
+  }
+  if (q.match(/skill|technolog|program|python|ml\b|machine learning|stack/)) {
+    return "Top skills: Survey Methodology (98%), AI/ML (95%), Core AI Systems (91%), Programming (84%). Stack: Python, R, PyTorch, TensorFlow, Hugging Face, LangChain, and cloud platforms (AWS, Azure, GCP).";
+  }
+  if (q.match(/educat|degree|university|college|gpa|grade|bits|umd/)) {
+    return "M.S. in Survey & Data Science at UMD (GPA 3.814/4.0, JPSM Dean's Fellow 2025-26). B.E. in Civil Engineering with Data Science minor from BITS Pilani (GPA 3.327/4.0).";
+  }
+  if (q.match(/project|build|portfolio|work/)) {
+    return "20+ projects: EV sentiment (1.1M+ posts, 91.6% accuracy), football market value (7,023 rows, €38bn), LEXNet (97% smaller CNN), geospatial broadband analysis (129K+ tracts). See the Projects section!";
+  }
+  if (q.match(/contact|email|reach|connect|message|phone/)) {
+    return "Email: " + data.profile.email + " · LinkedIn: linkedin.com/in/namit-shrivastava-baab47204/ · GitHub: github.com/namo507. Based in " + data.profile.location + ".";
+  }
+  if (q.match(/github|repo|code|open.?source|commit/)) {
+    return "41 public repos on GitHub (@namo507). Featured: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, career-ops. Python, R, TypeScript stack.";
+  }
+  if (q.match(/linkedin/)) {
+    return "LinkedIn profile auto-synced via GitHub Actions every 5 days. Data passes fetch → parse → diff → schema validation before rendering into the portfolio.";
+  }
+  if (q.match(/ollama|local.?llm|llm|model|ai\b/)) {
+    return "To unlock AI-powered responses, install Ollama at ollama.ai and run: \"ollama pull llama3.2\". Once running on localhost:11434, I'll connect automatically and give richer answers!";
+  }
+  if (q.match(/fellowship|award|achiev|honor|recogni/)) {
+    return "Awards: JPSM Dean's Fellowship (AY 2025-26), 1st rank in HRD among 180 students at BITS Pilani, Top 10 in Water & Wastewater Treatment, Microsoft Azure AI Fundamentals certified.";
+  }
+  if (q.match(/teach|course|student|ta\b|assistant|surv735/)) {
+    return "TA for SURV735 (Data Privacy & Confidentiality) at JPSM, UMD — guiding 23 grad students. Also redesigned Canvas LMS for 10+ instructors, 125+ students: +30% satisfaction, -40% setup time.";
+  }
+  if (q.match(/experience|job|work history|role|position|internship/)) {
+    return "5 roles: Social Data Science Center (UMD), U. Michigan ISR, JPSM Teaching TA, Legistify ML Engineer (92% precision, 2.4M images), Accenture (89% threat classification). Full timeline in CV section!";
+  }
+  if (q.match(/survey|methodology|data.?collection|sampling|measurement/)) {
+    return "Core research area: Survey & Data Science. Focus on trustworthy data integration, AI-enabled data collection quality assurance frameworks, causal inference, and privacy-preserving methods.";
+  }
+  if (q.match(/geospatial|census|broadband|michigan|epidemiol/)) {
+    return "At U. Michigan ISR: deployed geospatial pipeline across 129,572 US census tracts & 3 RUCA strata. Achieved 100% broadband completeness, reduced missingness by 28.6%.";
+  }
+  if (q.match(/hello|hi\b|hey|greet|who are you|what can you do/)) {
+    return "Hi! I'm Namit's research assistant. I know about his publications, projects, skills, and experience. Ask me anything — or hover over any tile for instant insights about that section!";
+  }
+  return "Namit is a Graduate Researcher at UMD (GPA 3.814, Dean's Fellow) specializing in survey methodology, causal inference, and responsible AI. 20+ projects, 2 publications, 41 GitHub repos. What would you like to know?";
+}
+
+// ── AiBuddy Component ────────────────────────────────────────────────────────
+function AiBuddy({ data, activeSection }) {
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState([{
+    role: "assistant",
+    content: "Hi! I'm Namit's research assistant ✦ Hover any tile for instant insights, or ask me about his research, projects, and skills!",
+  }]);
+  const [input, setInput] = useState("");
+  const [insight, setInsight] = useState(null);
+  const [ollamaStatus, setOllamaStatus] = useState("checking");
+  const [ollamaModel, setOllamaModel] = useState(null);
+  const [thinking, setThinking] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [factIdx, setFactIdx] = useState(0);
+  const msgEndRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Expose global setters so tile hover handlers (in sections) can feed insights
+  useEffect(() => {
+    window.BUDDY_SHOW = (ins) => { setInsight(ins); setShowTooltip(true); };
+    window.BUDDY_CLEAR = () => { setInsight(null); setShowTooltip(false); };
+    return () => { delete window.BUDDY_SHOW; delete window.BUDDY_CLEAR; };
+  }, []);
+
+  // Check Ollama availability on mount (silent — never blocks UI)
+  useEffect(() => {
+    (async () => {
+      try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 2800);
+        const res = await fetch("http://localhost:11434/api/tags", { signal: ctrl.signal });
+        clearTimeout(tid);
+        if (!res.ok) { setOllamaStatus("unavailable"); return; }
+        const d = await res.json();
+        const models = d.models || [];
+        if (models.length > 0) {
+          setOllamaStatus("available");
+          const preferred = ["llama3.2", "llama3", "mistral", "phi3", "qwen", "gemma"];
+          const hit = preferred.reduce((f, p) => f || models.find(m => m.name.startsWith(p)), null);
+          setOllamaModel(hit ? hit.name : models[0].name);
+        } else {
+          setOllamaStatus("unavailable");
+        }
+      } catch { setOllamaStatus("unavailable"); }
+    })();
+  }, []);
+
+  // Auto-scroll
+  useEffect(() => {
+    if (open && msgEndRef.current) msgEndRef.current.scrollIntoView({ behavior: "smooth" });
+  }, [messages, open]);
+
+  // Focus input on open
+  useEffect(() => {
+    if (open && inputRef.current) setTimeout(() => inputRef.current?.focus(), 180);
+  }, [open]);
+
+  const sectionInsights = useMemo(() => ({
+    home: { title: "Portfolio Overview", fact: "129K+ census tracts · 1.1M+ social posts processed · 2.4M images in ML workflows · 91.6% best model accuracy." },
+    cv: { title: "CV Highlights", fact: "GPA 3.814/4.0 at UMD · JPSM Dean's Fellow 2025-26 · 5 professional roles spanning research, ML engineering, and TA positions." },
+    publications: { title: "Research Output", fact: "Springer journal (2024) + AAPOR 2025 conference paper. DistilBERT 91.6% on 1.1M+ EV posts. +0.57 LLM sentiment bias discovered." },
+    projects: { title: "Project Portfolio", fact: "20 projects: LEXNet (97% smaller CNN), Voice recognition (98.3%), Football market €38bn, Broadband pipeline 129K tracts." },
+    github: { title: "Code Portfolio", fact: "41 public repos · Python, R, TypeScript · Featured: AAPOR EV Analysis, Moneyball FC, office-doc-redactor, live-meeting-copilot." },
+    "linkedin-signals": { title: "LinkedIn Signals", fact: "Auto-synced via GitHub Actions every 5 days. Data passes fetch → parse → diff → schema validation before rendering." },
+    talks: { title: "Conference Talks", fact: "AAPOR 80th Annual, St. Louis MO, May 2025. Pipeline: 1.1M+ posts → DistilBERT → 10 Groq LLM variants compared." },
+    teaching: { title: "Teaching Practice", fact: "TA for SURV735 at JPSM. Canvas LMS redesign for 125+ students. +30% satisfaction · -40% setup time · 100% accessibility." },
+    contact: { title: "Contact", fact: "College Park, MD · namit507@gmail.com · Open to research collaborations, data science work, and survey methodology discussions." },
+  }), []);
+
+  const funFacts = useMemo(() => [
+    { title: "📊 Census Scale", fact: "129,572 US census tracts analyzed — every single tract in the country — for broadband completeness research." },
+    { title: "🤖 Model Accuracy", fact: "DistilBERT hits 91.6% accuracy on 1.1M+ EV sentiment posts from Reddit & NYT at AAPOR 2025." },
+    { title: "⚡ LEXNet Speed", fact: "LEXNet CNN: 97% smaller, 93% faster than baseline, +4% accuracy improvement over standard architectures." },
+    { title: "🎙️ Voice AI", fact: "Voice gender recognition: 98.3% accuracy — only 11 misclassifications on the full held-out test set." },
+    { title: "⚽ Football Markets", fact: "€38bn football transfer market modeled with 7,023 player-season observations. 78% of player-level variance explained." },
+    { title: "🩸 Community Impact", fact: "Organized a 2-day blood donation drive: 60+ volunteers, 1,000+ donor records, 844 successful donations." },
+    { title: "🏆 Dean's Fellow", fact: "JPSM Dean's Fellowship awarded at University of Maryland for AY 2025-26." },
+    { title: "🔍 Sentiment Bias", fact: "+0.57 systematic positive bias found in LLM sentiment outputs vs Reddit data. F(2,549)=28.43, p<0.001." },
+    { title: "📡 Broadband Pipeline", fact: "Geospatial pipeline: 129,572 US census tracts × 3 RUCA strata — 100% completeness, -28.6% baseline missingness." },
+    { title: "🖼️ Image ML", fact: "Multilabel CNN on 42,520 road-surface images → 86.67% accuracy, 88.19% F1 across 5 distress categories." },
+  ], []);
+
+  const displayInsight = insight || sectionInsights[activeSection] || null;
+
+  const buildSystemPrompt = useCallback(() => (
+    "You are an AI portfolio assistant for " + data.profile.name + ", a " + data.profile.role +
+    " at UMD. Help visitors learn about their work concisely (max 2-3 sentences). " +
+    "Key facts: GPA 3.814, JPSM Dean's Fellow 2025-26. " +
+    "Publications: Springer supply chain article + AAPOR 2025 EV sentiment (91.6% DistilBERT). " +
+    "Projects: LEXNet, football market analysis, geospatial broadband pipeline. " +
+    "Email: " + data.profile.email
+  ), [data]);
+
+  const sendMessage = useCallback(async () => {
+    const trimmed = input.trim();
+    if (!trimmed || thinking) return;
+    setInput("");
+    const newMsgs = [...messages, { role: "user", content: trimmed }];
+    setMessages(newMsgs);
+    setThinking(true);
+    let reply;
+    if (ollamaStatus === "available" && ollamaModel) {
+      try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 35000);
+        const res = await fetch("http://localhost:11434/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: ollamaModel,
+            messages: [
+              { role: "system", content: buildSystemPrompt() },
+              ...newMsgs.slice(-6).map(m => ({ role: m.role, content: m.content })),
+            ],
+            stream: false,
+          }),
+          signal: ctrl.signal,
+        });
+        clearTimeout(tid);
+        reply = res.ok ? ((await res.json()).message?.content || getPrecomputedResponse(trimmed, data)) : getPrecomputedResponse(trimmed, data);
+      } catch { reply = getPrecomputedResponse(trimmed, data); }
+    } else {
+      reply = getPrecomputedResponse(trimmed, data);
+    }
+    setMessages(prev => [...prev, { role: "assistant", content: reply }]);
+    setThinking(false);
+  }, [input, messages, thinking, ollamaStatus, ollamaModel, data, buildSystemPrompt]);
+
+  const handleKey = useCallback((e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }, [sendMessage]);
+
+  const ollamaLabel = ollamaStatus === "checking" ? "Checking Ollama…" :
+    ollamaStatus === "available" ? "✓ Ollama · " + ollamaModel : "Ollama offline · keyword mode";
+
+  return (
+    <>
+      <div className="ai-buddy">
+        {showTooltip && displayInsight && !open && (
+          <div className="ai-buddy__tooltip">
+            <div className="ai-buddy__tooltip-title">{displayInsight.title}</div>
+            <div className="ai-buddy__tooltip-body">{displayInsight.fact}</div>
+          </div>
+        )}
+        <button
+          className={"ai-buddy__orb" + (open ? " ai-buddy__orb--open" : "")}
+          onClick={() => setOpen(o => !o)}
+          aria-label={open ? "Close AI assistant" : "Open AI research assistant"}
+        >
+          <span className="ai-buddy__orb-icon">{open ? "✕" : "✦"}</span>
+        </button>
+      </div>
+
+      {open && (
+        <div className="ai-buddy__panel" role="dialog" aria-label="AI Research Assistant">
+          <div className="ai-buddy__panel-header">
+            <div>
+              <div className="ai-buddy__panel-title">✦ Research Assistant</div>
+              <div className={"ai-buddy__ollama-status" + (ollamaStatus === "available" ? " ai-buddy__ollama-status--ok" : "")}>{ollamaLabel}</div>
+            </div>
+            <button className="ai-buddy__close" onClick={() => setOpen(false)} aria-label="Close">✕</button>
+          </div>
+
+          {/* Rotating fun fact — click to cycle */}
+          <div className="ai-buddy__insight" onClick={() => setFactIdx(i => (i + 1) % funFacts.length)} title="Click for next fact">
+            <span className="ai-buddy__insight-label">✦ Research fact · tap to rotate</span>
+            <span className="ai-buddy__insight-text">{funFacts[factIdx].title} — {funFacts[factIdx].fact}</span>
+          </div>
+
+          {/* Current section or tile insight */}
+          {displayInsight && (
+            <div className="ai-buddy__section-insight">
+              <span className="ai-buddy__insight-label">{displayInsight.title}</span>
+              <span className="ai-buddy__insight-text">{displayInsight.fact}</span>
+            </div>
+          )}
+
+          <div className="ai-buddy__messages">
+            {messages.map((m, i) => (
+              <div key={i} className={"ai-buddy__msg ai-buddy__msg--" + m.role}>{m.content}</div>
+            ))}
+            {thinking && (
+              <div className="ai-buddy__msg ai-buddy__msg--assistant ai-buddy__msg--thinking">
+                <span className="ai-buddy__dots"><span /><span /><span /></span>
+              </div>
+            )}
+            <div ref={msgEndRef} />
+          </div>
+
+          <div className="ai-buddy__input-row">
+            <input
+              ref={inputRef}
+              className="ai-buddy__input"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Ask about research, projects…"
+              disabled={thinking}
+              aria-label="Ask a question"
+            />
+            <button
+              className="ai-buddy__send"
+              onClick={sendMessage}
+              disabled={thinking || !input.trim()}
+              aria-label="Send"
+            >→</button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -1007,6 +1321,7 @@ function App() {
       <TalksSection data={data} />
       <TeachingSection data={data} />
       <ContactSection data={data} />
+      <AiBuddy data={data} activeSection={active} />
     </>
   );
 }
