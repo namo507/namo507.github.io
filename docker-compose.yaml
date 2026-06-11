@@ -2,7 +2,9 @@ services:
   jekyll-site:
     image: jekyll-site
     build: .
-    volumes: [ .:/usr/src/app ]
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/.venv
     ports: [ 4000:4000 ]
     user: 1000:1000
     environment: [ JEKYLL_ENV=docker ]

@@ -21,8 +21,8 @@ RUN chown -R vscode:vscode /usr/src/app
 # Switch to the non-root user
 USER vscode
 
-# Copy Gemfile into the container (necessary for `bundle install`)
-COPY Gemfile ./
+# Copy the dependency manifests so bundle install matches the repo lockfile.
+COPY Gemfile Gemfile.lock ./
 
 
 
