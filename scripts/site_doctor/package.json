@@ -1,0 +1,14 @@
+{
+  "name": "site-doctor-visual",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Headless visual + accessibility audit (Playwright + axe-core) for the namo507.github.io portfolio.",
+  "scripts": {
+    "audit": "node visual_audit.mjs"
+  },
+  "dependencies": {
+    "axe-core": "^4.10.2",
+    "playwright": "^1.49.1"
+  }
+}

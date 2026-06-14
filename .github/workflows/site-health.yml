@@ -1,0 +1,198 @@
+name: Site Health (daily doctor)
+
+# Daily cleaning + visual/accessibility + link + workflow-health automation.
+# It builds the site, audits it, auto-commits safe fixes to master, files a
+# single rolling issue for anything needing a human, and re-dispatches any other
+# automation workflow whose last run failed (self-heal).
+
+on:
+  schedule:
+    - cron: '30 7 * * *'        # every day at 07:30 UTC
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - 'assets/cosmic/**'
+      - '_sass/**'
+      - '_data/**'
+      - '_pages/**'
+      - 'scripts/site_doctor/**'
+      - '.github/workflows/site-health.yml'
+
+# Serialize with the other auto-committing workflows so two bots never push to
+# master at the same time. Queued, never cancelled, so nothing is dropped.
+concurrency:
+  group: repo-autocommit
+  cancel-in-progress: false
+
+permissions:
+  contents: write              # commit auto-fixes
+  issues: write                # file/close the rolling health issue
+  actions: write               # re-dispatch failing workflows (self-heal)
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # full history so rebase-before-push works
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Install Python dependencies
+        run: pip install -r scripts/site_doctor/requirements.txt
+
+      - name: Install visual-audit dependencies
+        working-directory: scripts/site_doctor
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Build site
+        id: build
+        continue-on-error: true
+        env:
+          JEKYLL_ENV: production
+        run: bundle exec jekyll build 2>&1 | tee /tmp/jekyll-build.log
+
+      - name: Run headless visual + accessibility audit
+        continue-on-error: true
+        working-directory: scripts/site_doctor
+        run: node visual_audit.mjs
+
+      - name: Run Site Doctor (clean, validate, contrast, alignment, links, workflow health)
+        id: doctor
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          SITE_DOCTOR_REDISPATCH: '1'
+        run: python scripts/site_doctor/doctor.py
+
+      - name: Upload audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-doctor-report
+          path: |
+            scripts/site_doctor/reports/report.json
+            scripts/site_doctor/reports/report.md
+            scripts/site_doctor/reports/visual_report.json
+            scripts/site_doctor/reports/visual_report.md
+            scripts/site_doctor/reports/screenshots/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Commit auto-fixes to master
+        id: commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage only source files the doctor is allowed to touch.
+          git add -A \
+            assets/cosmic/styles.css \
+            _sass _pages _data \
+            scripts/site_doctor 2>/dev/null || true
+          # Drop generated/ignored noise from the index if any slipped in.
+          git reset -q -- scripts/site_doctor/node_modules scripts/site_doctor/reports 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "No auto-fixes to commit."
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "chore(site-doctor): automated cleaning + visual fixes"
+          # Rebase-and-retry push to self-heal races with the other bots.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:master; then
+              echo "Pushed on attempt $attempt."
+              echo "committed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); rebasing on latest master."
+            git pull --rebase origin master || true
+            sleep $((attempt * 3))
+          done
+          echo "::warning::Could not push auto-fixes after 5 attempts."
+          echo "committed=false" >> "$GITHUB_OUTPUT"
+
+      - name: File or resolve rolling health issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          NEEDS_ISSUE: ${{ steps.doctor.outputs.needs_issue }}
+          ERRORS: ${{ steps.doctor.outputs.error_count }}
+          WARNINGS: ${{ steps.doctor.outputs.warning_count }}
+          COMMITTED: ${{ steps.commit.outputs.committed }}
+        run: |
+          set -euo pipefail
+          gh label create site-health --color 0E8A16 \
+            --description "Automated site health findings" 2>/dev/null || true
+
+          REPORTS=scripts/site_doctor/reports
+          BODY=/tmp/issue-body.md
+          {
+            echo "# 🩺 Site Doctor report ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+            echo
+            echo "Run: [\`${GITHUB_RUN_ID:-local}\`](${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID:-})"
+            echo "- build: \`${BUILD_OUTCOME}\`  ·  errors: \`${ERRORS:-?}\`  ·  warnings: \`${WARNINGS:-?}\`  ·  auto-fixes pushed: \`${COMMITTED:-false}\`"
+            echo
+            if [ "${BUILD_OUTCOME}" != "success" ]; then
+              echo "## ❌ Jekyll build failed"
+              echo '```'
+              tail -n 40 /tmp/jekyll-build.log 2>/dev/null || echo "(no build log)"
+              echo '```'
+              echo
+            fi
+            [ -f "$REPORTS/report.md" ]        && cat "$REPORTS/report.md"
+            echo
+            [ -f "$REPORTS/visual_report.md" ] && cat "$REPORTS/visual_report.md"
+          } > "$BODY"
+
+          NEED=false
+          if [ "${NEEDS_ISSUE}" = "true" ] || [ "${BUILD_OUTCOME}" != "success" ]; then
+            NEED=true
+          fi
+
+          EXISTING=$(gh issue list --label site-health --state open \
+            --json number --jq '.[0].number' 2>/dev/null || echo "")
+
+          if [ "$NEED" = "true" ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue edit "$EXISTING" --body-file "$BODY"
+              gh issue comment "$EXISTING" --body "🔄 Refreshed by the daily Site Doctor run. See updated report above."
+              echo "Updated issue #$EXISTING."
+            else
+              gh issue create --title "🩺 Site Doctor: action needed" \
+                --label site-health --body-file "$BODY"
+              echo "Opened a new health issue."
+            fi
+          else
+            if [ -n "$EXISTING" ]; then
+              gh issue comment "$EXISTING" --body "✅ All clear on the latest Site Doctor run. Closing."
+              gh issue close "$EXISTING"
+              echo "Closed resolved issue #$EXISTING."
+            else
+              echo "Site healthy; no issue needed."
+            fi
+          fi

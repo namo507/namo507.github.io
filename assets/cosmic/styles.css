@@ -727,7 +727,7 @@ a:hover { color: var(--accent); }
     linear-gradient(135deg, rgba(127,230,210,0.18), rgba(168,197,255,0.12)),
     rgba(14,16,24,0.85);
   border: 1px solid rgba(127,230,210,0.38);
-  border-radius: 28px;
+  border-radius: 22px;
   padding: 56px;
   position: relative;
   overflow: hidden;
@@ -1523,4 +1523,3 @@ a:hover { color: var(--accent); }
     max-height: 72dvh; border-radius: 20px 20px 0 0;
   }
 }
-

@@ -1,0 +1,6 @@
+# Python dependencies for the site_doctor health/cleaning/visual toolkit.
+PyYAML>=6.0
+tinycss2>=1.3
+beautifulsoup4>=4.12
+lxml>=5.0
+requests>=2.31

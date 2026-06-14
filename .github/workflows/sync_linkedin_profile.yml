@@ -5,8 +5,10 @@ on:
   schedule:
     - cron: '23 6 */5 * *'
 
+# Shared with the other auto-committing workflows so no two bots push to master
+# at the same time (also prevents overlapping LinkedIn syncs).
 concurrency:
-  group: sync-linkedin-profile
+  group: repo-autocommit
   cancel-in-progress: false
 
 jobs:
@@ -76,4 +78,13 @@ jobs:
             _data/linkedin_snapshot.json \
             assets/cosmic/linkedin.generated.js
           git commit -m "$message"
-          git push
+          # Rebase-and-retry push so a concurrent bot push cannot reject this one.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:master; then
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); rebasing."
+            git pull --rebase origin master || true
+            sleep $((attempt * 3))
+          done
+          echo "::warning::Could not push LinkedIn sync after 5 attempts."
