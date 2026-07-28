@@ -1,5 +1,7 @@
-# Base image: Ruby with necessary dependencies for Jekyll
-FROM ruby:3.2
+# Base image: Ruby with necessary dependencies for Jekyll.
+# Pinned to 3.3 to match .github/workflows/site-health.yml (ruby-version: '3.3')
+# so local Docker builds and CI resolve identical native gems.
+FROM ruby:3.3
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -26,9 +28,11 @@ COPY Gemfile Gemfile.lock ./
 
 
 
-# Install bundler and dependencies
+# Install bundler and dependencies.
+# Bundler is pinned to the version recorded in Gemfile.lock (BUNDLED WITH 2.4.19)
+# so `bundle install` never rewrites the lockfile inside the image.
 RUN gem install connection_pool:2.5.0
-RUN gem install bundler:2.3.26
+RUN gem install bundler:2.4.19
 RUN bundle install
 
 # Command to serve the Jekyll site
