@@ -80,15 +80,17 @@
 /* ── Light theme — same tokens, remapped. Accents are darkened so all
       text-grade uses keep ≥4.5:1 contrast on the light panels. ── */
 [data-theme="light"] {
-  --ink: #14171f;
-  --ink-soft: #3a4150;
-  --ink-mute: #5b6272;
-  --ink-faint: #838a99;
+  --ink: #0f1218;
+  --ink-soft: #333a48;
+  --ink-mute: #525a6b;
+  --ink-faint: #79808f;
   --bg: #eef1f6;
-  --panel: rgba(255, 255, 255, 0.72);
-  --panel-strong: rgba(255, 255, 255, 0.92);
-  --line: rgba(15, 23, 42, 0.13);
-  --line-strong: rgba(15, 23, 42, 0.27);
+  /* Slightly cool-tinted, denser panels so tiles read as distinct plates
+     against the page background instead of dissolving into it. */
+  --panel: rgba(252, 253, 255, 0.86);
+  --panel-strong: rgba(255, 255, 255, 0.96);
+  --line: rgba(15, 23, 42, 0.16);
+  --line-strong: rgba(15, 23, 42, 0.30);
   --accent: #0b7d69;
   --accent-warm: #8a5a00;
   --accent-cool: #2f5cc4;
@@ -105,11 +107,15 @@
   --accent-line: rgba(11, 125, 105, 0.35);
   --accent-glow: rgba(11, 125, 105, 0.22);
 
-  --halo-strong: 0 2px 24px rgba(255, 255, 255, 0.85), 0 0 1px rgba(255, 255, 255, 0.6);
-  --halo-soft: 0 2px 16px rgba(255, 255, 255, 0.75);
-  --halo-lead: 0 1px 10px rgba(255, 255, 255, 0.65);
+  /* No glow halos on light — dark ink on light panels needs crisp edges;
+     a white glow only blurs the glyph boundary and reads as "washed out". */
+  --halo-strong: none;
+  --halo-soft: none;
+  --halo-lead: none;
 
-  --scrim: radial-gradient(120% 90% at 50% 50%, rgba(238,241,246,0.30) 0%, rgba(238,241,246,0.72) 60%, rgba(238,241,246,0.92) 100%);
+  /* Center fully clear (like dark mode) so hero content never sits under a
+     veil; edges lighten the 3D canvas without touching foreground text. */
+  --scrim: radial-gradient(120% 90% at 50% 50%, rgba(238,241,246,0) 0%, rgba(238,241,246,0.5) 60%, rgba(238,241,246,0.8) 100%);
   --nav-veil: linear-gradient(180deg, rgba(238,241,246,0.96) 0%, rgba(238,241,246,0.78) 70%, rgba(238,241,246,0.12));
 
   --glass-hi:
@@ -118,8 +124,8 @@
   --glass-hi-hover:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
     inset 0 0 0 1px rgba(255, 255, 255, 0.55);
-  --glass-shadow: 0 10px 32px rgba(30, 41, 59, 0.14);
-  --glass-shadow-hover: 0 16px 44px rgba(30, 41, 59, 0.20);
+  --glass-shadow: 0 8px 26px rgba(30, 41, 59, 0.16), 0 1px 3px rgba(30, 41, 59, 0.10);
+  --glass-shadow-hover: 0 16px 44px rgba(30, 41, 59, 0.24), 0 2px 5px rgba(30, 41, 59, 0.12);
   --glass-edge: linear-gradient(165deg,
     rgba(255, 255, 255, 0.95) 0%,
     rgba(255, 255, 255, 0.35) 28%,
@@ -145,7 +151,8 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--body);
-  font-size: 16px;
+  /* Fluid base size: 16px on laptops scaling to 17px on wide screens */
+  font-size: clamp(16px, 15.4px + 0.2vw, 17px);
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
@@ -335,6 +342,10 @@ a:hover { color: var(--accent); }
   min-height: 100vh;
   padding: 120px 48px 80px;
   position: relative;
+  /* Explicit z-index lifts section content above the fixed #app::before
+     scrim (z-index 1). Positioned elements with z-index:auto would
+     otherwise paint BELOW it and every card/heading gets veiled. */
+  z-index: 2;
 }
 .section__container { max-width: 1200px; margin: 0 auto; }
 
@@ -407,7 +418,7 @@ a:hover { color: var(--accent); }
 }
 .hero__typer {
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--ink-soft);
   margin: 0 0 18px;
   font-weight: 500;
@@ -693,7 +704,7 @@ a:hover { color: var(--accent); }
   text-shadow: 0 0 20px rgba(127,230,210,0.25);
 }
 .metric__k {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--ink-soft);
   margin-top: 10px;
   text-transform: uppercase;
@@ -725,7 +736,7 @@ a:hover { color: var(--accent); }
 }
 .card__meta {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 12.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-mute);
@@ -734,13 +745,13 @@ a:hover { color: var(--accent); }
 }
 .card__sub {
   color: var(--ink-soft);
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: clamp(15px, 14.4px + 0.2vw, 16px);
+  line-height: 1.62;
 }
 .card__bullets {
   margin: 14px 0 0; padding: 0 0 0 18px;
   color: var(--ink-soft);
-  font-size: 14.5px;
+  font-size: clamp(14.5px, 14px + 0.2vw, 15.5px);
   line-height: 1.65;
 }
 .card__bullets li { margin: 6px 0; }
@@ -888,7 +899,7 @@ a:hover { color: var(--accent); }
 }
 .repo__desc {
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: 14.5px;
   line-height: 1.6;
 }
 .repo__metric {
