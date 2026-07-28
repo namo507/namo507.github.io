@@ -1816,6 +1816,16 @@ a:hover { color: var(--accent); }
 /* ── Light-theme special cases ─────────────────────────────────────────────
    screen-blended decorations (creatures, hero orbs) brighten toward white,
    which disappears on a light background — flip them to multiply/normal. */
+/* Ambient brand-tinted atmosphere so the light page reads as designed
+   rather than flat clinical white; the 3D canvas sits over this. */
+[data-theme="light"] body {
+  background:
+    radial-gradient(120% 80% at 75% 8%, rgba(14, 132, 113, 0.08), transparent 42%),
+    radial-gradient(100% 70% at 12% 92%, rgba(59, 91, 214, 0.07), transparent 46%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
 [data-theme="light"] .creature {
   mix-blend-mode: multiply;
   opacity: 0.5;

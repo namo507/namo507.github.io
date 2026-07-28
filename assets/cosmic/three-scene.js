@@ -39,15 +39,19 @@
   // darkens the particle colors, and swaps the fog. Driven by the same
   // "themechange" event the React nav toggle dispatches.
   let isLight = document.documentElement.getAttribute("data-theme") === "light";
-  const LIGHT_DARKEN = 0.62;         // multiplier that keeps brand hues visible on light bg
   function applySceneTheme() {
     isLight = document.documentElement.getAttribute("data-theme") === "light";
-    scene.fog = new THREE.FogExp2(isLight ? 0xdfe5ee : 0x08090f, 0.045);
+    // Fog washes hue with distance. On light the density must be much lower
+    // or every particle fades toward the page color and looks gray.
+    scene.fog = new THREE.FogExp2(isLight ? 0xe4e9f1 : 0x08090f, isLight ? 0.020 : 0.045);
     mat.blending = isLight ? THREE.NormalBlending : THREE.AdditiveBlending;
-    mat.opacity = isLight ? 0.85 : 1;
+    mat.opacity = isLight ? 0.92 : 1;
+    mat.size = isLight ? 0.15 : 0.12;   // slightly larger dots for presence on light
     mat.needsUpdate = true;
-    ringMat.opacity = isLight ? 0.22 : 0.1;
-    planetMat.opacity = isLight ? 0.14 : 0.08;
+    // Ring color follows the section hue every frame (see animate());
+    // on light it just needs enough opacity to read over the pale page.
+    ringMat.opacity = isLight ? 0.35 : 0.1;
+    planetMat.opacity = isLight ? 0.22 : 0.08;
   }
   window.addEventListener("themechange", applySceneTheme);
 
@@ -160,16 +164,20 @@
     return out;
   }
 
-  // section → shape map (in scroll order)
+  // section → shape map (in scroll order).
+  // `color` drives the dark theme (bright pastels over near-black);
+  // `lightColor` is an explicit deep jewel-tone variant — simply darkening
+  // the pastels reads as washed-out gray on a light page, so each section
+  // gets a saturated hue that stays legible over #eef1f6.
   const SHAPES = [
-    { id: "home",         pts: spherePoints(PARTICLE_COUNT, 6.5),    color: 0x69d7c3, rot: 0.05 },
-    { id: "cv",           pts: galaxyPoints(PARTICLE_COUNT),         color: 0x8fb6ff, rot: 0.04 },
-    { id: "publications", pts: torusKnotPoints(PARTICLE_COUNT),      color: 0xff8a9b, rot: 0.06 },
-    { id: "projects",     pts: gridCubePoints(PARTICLE_COUNT, 6.5),  color: 0xf1b76a, rot: 0.03 },
-    { id: "github",       pts: ringPoints(PARTICLE_COUNT),           color: 0x7ad6ff, rot: 0.05 },
-    { id: "talks",        pts: helixPoints(PARTICLE_COUNT),          color: 0xc8a4ff, rot: 0.07 },
-    { id: "teaching",     pts: waveGridPoints(PARTICLE_COUNT),       color: 0xbcd86c, rot: 0.04 },
-    { id: "contact",      pts: spherePoints(PARTICLE_COUNT, 5.0),    color: 0x69d7c3, rot: 0.06 },
+    { id: "home",         pts: spherePoints(PARTICLE_COUNT, 6.5),    color: 0x69d7c3, lightColor: 0x0e8471, rot: 0.05 },
+    { id: "cv",           pts: galaxyPoints(PARTICLE_COUNT),         color: 0x8fb6ff, lightColor: 0x3b5bd6, rot: 0.04 },
+    { id: "publications", pts: torusKnotPoints(PARTICLE_COUNT),      color: 0xff8a9b, lightColor: 0xc2385a, rot: 0.06 },
+    { id: "projects",     pts: gridCubePoints(PARTICLE_COUNT, 6.5),  color: 0xf1b76a, lightColor: 0xb07515, rot: 0.03 },
+    { id: "github",       pts: ringPoints(PARTICLE_COUNT),           color: 0x7ad6ff, lightColor: 0x1173b8, rot: 0.05 },
+    { id: "talks",        pts: helixPoints(PARTICLE_COUNT),          color: 0xc8a4ff, lightColor: 0x7a4fd1, rot: 0.07 },
+    { id: "teaching",     pts: waveGridPoints(PARTICLE_COUNT),       color: 0xbcd86c, lightColor: 0x6d8f1d, rot: 0.04 },
+    { id: "contact",      pts: spherePoints(PARTICLE_COUNT, 5.0),    color: 0x69d7c3, lightColor: 0x0e8471, rot: 0.06 },
   ];
 
   // ── Particle system ─────────────────────────────────────────────────────────
@@ -286,10 +294,9 @@
     const pa = geom.attributes.position.array;
     const ca = geom.attributes.color.array;
     const fp = fromShape.pts, tp = toShape.pts;
-    const fc = new THREE.Color(fromShape.color);
-    const tc = new THREE.Color(toShape.color);
+    const fc = new THREE.Color(isLight ? fromShape.lightColor : fromShape.color);
+    const tc = new THREE.Color(isLight ? toShape.lightColor : toShape.color);
     tmp.copy(fc).lerp(tc, k);
-    if (isLight) tmp.multiplyScalar(LIGHT_DARKEN); // keep hues visible on the light bg
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const i3 = i*3;
       // small per-particle wobble for life (stilled for reduced-motion users)
