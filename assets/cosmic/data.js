@@ -27,7 +27,6 @@ window.SITE = {
     { label: "GitHub", url: "https://github.com/namo507" },
     { label: "Google Scholar", url: "https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en" },
     { label: "ORCID", url: "https://orcid.org/0009-0005-7920-8350" },
-    { label: "Bluesky", url: "https://bsky.app/profile/bsky.app" },
     { label: "X (Twitter)", url: "https://twitter.com/Namit507" },
     { label: "Email", url: "mailto:namit507@gmail.com" },
   ],
@@ -332,9 +331,10 @@ window.SITE = {
     profileUrl: "https://github.com/namo507",
     reposUrl: "https://github.com/namo507?tab=repositories",
     starredUrl: "https://github.com/namo507?tab=stars",
+    // Counts verified against the live GitHub API (July 2026).
     stats: [
-      { v: "41", k: "Public repositories" },
-      { v: "28", k: "Original builds" },
+      { v: "44", k: "Public repositories" },
+      { v: "31", k: "Original builds" },
       { v: "7", k: "Starred spotlight" },
       { v: "57", k: "Total accessible" },
     ],
@@ -362,20 +362,31 @@ window.SITE = {
         metric: "2", metricLabel: "benchmark styles", url: "https://github.com/namo507/Smart-Order-Routing-SOR" },
       { name: "career-ops", lang: "Go", desc: "AI-powered job search system on Claude Code — 14 skill modes, dashboard, PDF generation.",
         metric: "14", metricLabel: "skill modes", url: "https://github.com/namo507/career-ops" },
-      { name: "namo507.github.io", lang: "SCSS", desc: "Source repo for the personal academic site, integrating CV, projects, GitHub showcase.",
+      { name: "namo507.github.io", lang: "JavaScript", desc: "Source repo for the personal academic site, integrating CV, projects, GitHub showcase.",
         metric: "17", metricLabel: "project writeups", url: "https://github.com/namo507/namo507.github.io" },
     ],
+    // Pulled from the live GitHub API (sorted by last push, July 2026).
     recent: [
+      { name: "namo507.github.io", lang: "JavaScript", updated: "Jul 2026", url: "https://github.com/namo507/namo507.github.io" },
+      { name: "esd-redcap-metadata-watcher", lang: "Jupyter", updated: "Jul 2026", url: "https://github.com/namo507/esd-redcap-metadata-watcher" },
+      { name: "ESD-Lab-USC", lang: "Jupyter", updated: "Jul 2026", url: "https://github.com/namo507/ESD-Lab-USC" },
+      { name: "OBS", lang: "Repo", updated: "Jul 2026", url: "https://github.com/namo507/OBS" },
+      { name: "live-meeting-copilot", lang: "TypeScript", updated: "Apr 2026", url: "https://github.com/namo507/live-meeting-copilot" },
       { name: "Team-PSID", lang: "Jupyter", updated: "Apr 2026", url: "https://github.com/namo507/Team-PSID" },
       { name: "SURV-745_Team-Neyman", lang: "TeX", updated: "Apr 2026", url: "https://github.com/namo507/SURV-745_Team-Neyman" },
-      { name: "live-meeting-copilot", lang: "TypeScript", updated: "Apr 2026", url: "https://github.com/namo507/live-meeting-copilot" },
-      { name: "Portfolio", lang: "Multi", updated: "Mar 2026", url: "https://github.com/namo507/Portfolio" },
-      { name: "CV_Namit-Shrivastava", lang: "Repo", updated: "Mar 2026", url: "https://github.com/namo507/CV_Namit-Shrivastava" },
       { name: "office-doc-redactor", lang: "TypeScript", updated: "Jan 2026", url: "https://github.com/namo507/office-doc-redactor" },
-      { name: "n8n-Project", lang: "JavaScript", updated: "Jan 2026", url: "https://github.com/namo507/n8n-Project" },
-      { name: "AAPOR-Project-EV-Sentiment-Analysis", lang: "HTML", updated: "Dec 2025", url: "https://github.com/namo507/AAPOR-Project-EV-Sentiment-Analysis" },
     ],
   },
+
+  // 2026 research pipeline — titles and years verified against the public
+  // ORCID record (0009-0005-7920-8350). Each links to the ORCID works list.
+  worksInProgress: [
+    { title: "PSID Generic Crisis Module — NLP Utility-Burden Optimization for Survey Question Selection", year: "2026", kind: "Research output" },
+    { title: "Benchmarking In-Context Learning against Chained Equations: A Simulation Study on Item Nonresponse Adjustment", year: "2026", kind: "Working paper" },
+    { title: "Multi-Stage Area Probability Sample Design for the Detroit Transportation Security Survey", year: "2026", kind: "Working paper" },
+    { title: "State of Connecticut DOT: CTtransit Fixed-Route Bus System", year: "2026", kind: "Working paper" },
+    { title: "Guest Blog: The Future of International Aid and Development — Lessons at the Intersection of Scholarship and Practice", year: "2026", kind: "Blog post" },
+  ],
 
   achievements: [
     "JPSM Dean's Fellowship Award (AY 2025–26, UMD)",

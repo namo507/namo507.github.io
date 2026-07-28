@@ -33,6 +33,29 @@
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x08090f, 0.045);
 
+  // ── Theme awareness ────────────────────────────────────────────────────────
+  // Additive blending looks great on the dark background but washes out to
+  // near-white on the light theme, so light mode switches to normal blending,
+  // darkens the particle colors, and swaps the fog. Driven by the same
+  // "themechange" event the React nav toggle dispatches.
+  let isLight = document.documentElement.getAttribute("data-theme") === "light";
+  const LIGHT_DARKEN = 0.62;         // multiplier that keeps brand hues visible on light bg
+  function applySceneTheme() {
+    isLight = document.documentElement.getAttribute("data-theme") === "light";
+    scene.fog = new THREE.FogExp2(isLight ? 0xdfe5ee : 0x08090f, 0.045);
+    mat.blending = isLight ? THREE.NormalBlending : THREE.AdditiveBlending;
+    mat.opacity = isLight ? 0.85 : 1;
+    mat.needsUpdate = true;
+    ringMat.opacity = isLight ? 0.22 : 0.1;
+    planetMat.opacity = isLight ? 0.14 : 0.08;
+  }
+  window.addEventListener("themechange", applySceneTheme);
+
+  // Respect prefers-reduced-motion: keep the scene but stop the constant
+  // per-particle wobble and mouse parallax (scroll morphs remain, tied to
+  // deliberate user scrolling rather than autonomous animation).
+  const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 200);
   camera.position.set(0, 0, 14);
 
@@ -230,12 +253,17 @@
     return { t, idx, local };
   }
 
-  // mouse parallax
+  // mouse parallax (disabled for reduced-motion users)
   let mx = 0, my = 0;
-  window.addEventListener("mousemove", (e) => {
-    mx = (e.clientX / window.innerWidth) * 2 - 1;
-    my = (e.clientY / window.innerHeight) * 2 - 1;
-  });
+  if (!reducedMotion) {
+    window.addEventListener("mousemove", (e) => {
+      mx = (e.clientX / window.innerWidth) * 2 - 1;
+      my = (e.clientY / window.innerHeight) * 2 - 1;
+    });
+  }
+
+  // apply the initial theme now that all materials exist
+  applySceneTheme();
 
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -261,10 +289,11 @@
     const fc = new THREE.Color(fromShape.color);
     const tc = new THREE.Color(toShape.color);
     tmp.copy(fc).lerp(tc, k);
+    if (isLight) tmp.multiplyScalar(LIGHT_DARKEN); // keep hues visible on the light bg
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const i3 = i*3;
-      // small per-particle wobble for life
-      const wob = 0.06;
+      // small per-particle wobble for life (stilled for reduced-motion users)
+      const wob = reducedMotion ? 0 : 0.06;
       const ph = (i * 0.013) + t;
       pa[i3]   = fp[i3]   + (tp[i3]   - fp[i3])   * k + Math.sin(ph)     * wob;
       pa[i3+1] = fp[i3+1] + (tp[i3+1] - fp[i3+1]) * k + Math.cos(ph*1.1) * wob;
@@ -276,14 +305,16 @@
     geom.attributes.position.needsUpdate = true;
     geom.attributes.color.needsUpdate = true;
 
-    // group rotation tied to scroll + idle spin
+    // group rotation tied to scroll + idle spin (idle spin paused for reduced motion)
     const rotSpeed = fromShape.rot + (toShape.rot - fromShape.rot) * k;
-    points.rotation.y = sp.t * Math.PI * 2 + t * rotSpeed;
+    points.rotation.y = sp.t * Math.PI * 2 + (reducedMotion ? 0 : t * rotSpeed);
     points.rotation.x = Math.sin(sp.t * Math.PI * 2) * 0.4;
 
     // planet pulse + tint
-    planet.rotation.y = t * 0.1;
-    planet.rotation.x = t * 0.08;
+    if (!reducedMotion) {
+      planet.rotation.y = t * 0.1;
+      planet.rotation.x = t * 0.08;
+    }
     planetMat.color.copy(tmp);
     planetMat.opacity = 0.06 + Math.sin(t * 0.6) * 0.02;
 

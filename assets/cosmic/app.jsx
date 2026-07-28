@@ -24,6 +24,10 @@ function useTypewriter(words, pause = 1700, typingSpeed = 70, deletingSpeed = 35
 }
 
 function useReveal() {
+  // Empty dependency array: every .reveal element exists after the first
+  // render (all sections mount at once), so a single observer is enough.
+  // Without it this effect re-ran — and rebuilt the observer — on every
+  // App re-render triggered by scroll-driven active-section state changes.
   useEffect(() => {
     const els = document.querySelectorAll(".reveal");
     const io = new IntersectionObserver(
@@ -32,7 +36,52 @@ function useReveal() {
     );
     els.forEach((e) => io.observe(e));
     return () => io.disconnect();
-  });
+  }, []);
+}
+
+// ── Theme hook ──────────────────────────────────────────────────────────────
+// Single source of truth for dark/light mode. The pre-paint script in
+// index.html has already set <html data-theme> before React mounts, so this
+// hook reads that attribute, persists user choices to localStorage (shared
+// with the classic Jekyll view), follows the OS preference until the visitor
+// makes an explicit choice, and broadcasts a "themechange" event that the
+// Three.js background listens for.
+function useTheme() {
+  const [theme, setThemeState] = useState(
+    () => document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark"
+  );
+
+  const applyTheme = useCallback((next, persist) => {
+    document.documentElement.setAttribute("data-theme", next);
+    setThemeState(next);
+    if (persist) {
+      try { localStorage.setItem("theme", next); } catch (e) { /* storage blocked */ }
+    }
+    window.dispatchEvent(new CustomEvent("themechange", { detail: { theme: next } }));
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    applyTheme(theme === "dark" ? "light" : "dark", true);
+  }, [theme, applyTheme]);
+
+  // Follow OS-level changes only while the visitor has no stored preference.
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-color-scheme: light)");
+    const onChange = (e) => {
+      let stored = null;
+      try { stored = localStorage.getItem("theme"); } catch (err) { /* noop */ }
+      if (!stored) applyTheme(e.matches ? "light" : "dark", false);
+    };
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else if (mq.addListener) mq.addListener(onChange); // older Safari
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
+      else if (mq.removeListener) mq.removeListener(onChange);
+    };
+  }, [applyTheme]);
+
+  return { theme, toggleTheme };
 }
 
 function useActiveSection(ids) {
@@ -671,7 +720,7 @@ function PublicationsSection({ data }) {
                 <p className="card__sub" style={{marginTop:10}}>{p.excerpt}</p>
                 <div className="grid-3" style={{marginTop:16, gap:8}}>
                   {p.stats.map((s) => (
-                    <div key={s.k} style={{padding:"10px 12px", background:"rgba(255,255,255,0.04)", borderRadius:12}}>
+                    <div key={s.k} className="stat-chip">
                       <div className="metric__v" style={{fontSize:22, color:"var(--accent-cool)"}}>{s.v}</div>
                       <div className="metric__k">{s.k}</div>
                     </div>
@@ -684,6 +733,19 @@ function PublicationsSection({ data }) {
             );
           })}
         </div>
+
+        {/* 2026 research pipeline — titles verified against the public ORCID record. */}
+        {Array.isArray(data.worksInProgress) && data.worksInProgress.length > 0 && (
+          <div className="card reveal pipeline-card" style={{marginTop: 24}}>
+            <p className="card__meta">2026 research pipeline · via ORCID</p>
+            <ul className="card__bullets">
+              {data.worksInProgress.map((w) => (
+                <li key={w.title}><b>{w.title}</b> <span style={{color: "var(--ink-mute)"}}>· {w.kind} · {w.year}</span></li>
+              ))}
+            </ul>
+            <TileCreature kind="paper" color="#a8c5ff" delay={0.2} />
+          </div>
+        )}
 
         <div className="btn-row reveal" style={{marginTop:24}}>
           <a className="btn btn--primary" href="https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar ↗</a>
@@ -712,7 +774,8 @@ function ProjectsSection({ data }) {
         <div className="reveal" style={{marginBottom:24}}>
           {tags.map((t) => (
             <button key={t} className="tag" onClick={() => setFilter(t)}
-              style={{cursor:"pointer", background: filter===t? "var(--accent)":"rgba(255,255,255,0.06)", color: filter===t? "#06120f":"var(--ink-soft)", borderColor: filter===t? "var(--accent)":"var(--line)", padding:"6px 12px", marginRight:6}}>
+              aria-pressed={filter === t}
+              style={{cursor:"pointer", background: filter===t? "var(--accent)":"var(--surface-2)", color: filter===t? "var(--accent-contrast)":"var(--ink-soft)", borderColor: filter===t? "var(--accent)":"var(--line)", padding:"6px 12px", marginRight:6}}>
               {t}
             </button>
           ))}
@@ -753,8 +816,8 @@ function GitHubSection({ data }) {
         <div className="metric-grid reveal">
           {g.stats.map((s) => {
             const ghFacts = {
-              "Public repositories": "41 public repos built across NLP, ML, survey methodology, and web development — all at github.com/namo507.",
-              "Original builds": "28 repos built from scratch, not forks. Full ownership of design, code, and documentation.",
+              "Public repositories": "44 public repos built across NLP, ML, survey methodology, and web development — all at github.com/namo507.",
+              "Original builds": "31 repos built from scratch, not forks. Full ownership of design, code, and documentation.",
               "Starred spotlight": "7 repositories pinned as featured work: AAPOR EV Sentiment, Moneyball FC, office-doc-redactor, and more.",
               "Total accessible": "57 total accessible repositories including collaborations, class projects, and forks.",
             };
@@ -1032,7 +1095,7 @@ function getPrecomputedResponse(query, data) {
     return "Email: " + data.profile.email + " · LinkedIn: linkedin.com/in/namit-shrivastava-baab47204/ · GitHub: github.com/namo507. Based in " + data.profile.location + ".";
   }
   if (q.match(/github|repo|code|open.?source|commit/)) {
-    return "41 public repos on GitHub (@namo507). Featured: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, career-ops. Python, R, TypeScript stack.";
+    return "44 public repos on GitHub (@namo507). Featured: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, career-ops. Python, R, TypeScript stack.";
   }
   if (q.match(/linkedin/)) {
     return "LinkedIn profile auto-synced via GitHub Actions every 5 days. Data passes fetch → parse → diff → schema validation before rendering into the portfolio.";
@@ -1058,7 +1121,7 @@ function getPrecomputedResponse(query, data) {
   if (q.match(/hello|hi\b|hey|greet|who are you|what can you do/)) {
     return "Hi! I'm Namit's research assistant. I know about his publications, projects, skills, and experience. Ask me anything — or hover over any tile for instant insights about that section!";
   }
-  return "Namit is a Graduate Researcher at UMD (GPA 3.814, Dean's Fellow) specializing in survey methodology, causal inference, and responsible AI. 20+ projects, 2 publications, 41 GitHub repos. What would you like to know?";
+  return "Namit is a Graduate Researcher at UMD (GPA 3.814, Dean's Fellow) specializing in survey methodology, causal inference, and responsible AI. 20+ projects, 2 publications, 44 GitHub repos. What would you like to know?";
 }
 
 // ── AiBuddy Component ────────────────────────────────────────────────────────
@@ -1279,6 +1342,7 @@ function App() {
   const data = useMemo(() => mergeLinkedInIntoSite(window.SITE, window.LINKEDIN_SYNC), []);
   const navIds = data.navigation.map((n) => n.id);
   const active = useActiveSection(navIds);
+  const { theme, toggleTheme } = useTheme();
   useReveal();
 
   const jump = useCallback((id) => {
@@ -1288,9 +1352,12 @@ function App() {
 
   return (
     <>
-      <nav className="nav">
+      <nav className="nav" aria-label="Primary">
         <div className="nav__brand">
           <div className={"nav__brand-mark" + (data.profile.avatarUrl ? " nav__brand-mark--photo" : "") }>
+            {/* fetchpriority stays lowercase: React 18 forwards unknown
+                lowercase attributes to the DOM silently; the camelCase form
+                is only recognized from React 19 onward. */}
             {data.profile.avatarUrl ? (
               <img
                 src={data.profile.avatarUrl}
@@ -1306,21 +1373,36 @@ function App() {
           {data.navigation.map((n) => (
             <button key={n.id}
               className={"nav__link" + (active === n.id ? " nav__link--active" : "")}
+              aria-current={active === n.id ? "true" : undefined}
               onClick={() => jump(n.id)}>{n.label}</button>
           ))}
         </div>
-        <a className="nav__cta" href={data.profile.pdfUrl} target="_blank" rel="noopener">Download CV</a>
+        <div className="nav__actions">
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            aria-pressed={theme === "light"}
+            title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+          >
+            {/* Sun / moon glyphs are decorative; the accessible name lives on the button. */}
+            <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+          </button>
+          <a className="nav__cta" href={data.profile.pdfUrl} target="_blank" rel="noopener">Download CV</a>
+        </div>
       </nav>
 
-      <Hero data={data} onJump={jump} />
-      <CVSection data={data} />
-      <PublicationsSection data={data} />
-      <ProjectsSection data={data} />
-      <GitHubSection data={data} />
-      <LinkedInSection data={data} />
-      <TalksSection data={data} />
-      <TeachingSection data={data} />
-      <ContactSection data={data} />
+      <main id="content">
+        <Hero data={data} onJump={jump} />
+        <CVSection data={data} />
+        <PublicationsSection data={data} />
+        <ProjectsSection data={data} />
+        <GitHubSection data={data} />
+        <LinkedInSection data={data} />
+        <TalksSection data={data} />
+        <TeachingSection data={data} />
+        <ContactSection data={data} />
+      </main>
       <AiBuddy data={data} activeSection={active} />
     </>
   );

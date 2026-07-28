@@ -23,7 +23,10 @@
     });
     el.style.transformStyle = "preserve-3d";
     el.style.willChange = "transform";
-    el.style.transition = "transform 0.25s cubic-bezier(.16,.84,.44,1)";
+    // Keep the stylesheet's border/shadow/background transitions alive:
+    // an inline `transition` fully replaces the CSS one, so list them here.
+    el.style.transition =
+      "transform 0.25s cubic-bezier(.16,.84,.44,1), border-color 0.25s ease, box-shadow 0.25s ease, background 0.35s ease";
   }
 
   function applyTilts() {
@@ -59,6 +62,7 @@
       d.className = "rail-3d__dot";
       d.dataset.id = id;
       d.title = id;
+      d.setAttribute("aria-label", "Jump to " + id + " section");
       d.style.top = `${(i / (sectionIds.length - 1)) * 100}%`;
       d.addEventListener("click", () => {
         const el = document.getElementById(id);
@@ -195,19 +199,32 @@
         const top = el.offsetTop, bot = top + el.offsetHeight;
         if (yTarget >= top && yTarget <= bot) inHeavy = true;
       });
-      dim.style.background = inHeavy ? "rgba(6,7,12,0.55)" : "rgba(6,7,12,0.18)";
+      // Theme-aware scrim: darkens the bg in dark mode, lightens it in light
+      // mode, in both cases pushing the 3D canvas back behind dense text.
+      const light = document.documentElement.getAttribute("data-theme") === "light";
+      dim.style.background = light
+        ? (inHeavy ? "rgba(238,241,246,0.55)" : "rgba(238,241,246,0.18)")
+        : (inHeavy ? "rgba(6,7,12,0.55)" : "rgba(6,7,12,0.18)");
     }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("themechange", onScroll);
   }
+
+  // Reduced-motion users skip the decorative tilt/parallax/3D-flip layers;
+  // the functional pieces (rail navigation, dimmer) stay.
+  const REDUCED_MOTION = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // initial pass + observe DOM mutations so React-rendered cards get caught
   function bootstrap() {
-    applyTilts();
+    if (!REDUCED_MOTION) {
+      applyTilts();
+      attachParallax();
+      attach3DReveal();
+    }
     buildRail();
-    attachParallax();
     buildSectionStamp();
-    attach3DReveal();
     attachDimmer();
   }
 
@@ -220,6 +237,7 @@
 
   // re-apply on mutations (project filter changes, lazy renders, etc)
   const mo = new MutationObserver(() => {
+    if (REDUCED_MOTION) return;
     applyTilts();
     attach3DReveal();
   });

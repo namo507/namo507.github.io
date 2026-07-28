@@ -15,6 +15,18 @@
 
 <script>
   document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  /* Pre-paint theme init: apply the stored (or system) theme before the first
+     stylesheet paints so light-mode users never see a dark flash (FOUC).
+     Uses the same "theme" localStorage key as assets/js/_main.js and the
+     cosmic homepage, so the preference is shared across both views. */
+  (function () {
+    try {
+      var t = localStorage.getItem("theme");
+      if (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) t = "light";
+      if (t === "light") document.documentElement.removeAttribute("data-theme");
+      else document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) { /* storage blocked — keep server-rendered default */ }
+  })();
 </script>
 
 <!-- For all browsers -->
