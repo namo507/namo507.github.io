@@ -133,6 +133,10 @@ redirect_from:
 
     <div class="cv-record-grid cv-record-grid--stacked">
       {% for role in site.data.cv_site.experience %}
+        {% assign combined_bullets = role.bullets %}
+        {% if role.generated_bullets %}
+          {% assign combined_bullets = combined_bullets | concat: role.generated_bullets %}
+        {% endif %}
         <article class="cv-entry-card cv-entry-card--timeline" data-reveal>
           <div class="cv-entry-card__header">
             <div>
@@ -144,16 +148,16 @@ redirect_from:
           </div>
 
           <ul class="detail-list detail-list--compact">
-            {% for bullet in role.bullets limit:2 %}
+            {% for bullet in combined_bullets limit:2 %}
               <li>{{ bullet }}</li>
             {% endfor %}
           </ul>
 
-          {% if role.bullets.size > 2 %}
+          {% if combined_bullets.size > 2 %}
             <details class="cv-disclosure">
               <summary>View additional impact</summary>
               <ul class="detail-list detail-list--compact">
-                {% for bullet in role.bullets offset:2 %}
+                {% for bullet in combined_bullets offset:2 %}
                   <li>{{ bullet }}</li>
                 {% endfor %}
               </ul>

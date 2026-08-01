@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "updated_at": "",
+  "target_role": {
+    "organization": "Social Data Science Center, University of Maryland",
+    "role": "Graduate Research Assistant"
+  },
+  "processed_weeks": [],
+  "processed_commits": {
+    "study_monorepo": [],
+    "automation_workspace": []
+  },
+  "generated_bullets": []
+}

@@ -104,6 +104,38 @@ function useActiveSection(ids) {
   return active;
 }
 
+function normalizePortfolioSync(sync) {
+  if (!sync || !sync.meta || sync.meta.sync_status !== "ok") return null;
+  return {
+    meta: sync.meta,
+    experience: Array.isArray(sync.experience) ? sync.experience : [],
+  };
+}
+
+function mergePortfolioSyncIntoSite(baseData, sync) {
+  const portfolioSync = normalizePortfolioSync(sync);
+  if (!portfolioSync || !Array.isArray(baseData.experience)) return baseData;
+
+  const experience = baseData.experience.map((role) => {
+    const override = portfolioSync.experience.find((item) => item.role === role.role && item.org === role.org);
+    if (!override || !Array.isArray(override.generated_bullets) || override.generated_bullets.length === 0) {
+      return role;
+    }
+    const generated = override.generated_bullets.filter((bullet) => !role.bullets.includes(bullet));
+    if (generated.length === 0) return role;
+    return {
+      ...role,
+      bullets: [...role.bullets, ...generated],
+    };
+  });
+
+  return {
+    ...baseData,
+    experience,
+    portfolioSync,
+  };
+}
+
 function normalizeLinkedInSync(sync) {
   if (!sync || !sync.meta || sync.meta.sync_status !== "ok") return null;
   if (!sync.profile || (!sync.profile.headline_short && !sync.profile.about_short)) return null;
@@ -1339,7 +1371,10 @@ function AiBuddy({ data, activeSection }) {
 
 // ── Top-level App ───────────────────────────────────────────────────────────
 function App() {
-  const data = useMemo(() => mergeLinkedInIntoSite(window.SITE, window.LINKEDIN_SYNC), []);
+  const data = useMemo(
+    () => mergeLinkedInIntoSite(mergePortfolioSyncIntoSite(window.SITE, window.PORTFOLIO_SYNC), window.LINKEDIN_SYNC),
+    []
+  );
   const navIds = data.navigation.map((n) => n.id);
   const active = useActiveSection(navIds);
   const { theme, toggleTheme } = useTheme();
@@ -1413,9 +1448,11 @@ const mountApp = () => {
   root.render(<App />);
 };
 
-const linkedInSyncReady = window.LINKEDIN_SYNC_READY;
-if (linkedInSyncReady && typeof linkedInSyncReady.then === "function") {
-  linkedInSyncReady.finally(mountApp);
+const syncLoads = [window.PORTFOLIO_SYNC_READY, window.LINKEDIN_SYNC_READY].filter(
+  (promiseLike) => promiseLike && typeof promiseLike.then === "function"
+);
+if (syncLoads.length > 0) {
+  Promise.allSettled(syncLoads).finally(mountApp);
 } else {
   mountApp();
 }

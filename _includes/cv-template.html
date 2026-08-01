@@ -112,9 +112,13 @@
           {% if work.summary %}
           <div class="cv-item-detail">{{ work.summary }}</div>
           {% endif %}
-          {% if work.highlights.size > 0 %}
+          {% assign combined_highlights = work.highlights %}
+          {% if work.generatedHighlights %}
+          {% assign combined_highlights = combined_highlights | concat: work.generatedHighlights %}
+          {% endif %}
+          {% if combined_highlights.size > 0 %}
           <ul class="cv-highlights">
-            {% for highlight in work.highlights %}
+            {% for highlight in combined_highlights %}
             <li>{{ highlight }}</li>
             {% endfor %}
           </ul>

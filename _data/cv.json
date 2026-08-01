@@ -47,7 +47,8 @@
         "Engineered Python automation suite interacting with CKAN REST API to manage lifecycle of 18 datasets ensuring 100% resource accessibility and data integrity",
         "Architected scalable data taxonomy for university repository transforming flat catalogs into hierarchical thematic groups, improving search discoverability by 35%",
         "Implemented bulk metadata update scripts reducing manual maintenance overhead by 90% and ensuring strict schema compliance across the repository"
-      ]
+      ],
+      "generatedHighlights": []
     },
     {
       "company": "Joint Program in Survey Methodology (JPSM), University of Maryland",

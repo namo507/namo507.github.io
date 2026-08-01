@@ -219,6 +219,35 @@ Automation details:
 - There is no push trigger, so the workflow cannot create a commit loop.
 - Disable the automation by turning off the `Sync LinkedIn Profile` workflow in the GitHub Actions UI or by removing the schedule from `.github/workflows/sync_linkedin_profile.yml`.
 
+## Weekly ESD Portfolio Sync
+
+The ESD portfolio sync is machine-managed and only promotes publicly safe, generalized bullets into the existing Graduate Research Assistant role.
+
+- The orchestrator lives in `scripts/sync_esd_portfolio.py`.
+- Supporting modules live under `scripts/portfolio_sync/`.
+- The committed state manifest lives at `scripts/portfolio_sync/state_manifest.json`.
+- The frontend overlay is generated into `assets/cosmic/portfolio-sync.generated.js`.
+- Backend role updates are written symmetrically into `_data/cv_site.yml`, `_data/cv.yml`, and `_data/cv.json`.
+- Validation runs through `scripts/validate_esd_portfolio_sync.py` and blocks any commit when generated text fails redaction checks or the site stops building.
+- Scheduled automation runs via `.github/workflows/sync_esd_portfolio.yml`.
+
+Required GitHub secrets and variables:
+
+- `ESD_PORTFOLIO_GITHUB_TOKEN`: read-only token scoped to the two private evidence repositories.
+- `ESD_LAB_SLACK_BOT_TOKEN`: read-only Slack bot token.
+- `ESD_LAB_SLACK_MCP_COMMAND` or `ESD_LAB_SLACK_MCP_URL`: how GitHub Actions should reach the Slack MCP server.
+- `ESD_LAB_SLACK_MCP_TOOL`: MCP tool name for reading the weekly agenda canvas.
+- `ESD_LAB_SLACK_MCP_TOOL_ARGS_JSON`: optional JSON arguments merged into the Slack MCP tool call.
+- `ESD_LAB_SLACK_CANVAS_ID`: optional explicit canvas identifier when the MCP tool expects one.
+
+Refresh locally:
+
+```bash
+python3 -m pip install -r scripts/requirements-portfolio-sync.txt
+python3 scripts/sync_esd_portfolio.py --dry-run --verbose --agenda-source-file path/to/agenda.md
+python3 scripts/validate_esd_portfolio_sync.py
+```
+
 ## Contact & Connect
 
 - 📧 **Email**: [namit507@gmail.com](mailto:namit507@gmail.com)

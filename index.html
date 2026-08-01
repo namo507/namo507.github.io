@@ -45,6 +45,18 @@
 
   <script src="/assets/cosmic/data.js?v=20260728a"></script>
   <script>
+    window.PORTFOLIO_SYNC = {
+      meta: { sync_status: "unavailable" },
+      experience: [],
+    };
+    window.PORTFOLIO_SYNC_READY = new Promise(function (resolve) {
+      var script = document.createElement("script");
+      script.src = "/assets/cosmic/portfolio-sync.generated.js?v=" + Date.now();
+      script.onload = resolve;
+      script.onerror = resolve;
+      document.head.appendChild(script);
+    });
+
     window.LINKEDIN_SYNC = {
       meta: { sync_status: "unavailable" },
       profile: {},

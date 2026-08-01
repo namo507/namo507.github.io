@@ -1,0 +1,187 @@
+name: Sync ESD Portfolio
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 8 * * 1'
+  pull_request:
+    branches: [master]
+    paths:
+      - '_data/cv.json'
+      - '_data/cv.yml'
+      - '_data/cv_site.yml'
+      - 'assets/cosmic/app.jsx'
+      - 'assets/cosmic/portfolio-sync.generated.js'
+      - 'index.html'
+      - 'scripts/portfolio_sync/**'
+      - 'scripts/sync_esd_portfolio.py'
+      - 'scripts/validate_esd_portfolio_sync.py'
+      - 'scripts/requirements-portfolio-sync.txt'
+      - '.github/workflows/sync_esd_portfolio.yml'
+
+concurrency:
+  group: portfolio-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r scripts/requirements-portfolio-sync.txt
+
+      - name: Install Node dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run weekly agenda sync
+        id: sync
+        env:
+          EVIDENCE_GITHUB_TOKEN: ${{ secrets.ESD_PORTFOLIO_GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.ESD_LAB_SLACK_BOT_TOKEN }}
+          SLACK_MCP_TRANSPORT: ${{ vars.ESD_LAB_SLACK_MCP_TRANSPORT || 'stdio' }}
+          SLACK_MCP_COMMAND: ${{ secrets.ESD_LAB_SLACK_MCP_COMMAND }}
+          SLACK_MCP_URL: ${{ secrets.ESD_LAB_SLACK_MCP_URL }}
+          SLACK_MCP_TOOL: ${{ vars.ESD_LAB_SLACK_MCP_TOOL || 'read_weekly_agenda_canvas' }}
+          SLACK_MCP_TOOL_ARGS_JSON: ${{ vars.ESD_LAB_SLACK_MCP_TOOL_ARGS_JSON }}
+          SLACK_AGENDA_CANVAS_ID: ${{ vars.ESD_LAB_SLACK_CANVAS_ID }}
+          PORTFOLIO_SYNC_LOOKBACK_DAYS: '21'
+        run: python scripts/sync_esd_portfolio.py --verbose
+
+      - name: Upload sync summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: esd-portfolio-sync-summary
+          path: scripts/portfolio_sync/last_run_summary.json
+          if-no-files-found: warn
+
+      - name: Validate generated content and site build
+        if: steps.sync.outputs.changed == 'true'
+        run: python scripts/validate_esd_portfolio_sync.py --run-js-build --run-site-build
+
+      - name: Commit and push sync branch
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          BRANCH_NAME: ${{ steps.sync.outputs.branch_name }}
+          PR_TITLE: ${{ steps.sync.outputs.pr_title }}
+          LATEST_LABEL: ${{ steps.sync.outputs.latest_label }}
+        run: |
+          git checkout -B "$BRANCH_NAME"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            _data/cv.json \
+            _data/cv.yml \
+            _data/cv_site.yml \
+            assets/cosmic/portfolio-sync.generated.js \
+            scripts/portfolio_sync/state_manifest.json
+
+          if git diff --cached --quiet; then
+            echo "No validated content changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore(portfolio): sync ESD Lab agenda ${LATEST_LABEL}"
+          git push --force-with-lease --set-upstream origin "$BRANCH_NAME"
+
+      - name: Open or refresh pull request
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ steps.sync.outputs.branch_name }}
+          PR_TITLE: ${{ steps.sync.outputs.pr_title }}
+        run: |
+          python - <<'PY' > /tmp/esd-pr-body.md
+          import json
+          from pathlib import Path
+
+          summary = json.loads(Path("scripts/portfolio_sync/last_run_summary.json").read_text(encoding="utf-8"))
+          lines = [
+              "## Weekly automation summary",
+              "",
+              f"- Slack rows read: {summary['rows_read']}",
+              f"- Agenda items parsed: {summary['tasks_read']}",
+              f"- Sensitivity-filtered items: {summary['filtered_count']}",
+              f"- Matched activity items: {summary['matched_count']}",
+              "",
+              "## Matched activity by source",
+              "",
+          ]
+          for alias, count in summary["matched_by_repo"].items():
+              lines.append(f"- {alias}: {count}")
+          lines.extend(["", "## Public bullets", ""])
+          for bullet in summary["final_bullets"]:
+              lines.append(f"- {bullet}")
+          Path("/tmp/esd-pr-body.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+          PY
+
+          existing_url="$(gh pr list --head "$BRANCH_NAME" --json url --jq '.[0].url')"
+          if [ -n "$existing_url" ]; then
+            gh pr edit "$existing_url" --title "$PR_TITLE" --body-file /tmp/esd-pr-body.md
+            pr_url="$existing_url"
+          else
+            pr_url="$(gh pr create --base master --head "$BRANCH_NAME" --title "$PR_TITLE" --body-file /tmp/esd-pr-body.md)"
+          fi
+          gh pr merge --auto --squash "$pr_url"
+
+  validate-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r scripts/requirements-portfolio-sync.txt
+
+      - name: Install Node dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate generated content and site build
+        run: python scripts/validate_esd_portfolio_sync.py --run-js-build --run-site-build

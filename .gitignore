@@ -19,3 +19,7 @@ package-lock.json
 # Ignore files created by MacOS
 .DS_Store
 __pycache__/
+
+# Ignore per-run artifacts produced by the portfolio sync (uploaded by CI, never committed)
+scripts/portfolio_sync/last_run_summary.json
+scripts/portfolio_sync/last_workflow_summary.md
