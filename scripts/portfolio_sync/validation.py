@@ -3,7 +3,15 @@ from __future__ import annotations
 import subprocess
 from typing import Any
 
-from .config import CV_JSON_PATH, CV_SITE_PATH, CV_YAML_PATH, PORTFOLIO_SYNC_ASSET_PATH, ROOT, TARGET_ROLE_MATCH
+from .config import (
+    COSMIC_DATA_PATH,
+    CV_JSON_PATH,
+    CV_SITE_PATH,
+    CV_YAML_PATH,
+    PORTFOLIO_SYNC_ASSET_PATH,
+    ROOT,
+    TARGET_ROLE_MATCH,
+)
 from .redaction import assert_public_safe
 from .utils import load_json, load_yaml, parse_json_from_js_assignment
 
@@ -25,6 +33,24 @@ def _find_cv_json_role(data: dict[str, Any]) -> dict[str, Any]:
 def _load_generated_asset() -> dict[str, Any]:
     text = PORTFOLIO_SYNC_ASSET_PATH.read_text(encoding="utf-8")
     return parse_json_from_js_assignment(text, "PORTFOLIO_SYNC")
+
+
+def validate_cosmic_merge_key() -> None:
+    """Assert the React data file really contains the role we merge onto.
+
+    mergePortfolioSyncIntoSite() in app.jsx joins the overlay to a role on an
+    exact (org, role) pair. If either string drifts the join quietly matches
+    nothing and every generated bullet disappears from the site while all four
+    backend layers still agree with each other — so symmetry alone would pass.
+    """
+    text = COSMIC_DATA_PATH.read_text(encoding="utf-8")
+    org = TARGET_ROLE_MATCH["cosmic"]["org"]
+    role = TARGET_ROLE_MATCH["cosmic"]["role"]
+    anchor = text.find(f'org: "{org}"')
+    if anchor == -1:
+        raise RuntimeError(f'assets/cosmic/data.js has no experience entry with org: "{org}"')
+    if f'role: "{role}"' not in text[anchor : anchor + 400]:
+        raise RuntimeError(f'assets/cosmic/data.js entry for "{org}" is not role: "{role}"')
 
 
 def validate_symmetry() -> dict[str, Any]:
@@ -67,6 +93,7 @@ def run_build_validation(*, run_js_build: bool, run_site_build: bool) -> None:
 
 
 def validate_all(*, run_js_build: bool = False, run_site_build: bool = False) -> dict[str, Any]:
+    validate_cosmic_merge_key()
     summary = validate_symmetry()
     run_build_validation(run_js_build=run_js_build, run_site_build=run_site_build)
     return summary

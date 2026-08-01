@@ -81,6 +81,16 @@ education:
       - Mathematics I, II and III
 
 experience:
+  - organization: Institute for Mind and Brain, University of South Carolina
+    role: Data Scientist II
+    dates: May 2026 - Present
+    location: Columbia, SC, USA
+    current: true
+    bullets:
+      - Led an AI proof-of-concept through production delivery, building a React, TypeScript, and Python analytics platform with operational KPIs, geospatial insights, model leaderboards, and a grounded LLM assistant.
+      - Built Python and R data-extraction and transformation pipelines integrating REDCap APIs, biosignals, temperature streams, and clinical EHR data into validated Parquet datasets with schema checks and audit logging.
+      - Developed PyTorch CNN-LSTM and Transformer models across 260 participants using imputation, feature selection, ablations, subgroup analysis, AUROC/AUPRC, and bootstrap confidence intervals.
+    generated_bullets: []
   - organization: Social Data Science Center, University of Maryland
     role: Graduate Research Assistant
     dates: Jan 2026 - May 2026
@@ -89,7 +99,6 @@ experience:
       - Engineered Python automation suite interacting with CKAN REST API to manage lifecycle of 18 datasets, ensuring 100% resource accessibility and data integrity.
       - Architected scalable data taxonomy transforming flat catalogs into hierarchical thematic groups, improving search discoverability by 35%.
       - Implemented bulk metadata update scripts reducing manual maintenance overhead by 90% and ensuring strict schema compliance.
-    generated_bullets: []
   - organization: Institute for Social Research, University of Michigan
     role: Research Assistant
     dates: May 2025 - Dec 2025

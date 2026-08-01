@@ -13,7 +13,8 @@ from .config import (
     PORTFOLIO_SYNC_ASSET_PATH,
     TARGET_ROLE_MATCH,
 )
-from .utils import dump_json, dump_yaml, load_json, load_yaml, sha1_text, write_text_if_changed
+from .surgical_edit import set_json_generated_bullets, set_yaml_generated_bullets
+from .utils import dump_json, sha1_text, write_text_if_changed
 
 
 def default_state_manifest() -> dict[str, Any]:
@@ -49,32 +50,26 @@ def aggregate_public_bullets(state: dict[str, Any]) -> list[str]:
     return bullets
 
 
-def _find_cv_site_role(data: dict[str, Any]) -> dict[str, Any]:
-    for role in data.get("experience", []):
-        if role.get("organization") == TARGET_ROLE_MATCH["cv_site"]["organization"] and role.get("role") == TARGET_ROLE_MATCH["cv_site"]["role"]:
-            return role
-    raise RuntimeError("Could not find target role in _data/cv_site.yml")
-
-
-def _find_cv_json_role(data: dict[str, Any]) -> dict[str, Any]:
-    for role in data.get("work", []):
-        if role.get("company") == TARGET_ROLE_MATCH["cv_json"]["company"] and role.get("position") == TARGET_ROLE_MATCH["cv_json"]["position"]:
-            return role
-    raise RuntimeError("Could not find target role in _data/cv.json")
-
-
 def _update_yaml_file(path: Path, bullets: list[str]) -> bool:
-    data = load_yaml(path)
-    role = _find_cv_site_role(data)
-    role["generated_bullets"] = bullets
-    return write_text_if_changed(path, dump_yaml(data))
+    updated = set_yaml_generated_bullets(
+        path.read_text(encoding="utf-8"),
+        section="experience",
+        match_fields=TARGET_ROLE_MATCH["cv_site"],
+        key="generated_bullets",
+        values=bullets,
+    )
+    return write_text_if_changed(path, updated)
 
 
 def _update_json_file(path: Path, bullets: list[str]) -> bool:
-    data = load_json(path)
-    role = _find_cv_json_role(data)
-    role["generatedHighlights"] = bullets
-    return write_text_if_changed(path, dump_json(data))
+    updated = set_json_generated_bullets(
+        path.read_text(encoding="utf-8"),
+        section="work",
+        match_fields=TARGET_ROLE_MATCH["cv_json"],
+        key="generatedHighlights",
+        values=bullets,
+    )
+    return write_text_if_changed(path, updated)
 
 
 def generated_asset_content(bullets: list[str], state: dict[str, Any]) -> str:

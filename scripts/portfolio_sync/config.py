@@ -14,6 +14,7 @@ STATE_PATH = ROOT / "scripts" / "portfolio_sync" / "state_manifest.json"
 RUN_SUMMARY_PATH = ROOT / "scripts" / "portfolio_sync" / "last_run_summary.json"
 WORKFLOW_SUMMARY_PATH = ROOT / "scripts" / "portfolio_sync" / "last_workflow_summary.md"
 PORTFOLIO_SYNC_ASSET_PATH = ASSET_DIR / "portfolio-sync.generated.js"
+COSMIC_DATA_PATH = ASSET_DIR / "data.js"
 
 SCHEMA_VERSION = 1
 MCP_PROTOCOL_VERSION = os.getenv("PORTFOLIO_SYNC_MCP_PROTOCOL_VERSION", "2024-11-05")
@@ -23,18 +24,22 @@ DEFAULT_MAX_TASKS_PER_WEEK = int(os.getenv("PORTFOLIO_SYNC_MAX_TASKS_PER_WEEK", 
 DEFAULT_GITHUB_PER_PAGE = int(os.getenv("PORTFOLIO_SYNC_GITHUB_PER_PAGE", "50"))
 BRANCH_PREFIX = os.getenv("PORTFOLIO_SYNC_BRANCH_PREFIX", "automation/portfolio-update")
 
+# The role the weekly agenda actually describes. The organization/role strings
+# must match _data/cv_site.yml, _data/cv.yml, _data/cv.json and
+# assets/cosmic/data.js verbatim — the frontend overlay merges on (org, role),
+# so a typo here silently drops every generated bullet instead of failing.
 TARGET_ROLE_MATCH = {
     "cv_site": {
-        "organization": "Social Data Science Center, University of Maryland",
-        "role": "Graduate Research Assistant",
+        "organization": "Institute for Mind and Brain, University of South Carolina",
+        "role": "Data Scientist II",
     },
     "cv_json": {
-        "company": "Social Data Science Center, University of Maryland",
-        "position": "Graduate Research Assistant",
+        "company": "Institute for Mind and Brain, University of South Carolina",
+        "position": "Data Scientist II",
     },
     "cosmic": {
-        "org": "Social Data Science Center, UMD",
-        "role": "Graduate Research Assistant",
+        "org": "Institute for Mind and Brain, U. South Carolina",
+        "role": "Data Scientist II",
     },
 }
 

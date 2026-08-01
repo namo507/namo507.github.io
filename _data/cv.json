@@ -37,6 +37,19 @@
   },
   "work": [
     {
+      "company": "Institute for Mind and Brain, University of South Carolina",
+      "position": "Data Scientist II",
+      "website": "https://www.sc.edu/study/colleges_schools/artsandsciences/institute_for_mind_and_brain/",
+      "startDate": "2026-05",
+      "summary": "Delivering production analytics, clinical data pipelines, and deep-learning models for human-subjects research.",
+      "highlights": [
+        "Led an AI proof-of-concept through production delivery, building a React, TypeScript, and Python analytics platform with operational KPIs, geospatial insights, model leaderboards, and a grounded LLM assistant",
+        "Built Python and R data-extraction and transformation pipelines integrating REDCap APIs, biosignals, temperature streams, and clinical EHR data into validated Parquet datasets with schema checks and audit logging",
+        "Developed PyTorch CNN-LSTM and Transformer models across 260 participants using imputation, feature selection, ablations, subgroup analysis, AUROC/AUPRC, and bootstrap confidence intervals"
+      ],
+      "generatedHighlights": []
+    },
+    {
       "company": "Social Data Science Center, University of Maryland",
       "position": "Graduate Research Assistant",
       "website": "https://socialdatascience.umd.edu",
@@ -47,8 +60,7 @@
         "Engineered Python automation suite interacting with CKAN REST API to manage lifecycle of 18 datasets ensuring 100% resource accessibility and data integrity",
         "Architected scalable data taxonomy for university repository transforming flat catalogs into hierarchical thematic groups, improving search discoverability by 35%",
         "Implemented bulk metadata update scripts reducing manual maintenance overhead by 90% and ensuring strict schema compliance across the repository"
-      ],
-      "generatedHighlights": []
+      ]
     },
     {
       "company": "Joint Program in Survey Methodology (JPSM), University of Maryland",

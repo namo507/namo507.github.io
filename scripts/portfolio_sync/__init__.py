@@ -8,6 +8,7 @@ __all__ = [
     "redaction",
     "site_writer",
     "slack_fetch",
+    "surgical_edit",
     "synthesis",
     "taxonomy",
     "utils",

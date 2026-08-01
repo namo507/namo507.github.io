@@ -221,7 +221,7 @@ Automation details:
 
 ## Weekly ESD Portfolio Sync
 
-The ESD portfolio sync is machine-managed and only promotes publicly safe, generalized bullets into the existing Graduate Research Assistant role.
+The ESD portfolio sync is machine-managed and only promotes publicly safe, generalized bullets into the **Data Scientist II** role at the Institute for Mind and Brain, University of South Carolina — the role the weekly lab agenda describes.
 
 - The orchestrator lives in `scripts/sync_esd_portfolio.py`.
 - Supporting modules live under `scripts/portfolio_sync/`.
@@ -230,6 +230,14 @@ The ESD portfolio sync is machine-managed and only promotes publicly safe, gener
 - Backend role updates are written symmetrically into `_data/cv_site.yml`, `_data/cv.yml`, and `_data/cv.json`.
 - Validation runs through `scripts/validate_esd_portfolio_sync.py` and blocks any commit when generated text fails redaction checks or the site stops building.
 - Scheduled automation runs via `.github/workflows/sync_esd_portfolio.yml`.
+
+### Retargeting the sync to a different role
+
+`TARGET_ROLE_MATCH` in `scripts/portfolio_sync/config.py` is the single source of truth. Its three entries must match the role verbatim in `_data/cv_site.yml` + `_data/cv.yml` (`organization` / `role`), `_data/cv.json` (`company` / `position`), and `assets/cosmic/data.js` (`org` / `role`). The React overlay joins on the `(org, role)` pair, so a mismatch there would silently drop every generated bullet — `validate_cosmic_merge_key()` fails the run instead.
+
+### Why the writers are line-targeted
+
+The sync owns exactly one key per file (`generated_bullets` / `generatedHighlights`). `scripts/portfolio_sync/surgical_edit.py` splices that key in place instead of re-serializing the document, because a full YAML/JSON round-trip rewrites every unrelated line — reflowing long strings, dropping blank-line grouping, expanding inline arrays — which turns a two-line content change into a ~440-line diff and makes the weekly pull request unreviewable. Hand-maintained formatting in the CV data files therefore survives every run.
 
 Required GitHub secrets and variables:
 

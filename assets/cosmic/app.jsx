@@ -104,6 +104,21 @@ function useActiveSection(ids) {
   return active;
 }
 
+// Experience cards flow two per row. Return, per card, whether it should span
+// the full width: the current role always does, and so does a trailing card
+// that would otherwise be stranded alone in a half-empty row. Computed rather
+// than hard-coded because the role list grows over time and the Slack sync can
+// change how tall any given card renders.
+function experienceSpans(roles) {
+  const spans = roles.map((role) => Boolean(role.current));
+  let column = 0;
+  spans.forEach((isWide) => {
+    column = isWide ? 0 : (column + 1) % 2;
+  });
+  if (column === 1 && roles.length > 0) spans[roles.length - 1] = true;
+  return spans;
+}
+
 function normalizePortfolioSync(sync) {
   if (!sync || !sync.meta || sync.meta.sync_status !== "ok") return null;
   return {
@@ -610,6 +625,7 @@ function Hero({ data, onJump }) {
 }
 
 function CVSection({ data }) {
+  const wideCards = experienceSpans(data.experience);
   return (
     <section id="cv" className="section">
       <div className="section__container">
@@ -641,12 +657,15 @@ function CVSection({ data }) {
           {data.experience.map((r, i) => {
             const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff"][i % 6];
             return (
-              <div className="card reveal" key={i}
+              <div className={"card reveal" + (wideCards[i] ? " card--wide" : "")} key={i}
                 onMouseEnter={() => window.BUDDY_SHOW?.({ title: r.role + " @ " + r.org, fact: r.bullets[0] })}
                 onMouseLeave={() => window.BUDDY_CLEAR?.()}
               >
                 <span className="card__circle" style={{"--col": c}} />
-                <p className="card__meta">{r.dates} · {r.location}</p>
+                <p className="card__meta">
+                  {r.dates} · {r.location}
+                  {r.current ? <span className="card__badge">Current</span> : null}
+                </p>
                 <h4 className="h-card">{r.role}</h4>
                 <p className="card__sub" style={{color:"var(--accent)"}}>{r.org}</p>
                 <ul className="card__bullets">
@@ -1120,7 +1139,9 @@ function getPrecomputedResponse(query, data) {
   if (q.match(/educat|degree|university|college|gpa|grade|bits|umd/)) {
     return "M.S. in Survey & Data Science at UMD (GPA 3.814/4.0, JPSM Dean's Fellow 2025-26). B.E. in Civil Engineering with Data Science minor from BITS Pilani (GPA 3.327/4.0).";
   }
-  if (q.match(/project|build|portfolio|work/)) {
+  // "work" deliberately omitted here — "work history"/"work experience" belong
+  // to the experience branch further down, which this rule used to swallow.
+  if (q.match(/project|build|portfolio/)) {
     return "20+ projects: EV sentiment (1.1M+ posts, 91.6% accuracy), football market value (7,023 rows, €38bn), LEXNet (97% smaller CNN), geospatial broadband analysis (129K+ tracts). See the Projects section!";
   }
   if (q.match(/contact|email|reach|connect|message|phone/)) {
@@ -1141,8 +1162,8 @@ function getPrecomputedResponse(query, data) {
   if (q.match(/teach|course|student|ta\b|assistant|surv735/)) {
     return "TA for SURV735 (Data Privacy & Confidentiality) at JPSM, UMD — guiding 23 grad students. Also redesigned Canvas LMS for 10+ instructors, 125+ students: +30% satisfaction, -40% setup time.";
   }
-  if (q.match(/experience|job|work history|role|position|internship/)) {
-    return "5 roles: Social Data Science Center (UMD), U. Michigan ISR, JPSM Teaching TA, Legistify ML Engineer (92% precision, 2.4M images), Accenture (89% threat classification). Full timeline in CV section!";
+  if (q.match(/experience|job|work history|role|position|internship|current|now\b/)) {
+    return "Currently Data Scientist II at the Institute for Mind and Brain, University of South Carolina — shipping a React/TypeScript/Python analytics platform, REDCap and clinical EHR pipelines, and PyTorch CNN-LSTM/Transformer models. Before that: Social Data Science Center (UMD), U. Michigan ISR, JPSM Teaching TA, Legistify ML Engineer (92% precision, 2.4M images), Accenture (89% threat classification). Full timeline in the CV section!";
   }
   if (q.match(/survey|methodology|data.?collection|sampling|measurement/)) {
     return "Core research area: Survey & Data Science. Focus on trustworthy data integration, AI-enabled data collection quality assurance frameworks, causal inference, and privacy-preserving methods.";
@@ -1153,7 +1174,7 @@ function getPrecomputedResponse(query, data) {
   if (q.match(/hello|hi\b|hey|greet|who are you|what can you do/)) {
     return "Hi! I'm Namit's research assistant. I know about his publications, projects, skills, and experience. Ask me anything — or hover over any tile for instant insights about that section!";
   }
-  return "Namit is a Graduate Researcher at UMD (GPA 3.814, Dean's Fellow) specializing in survey methodology, causal inference, and responsible AI. 20+ projects, 2 publications, 44 GitHub repos. What would you like to know?";
+  return "Namit is a Data Scientist II at the Institute for Mind and Brain, University of South Carolina, and an M.S. Survey & Data Science graduate from UMD (GPA 3.814, Dean's Fellow), specializing in survey methodology, causal inference, and responsible AI. 20+ projects, 2 publications, 44 GitHub repos. What would you like to know?";
 }
 
 // ── AiBuddy Component ────────────────────────────────────────────────────────

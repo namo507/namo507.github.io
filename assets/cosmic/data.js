@@ -75,6 +75,18 @@ window.SITE = {
 
   experience: [
     {
+      org: "Institute for Mind and Brain, U. South Carolina",
+      role: "Data Scientist II",
+      dates: "May 2026 – Present",
+      location: "Columbia, SC",
+      current: true,
+      bullets: [
+        "Led an AI proof-of-concept through production delivery — a React, TypeScript, and Python analytics platform with operational KPIs, geospatial insights, model leaderboards, and a grounded LLM assistant.",
+        "Built Python and R extraction and transformation pipelines folding REDCap APIs, biosignals, temperature streams, and clinical EHR data into validated Parquet datasets with schema checks and audit logging.",
+        "Developed PyTorch CNN-LSTM and Transformer models across 260 participants using imputation, feature selection, ablations, subgroup analysis, AUROC/AUPRC, and bootstrap confidence intervals.",
+      ],
+    },
+    {
       org: "Social Data Science Center, UMD",
       role: "Graduate Research Assistant",
       dates: "Jan 2026 – May 2026",

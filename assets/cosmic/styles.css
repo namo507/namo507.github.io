@@ -48,6 +48,10 @@
   --accent-tint-strong: rgba(127, 230, 210, 0.16);
   --accent-line: rgba(127, 230, 210, 0.28);
   --accent-glow: rgba(105, 215, 195, 0.45);
+  /* Accent text painted ON an --accent-tint-strong fill. On dark the tint
+     barely lifts the panel so --accent still clears AA (9.1:1); light needs a
+     darker teal because #0b7d69 on the tinted fill only reaches 4.06:1. */
+  --accent-ink-strong: #7fe6d2;   /* 9.06:1 on the tinted panel */
 
   /* Text halos so type reads over the busy 3D background */
   --halo-strong: 0 2px 30px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.5);
@@ -106,6 +110,7 @@
   --accent-tint-strong: rgba(11, 125, 105, 0.14);
   --accent-line: rgba(11, 125, 105, 0.35);
   --accent-glow: rgba(11, 125, 105, 0.22);
+  --accent-ink-strong: #096151;   /* 5.93:1 on the tinted panel — AA at 11px */
 
   /* No glow halos on light — dark ink on light panels needs crisp edges;
      a white glow only blurs the glyph boundary and reads as "washed out". */
@@ -756,6 +761,43 @@ a:hover { color: var(--accent); }
 }
 .card__bullets li { margin: 6px 0; }
 .card__bullets li::marker { color: var(--accent); }
+
+/* Full-bleed tile. Used for the current role, and for a trailing card that
+ * would otherwise sit alone in a half-empty row — see experienceSpans() in
+ * app.jsx. Bullets split into two columns once the grid is genuinely 2-up
+ * (>880px, matching the .grid-2 collapse below) so a wide tile never stretches
+ * one sentence across the whole viewport. The right gutter keeps the tile
+ * creature's corner clear of text. */
+.card--wide { grid-column: 1 / -1; }
+@media (min-width: 881px) {
+  .card--wide .card__bullets {
+    columns: 2;
+    column-gap: 36px;
+    max-width: calc(100% - 130px);
+  }
+  .card--wide .card__bullets li {
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+  }
+}
+
+/* "Current" pill on the active role. Reuses the accent tint/line surfaces, but
+ * takes its ink from --accent-ink-strong: at 11px this is normal-size text, so
+ * it needs 4.5:1 against the tinted fill, which plain --accent misses on the
+ * light theme. Measured 9.06:1 dark / 5.93:1 light. */
+.card__badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--accent-tint-strong);
+  border: 1px solid var(--accent-line);
+  color: var(--accent-ink-strong);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  vertical-align: middle;
+}
 .card__circle {
   position: absolute; top: -40px; right: -40px;
   width: 130px; height: 130px; border-radius: 50%;
