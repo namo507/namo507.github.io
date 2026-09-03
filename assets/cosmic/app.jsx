@@ -1,124 +1,24 @@
 /* global React, ReactDOM */
-const { useState, useEffect, useRef, useMemo, useCallback } = React;
+/* Cosmic portfolio — implementation of the "Portfolio Redesign" Claude Design
+ * canvas. The canvas authored its logic as a `DCLogic` subclass whose
+ * `renderVals()` fed `{{ }}` bindings; here that same logic is a React class
+ * component rendering the markup directly, with the canvas's inline styles
+ * living in assets/cosmic/styles.css.
+ *
+ * Data contract (unchanged from the previous build, so the sync bots keep
+ * working):
+ *   window.SITE            — assets/cosmic/data.js
+ *   window.PORTFOLIO_SYNC  — assets/cosmic/portfolio-sync.generated.js
+ *   window.LINKEDIN_SYNC   — assets/cosmic/linkedin.generated.js
+ */
 
-// ── Hooks ───────────────────────────────────────────────────────────────────
-function useTypewriter(words, pause = 1700, typingSpeed = 70, deletingSpeed = 35) {
-  const [idx, setIdx] = useState(0);
-  const [text, setText] = useState("");
-  const [phase, setPhase] = useState("typing");
-  useEffect(() => {
-    const w = words[idx];
-    let t;
-    if (phase === "typing") {
-      if (text.length < w.length) t = setTimeout(() => setText(w.slice(0, text.length + 1)), typingSpeed);
-      else t = setTimeout(() => setPhase("holding"), pause);
-    } else if (phase === "holding") {
-      t = setTimeout(() => setPhase("deleting"), pause);
-    } else if (phase === "deleting") {
-      if (text.length > 0) t = setTimeout(() => setText(w.slice(0, text.length - 1)), deletingSpeed);
-      else { setPhase("typing"); setIdx((idx + 1) % words.length); }
-    }
-    return () => clearTimeout(t);
-  }, [text, phase, idx, words, pause, typingSpeed, deletingSpeed]);
-  return text;
-}
+const { useMemo } = React;
 
-function useReveal() {
-  // Empty dependency array: every .reveal element exists after the first
-  // render (all sections mount at once), so a single observer is enough.
-  // Without it this effect re-ran — and rebuilt the observer — on every
-  // App re-render triggered by scroll-driven active-section state changes.
-  useEffect(() => {
-    const els = document.querySelectorAll(".reveal");
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("in"); }),
-      { threshold: 0.12 }
-    );
-    els.forEach((e) => io.observe(e));
-    return () => io.disconnect();
-  }, []);
-}
-
-// ── Theme hook ──────────────────────────────────────────────────────────────
-// Single source of truth for dark/light mode. The pre-paint script in
-// index.html has already set <html data-theme> before React mounts, so this
-// hook reads that attribute, persists user choices to localStorage (shared
-// with the classic Jekyll view), follows the OS preference until the visitor
-// makes an explicit choice, and broadcasts a "themechange" event that the
-// Three.js background listens for.
-function useTheme() {
-  const [theme, setThemeState] = useState(
-    () => document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark"
-  );
-
-  const applyTheme = useCallback((next, persist) => {
-    document.documentElement.setAttribute("data-theme", next);
-    setThemeState(next);
-    if (persist) {
-      try { localStorage.setItem("theme", next); } catch (e) { /* storage blocked */ }
-    }
-    window.dispatchEvent(new CustomEvent("themechange", { detail: { theme: next } }));
-  }, []);
-
-  const toggleTheme = useCallback(() => {
-    applyTheme(theme === "dark" ? "light" : "dark", true);
-  }, [theme, applyTheme]);
-
-  // Follow OS-level changes only while the visitor has no stored preference.
-  useEffect(() => {
-    if (!window.matchMedia) return;
-    const mq = window.matchMedia("(prefers-color-scheme: light)");
-    const onChange = (e) => {
-      let stored = null;
-      try { stored = localStorage.getItem("theme"); } catch (err) { /* noop */ }
-      if (!stored) applyTheme(e.matches ? "light" : "dark", false);
-    };
-    if (mq.addEventListener) mq.addEventListener("change", onChange);
-    else if (mq.addListener) mq.addListener(onChange); // older Safari
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
-      else if (mq.removeListener) mq.removeListener(onChange);
-    };
-  }, [applyTheme]);
-
-  return { theme, toggleTheme };
-}
-
-function useActiveSection(ids) {
-  const [active, setActive] = useState(ids[0]);
-  useEffect(() => {
-    function onScroll() {
-      const y = window.scrollY + window.innerHeight * 0.35;
-      let cur = ids[0];
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (el && el.offsetTop <= y) cur = id;
-      }
-      setActive(cur);
-      if (window.BG) window.BG.setSection(cur);
-    }
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [ids]);
-  return active;
-}
-
-// Experience cards flow two per row. Return, per card, whether it should span
-// the full width: the current role always does, and so does a trailing card
-// that would otherwise be stranded alone in a half-empty row. Computed rather
-// than hard-coded because the role list grows over time and the Slack sync can
-// change how tall any given card renders.
-function experienceSpans(roles) {
-  const spans = roles.map((role) => Boolean(role.current));
-  let column = 0;
-  spans.forEach((isWide) => {
-    column = isWide ? 0 : (column + 1) % 2;
-  });
-  if (column === 1 && roles.length > 0) spans[roles.length - 1] = true;
-  return spans;
-}
-
+// ── Sync merges ─────────────────────────────────────────────────────────────
+// scripts/portfolio_sync/validation.py asserts this join explicitly: the
+// overlay is matched to a role on (org, role) and only appends bullets the
+// hand-authored entry does not already carry. Renaming either key, or dropping
+// this merge, breaks `scripts/validate_esd_portfolio_sync.py`.
 function normalizePortfolioSync(sync) {
   if (!sync || !sync.meta || sync.meta.sync_status !== "ok") return null;
   return {
@@ -138,1330 +38,1113 @@ function mergePortfolioSyncIntoSite(baseData, sync) {
     }
     const generated = override.generated_bullets.filter((bullet) => !role.bullets.includes(bullet));
     if (generated.length === 0) return role;
-    return {
-      ...role,
-      bullets: [...role.bullets, ...generated],
-    };
+    return { ...role, bullets: [...role.bullets, ...generated] };
   });
 
-  return {
-    ...baseData,
-    experience,
-    portfolioSync,
-  };
+  return { ...baseData, experience, portfolioSync };
 }
 
+// The LinkedIn card renders only when the sync validated; a failed or stale
+// fetch leaves `sync_status !== "ok"` and the section falls away entirely.
 function normalizeLinkedInSync(sync) {
   if (!sync || !sync.meta || sync.meta.sync_status !== "ok") return null;
   if (!sync.profile || (!sync.profile.headline_short && !sync.profile.about_short)) return null;
-  return {
-    meta: sync.meta,
-    profile: sync.profile,
-    experience: Array.isArray(sync.experience) ? sync.experience.slice(0, 2) : [],
-    featured: Array.isArray(sync.featured) ? sync.featured.slice(0, 2) : [],
-    updates: Array.isArray(sync.updates) ? sync.updates.slice(0, 2) : [],
-  };
+  return sync;
 }
 
-function mergeLinkedInIntoSite(baseData, sync) {
-  const linkedin = normalizeLinkedInSync(sync);
-  if (!linkedin) return baseData;
+function buildData() {
+  const base = mergePortfolioSyncIntoSite(window.SITE, window.PORTFOLIO_SYNC);
+  const linkedin = normalizeLinkedInSync(window.LINKEDIN_SYNC);
+  if (!linkedin) return { ...base, linkedin: null };
 
-  const links = (baseData.links || []).map((link) => {
-    if (link.label === "LinkedIn" && linkedin.profile.profile_url) {
-      return { ...link, url: linkedin.profile.profile_url };
-    }
-    return link;
-  });
-
-  return {
-    ...baseData,
-    links,
-    linkedin,
-  };
+  // Keep the canonical profile URL in sync with whatever the bot last validated.
+  const links = (base.links || []).map((link) =>
+    link.label === "LinkedIn" && linkedin.profile.profile_url
+      ? { ...link, url: linkedin.profile.profile_url }
+      : link
+  );
+  return { ...base, links, linkedin };
 }
 
-function formatLinkedInDate(value) {
+const ALL_SECTIONS = [
+  ["experience", "Experience"],
+  ["projects", "Projects"],
+  ["publications", "Publications"],
+  ["skills", "Skills"],
+  ["code", "Code"],
+  ["signals", "Signals"],
+  ["talks", "Talks"],
+  ["teaching", "Teaching"],
+  ["contact", "Contact"],
+];
+
+// #signals only renders when the LinkedIn sync validated, so drop it from the
+// nav too — otherwise a failed sync leaves a link that scrolls nowhere.
+function sectionsFor(data) {
+  return data.linkedin ? ALL_SECTIONS : ALL_SECTIONS.filter(([id]) => id !== "signals");
+}
+
+const FACTS = [
+  "129,572 U.S. census tracts analyzed — every tract in the country — for broadband completeness.",
+  "DistilBERT reached 91.6% accuracy on 1.1M+ EV sentiment posts presented at AAPOR 2025.",
+  "LEXNet: 97% smaller, 93% faster inference, +4% accuracy over the baseline CNN.",
+  "Voice gender recognition hit 98.3% accuracy — 11 misclassifications on the held-out test.",
+  "€38bn football transfer market modeled over 7,023 player-season observations; 78% of player-level variance explained.",
+  "A two-day blood drive: 60+ volunteers, 1,000+ donor records, 844 successful donations.",
+  "+0.57 systematic positive bias found in LLM sentiment vs Reddit data, F(2,549)=28.43, p<0.001.",
+];
+
+function formatSyncDate(value) {
   if (!value) return "";
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return "";
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(parsed);
 }
 
-function getLinkedInSourceView(meta) {
-  const seeded = meta && meta.source === "linkedin-curated-seed";
-  const validatedDate = formatLinkedInDate(meta && meta.last_successful_sync_at);
-  return {
-    eyebrow: seeded ? "LinkedIn Snapshot" : "LinkedIn Signals",
-    title: seeded
-      ? "A curated LinkedIn snapshot, rendered safely while live sync catches up."
-      : "Public profile changes, normalized before they touch the layout.",
-    lead: seeded
-      ? "This section is driven by a curated, validated snapshot that keeps the portfolio complete while public LinkedIn fetches are rate-limited."
-      : "Machine-managed cards rendered only when public LinkedIn data passes fetch, parse, diff, and schema validation.",
-    badge: seeded ? "Curated snapshot" : "Public sync",
-    snapshotLabel: seeded ? "Profile snapshot" : "Current public snapshot",
-    updatesLabel: seeded ? "Recent highlights" : "Latest public updates",
-    experienceLabel: seeded ? "Experience in focus" : "Recent LinkedIn Experience",
-    featuredLabel: seeded ? "Featured work" : "Featured from LinkedIn",
-    note: meta && meta.warning
-      ? meta.warning
-      : seeded
-        ? "Curated from portfolio-owned profile data and validated against the same schema as the live sync."
-        : "Live public LinkedIn data is currently driving these cards.",
-    metaLine: validatedDate
-      ? `Last validated snapshot · ${validatedDate}`
-      : seeded
-        ? "Validated curated snapshot"
-        : "Validated public snapshot",
-    seeded,
+// ── App ─────────────────────────────────────────────────────────────────────
+class Portfolio extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      theme: "dark",
+      scrolled: false,
+      active: "home",
+      typed: "",
+      ind: { x: 0, w: 0, ready: false },
+      metricP: 0,
+      filter: "All",
+      expanded: null,
+      expProgress: 0,
+      menuOpen: false,
+      fadeL: false,
+      fadeR: false,
+      ovFrom: "none",
+      ovClosing: false,
+      buddyOpen: false,
+      buddyInput: "",
+      buddyMsgs: [],
+      factIdx: 0,
+      skillsIn: false,
+    };
+    this.navRefs = {};
+    this.timers = [];
+    this.goCache = {};
+    this.scrollerRef = React.createRef();
+    this.closeRef = React.createRef();
+    this.msgsRef = React.createRef();
+    this.reduced = false;
+  }
+
+  // ── lifecycle ─────────────────────────────────────────────────────────────
+  componentDidMount() {
+    this.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.setState({ theme: document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark" });
+
+    this.osMq = window.matchMedia("(prefers-color-scheme: light)");
+    this.onOS = (e) => {
+      let stored = null;
+      try { stored = localStorage.getItem("theme"); } catch (err) { /* storage blocked */ }
+      if (!stored) this.applyTheme(e.matches ? "light" : "dark", false);
+    };
+    this.osMq.addEventListener("change", this.onOS);
+
+    window.addEventListener("scroll", this.onScroll, { passive: true });
+    window.addEventListener("resize", this.measureNav, { passive: true });
+    this.onScroll();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.onScroll());
+
+    const mainEl = document.querySelector("main");
+    if (mainEl && window.ResizeObserver) {
+      this.ro = new ResizeObserver(() => this.onScroll());
+      this.ro.observe(mainEl);
+    }
+
+    this.io = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.setAttribute("data-in", "1");
+      if (entry.target.id === "skills-grid" && !this.state.skillsIn) this.setState({ skillsIn: true });
+      this.io.unobserve(entry.target);
+    }), { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    this.observeAll();
+    this.mo = new MutationObserver(() => this.observeAll());
+    this.mo.observe(document.body, { childList: true, subtree: true });
+
+    window.addEventListener("keydown", this.onKey);
+    document.addEventListener("click", this.onDocClick);
+
+    this.startTyper();
+    this.countUp();
+    this.mountScenes(0);
+    this.timers.push(setTimeout(this.measureNav, 60));
+  }
+
+  componentDidUpdate() {
+    if (this.dead) return;
+    if (this._lastActive !== this.state.active) {
+      this._lastActive = this.state.active;
+      this.measureNav();
+    }
+  }
+
+  componentWillUnmount() {
+    this.dead = true;
+    window.removeEventListener("scroll", this.onScroll);
+    window.removeEventListener("resize", this.measureNav);
+    window.removeEventListener("keydown", this.onKey);
+    document.removeEventListener("click", this.onDocClick);
+    if (this.osMq) this.osMq.removeEventListener("change", this.onOS);
+    this.timers.forEach(clearTimeout);
+    this.timers = [];
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.io) this.io.disconnect();
+    if (this.mo) this.mo.disconnect();
+    if (this.ro) this.ro.disconnect();
+  }
+
+  // ── 3D explainer scenes ───────────────────────────────────────────────────
+  // explainers-3d.js loads as a module and may land after React mounts, so
+  // poll briefly rather than racing it.
+  mountScenes(tries) {
+    if (this.dead) return;
+    if (window.Explainers3D) { window.Explainers3D.mount(); return; }
+    if (tries > 30) return;
+    this.timers.push(setTimeout(() => this.mountScenes(tries + 1), 120));
+  }
+
+  // ── scroll / nav ──────────────────────────────────────────────────────────
+  onScroll = () => {
+    if (this.dead) return;
+    const probe = window.innerHeight * 0.38;
+    let cur = "home";
+    for (const [id] of this.sections) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      // height > 1 rejects sections that have not been laid out yet: on the
+      // synchronous mount probe every rect is 0-high at top 0, which would
+      // otherwise match all nine and latch the last one.
+      if (r.height > 1 && r.top <= probe) cur = id;
+    }
+    const scrolled = window.scrollY > 40;
+
+    let ep = this.state.expProgress;
+    const tl = document.getElementById("exp-timeline");
+    if (tl) {
+      const r = tl.getBoundingClientRect();
+      ep = Math.min(1, Math.max(0, (window.innerHeight * 0.62 - r.top) / Math.max(1, r.height)));
+    }
+
+    if (cur !== this.state.active || scrolled !== this.state.scrolled || Math.abs(ep - this.state.expProgress) > 0.004) {
+      this.setState({ active: cur, scrolled, expProgress: ep });
+    }
   };
-}
 
-// ── Atoms ───────────────────────────────────────────────────────────────────
-function Tag({ children, accent }) {
-  return <span className={"tag" + (accent ? " tag--accent" : "")}>{children}</span>;
-}
+  measureNav = () => {
+    if (this.dead) return;
+    this.readNavEdges();
+    const ref = this.navRefs[this.state.active];
+    const el = ref && ref.current;
+    if (!el) {
+      if (this.state.ind.ready) this.setState({ ind: { x: 0, w: 0, ready: false } });
+      return;
+    }
+    const x = el.offsetLeft;
+    const w = el.offsetWidth;
+    if (x !== this.state.ind.x || w !== this.state.ind.w || !this.state.ind.ready) {
+      this.setState({ ind: { x, w, ready: true } });
+    }
+    const sc = this.scrollerRef.current;
+    if (sc && sc.scrollWidth > sc.clientWidth + 2) {
+      const target = Math.max(0, Math.min(sc.scrollWidth - sc.clientWidth, x + w / 2 - sc.clientWidth / 2));
+      if (Math.abs(sc.scrollLeft - target) > 6) sc.scrollLeft = target;
+    }
+    this.readNavEdges();
+  };
 
-function Metric({ v, k, color, onMouseEnter, onMouseLeave }) {
-  return (
-    <div className="metric reveal" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <span className="metric__v" style={{ color: color || undefined }}>{v}</span>
-      <span className="metric__k">{k}</span>
-    </div>
-  );
-}
+  readNavEdges = () => {
+    if (this.dead) return;
+    const sc = this.scrollerRef.current;
+    if (!sc) return;
+    const overflow = sc.scrollWidth > sc.clientWidth + 2;
+    const left = overflow && sc.scrollLeft > 4;
+    const right = overflow && sc.scrollLeft < sc.scrollWidth - sc.clientWidth - 4;
+    if (left !== this.state.fadeL || right !== this.state.fadeR) this.setState({ fadeL: left, fadeR: right });
+  };
 
-// ── TileCreature ────────────────────────────────────────────────────────────
-// Tiny pseudo-3D SVG figures dropped into every content tile. Each `kind`
-// renders a self-contained scene (person + prop) with looping CSS animations
-// keyed off classNames defined in styles.css. `position` selects the corner
-// (br = bottom-right, default), `delay` desyncs neighbouring tiles so the
-// grid never animates in lockstep.
-function TileCreature({ kind, color, delay = 0, position = "br" }) {
-  const styleVars = { "--c": color || "var(--accent)", "--d": (delay || 0) + "s" };
-  const cls = "creature creature--" + kind + " creature--" + position;
+  observeAll() {
+    document.querySelectorAll("[data-reveal]:not([data-in]):not([data-obs])").forEach((el) => {
+      el.setAttribute("data-obs", "1");
+      this.io.observe(el);
+    });
+  }
 
-  let body = null;
+  go(id) {
+    return this.goCache[id] || (this.goCache[id] = () => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 84;
+      window.scrollTo({ top, behavior: this.reduced ? "auto" : "smooth" });
+    });
+  }
 
-  if (kind === "desk") {
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="30" ry="3" /></g>
-        <rect x="46" y="22" width="30" height="20" rx="2" fill="none" stroke="currentColor" strokeWidth="1.4" />
-        <rect className="creature__screen" x="49" y="25" width="24" height="14" fill="currentColor" />
-        <line x1="46" y1="42" x2="76" y2="42" stroke="currentColor" strokeWidth="1.4" />
-        <line x1="61" y1="42" x2="61" y2="48" stroke="currentColor" strokeWidth="1.4" />
-        <rect x="56" y="48" width="10" height="2" fill="currentColor" />
-        <rect x="14" y="50" width="60" height="2" fill="currentColor" opacity="0.55" />
-        <g className="creature__person creature__person--type">
-          <circle cx="28" cy="30" r="5" fill="currentColor" />
-          <rect x="24" y="34" width="8" height="14" rx="2" fill="currentColor" />
-          <line x1="28" y1="48" x2="25" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="28" y1="48" x2="32" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line className="creature__arm-l" x1="25" y1="38" x2="36" y2="44" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line className="creature__arm-r" x1="31" y1="38" x2="42" y2="46" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-        </g>
-      </svg>
-    );
-  } else if (kind === "chart") {
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="32" ry="3" /></g>
-        <line x1="14" y1="56" x2="80" y2="56" stroke="currentColor" strokeWidth="1.4" opacity="0.55" />
-        <rect className="creature__bar creature__bar--1" x="48" y="42" width="6" height="14" fill="currentColor" opacity="0.7" />
-        <rect className="creature__bar creature__bar--2" x="58" y="34" width="6" height="22" fill="currentColor" opacity="0.7" />
-        <rect className="creature__bar creature__bar--3" x="68" y="22" width="6" height="34" fill="currentColor" opacity="0.7" />
-        <g className="creature__person creature__person--point">
-          <circle cx="26" cy="28" r="5" fill="currentColor" />
-          <rect x="22" y="32" width="8" height="14" rx="2" fill="currentColor" />
-          <line x1="26" y1="46" x2="22" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="26" y1="46" x2="30" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="23" y1="36" x2="18" y2="42" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line className="creature__arm-point" x1="29" y1="36" x2="44" y2="28" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-        </g>
-      </svg>
-    );
-  } else if (kind === "gear") {
-    const teeth = [0, 45, 90, 135, 180, 225, 270, 315];
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="30" ry="3" /></g>
-        <g className="creature__gear">
-          <circle cx="60" cy="36" r="11" fill="none" stroke="currentColor" strokeWidth="1.6" />
-          <circle cx="60" cy="36" r="3" fill="currentColor" />
-          {teeth.map((a) => (
-            <rect key={a} x="58.5" y="22" width="3" height="5" fill="currentColor" transform={"rotate(" + a + " 60 36)"} />
-          ))}
-        </g>
-        <g className="creature__person creature__person--turn">
-          <circle cx="26" cy="28" r="5" fill="currentColor" />
-          <rect x="22" y="32" width="8" height="14" rx="2" fill="currentColor" />
-          <line x1="26" y1="46" x2="22" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="26" y1="46" x2="30" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="23" y1="36" x2="18" y2="42" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="29" y1="36" x2="46" y2="38" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-        </g>
-      </svg>
-    );
-  } else if (kind === "read") {
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="28" ry="3" /></g>
-        <g className="creature__person creature__person--read">
-          <polygon points="34,18 54,18 44,12" fill="currentColor" />
-          <line x1="44" y1="12" x2="50" y2="14" stroke="currentColor" strokeWidth="1.4" />
-          <circle cx="44" cy="24" r="6" fill="currentColor" />
-          <rect x="38" y="30" width="12" height="18" rx="2" fill="currentColor" />
-          <line x1="44" y1="48" x2="40" y2="60" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-          <line x1="44" y1="48" x2="48" y2="60" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-        </g>
-        <g className="creature__book">
-          <path d="M52 44 L60 42 L60 56 L52 58 Z" fill="currentColor" opacity="0.55" />
-          <path className="creature__page" d="M60 42 L68 44 L68 58 L60 56 Z" fill="currentColor" opacity="0.85" />
-        </g>
-      </svg>
-    );
-  } else if (kind === "paper") {
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="30" ry="3" /></g>
-        <g className="creature__paper">
-          <rect x="46" y="22" width="28" height="34" rx="1" fill="currentColor" opacity="0.18" />
-          <line className="creature__line creature__line--1" x1="50" y1="28" x2="70" y2="28" stroke="currentColor" strokeWidth="1.2" />
-          <line className="creature__line creature__line--2" x1="50" y1="34" x2="68" y2="34" stroke="currentColor" strokeWidth="1.2" />
-          <line className="creature__line creature__line--3" x1="50" y1="40" x2="66" y2="40" stroke="currentColor" strokeWidth="1.2" />
-          <line className="creature__line creature__line--4" x1="50" y1="46" x2="70" y2="46" stroke="currentColor" strokeWidth="1.2" />
-        </g>
-        <g className="creature__person creature__person--review">
-          <circle cx="28" cy="26" r="5" fill="currentColor" />
-          <rect x="24" y="30" width="8" height="14" rx="2" fill="currentColor" />
-          <line x1="28" y1="44" x2="24" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="28" y1="44" x2="32" y2="56" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="25" y1="34" x2="20" y2="40" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line className="creature__arm-pen" x1="31" y1="34" x2="48" y2="38" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-        </g>
-      </svg>
-    );
-  } else if (kind === "build") {
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="30" ry="3" /></g>
-        <g className="creature__cube">
-          <path d="M54 30 L62 26 L70 30 L70 44 L62 48 L54 44 Z" fill="none" stroke="currentColor" strokeWidth="1.4" />
-          <line x1="54" y1="30" x2="62" y2="34" stroke="currentColor" strokeWidth="1.2" />
-          <line x1="62" y1="34" x2="70" y2="30" stroke="currentColor" strokeWidth="1.2" />
-          <line x1="62" y1="34" x2="62" y2="48" stroke="currentColor" strokeWidth="1.2" />
-        </g>
-        <g className="creature__person creature__person--hammer">
-          <circle cx="26" cy="28" r="5" fill="currentColor" />
-          <rect x="22" y="32" width="8" height="14" rx="2" fill="currentColor" />
-          <line x1="26" y1="46" x2="22" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="26" y1="46" x2="30" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <g className="creature__hammer-arm">
-            <line x1="29" y1="36" x2="44" y2="34" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-            <rect x="42" y="30" width="6" height="8" fill="currentColor" />
-          </g>
-        </g>
-      </svg>
-    );
-  } else if (kind === "commit") {
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="32" ry="3" /></g>
-        <rect x="40" y="20" width="38" height="22" rx="2" fill="none" stroke="currentColor" strokeWidth="1.4" />
-        <text x="44" y="32" fontFamily="monospace" fontSize="6" fill="currentColor" opacity="0.75">$ git</text>
-        <text x="44" y="40" fontFamily="monospace" fontSize="6" fill="currentColor" opacity="0.6">
-          commit<tspan className="creature__cursor">_</tspan>
-        </text>
-        <rect x="40" y="42" width="38" height="2" fill="currentColor" />
-        <g className="creature__person creature__person--type">
-          <circle cx="22" cy="28" r="5" fill="currentColor" />
-          <rect x="18" y="32" width="8" height="14" rx="2" fill="currentColor" />
-          <line x1="22" y1="46" x2="18" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="22" y1="46" x2="26" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line className="creature__arm-l" x1="19" y1="36" x2="32" y2="44" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line className="creature__arm-r" x1="25" y1="36" x2="36" y2="46" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-        </g>
-        <g className="creature__commit-dot">
-          <circle cx="78" cy="14" r="3" fill="currentColor" />
-        </g>
-      </svg>
-    );
-  } else if (kind === "present") {
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="32" ry="3" /></g>
-        <rect x="46" y="14" width="32" height="22" rx="1" fill="none" stroke="currentColor" strokeWidth="1.4" />
-        <line className="creature__slide-line creature__slide-line--1" x1="50" y1="20" x2="74" y2="20" stroke="currentColor" strokeWidth="1.2" />
-        <line className="creature__slide-line creature__slide-line--2" x1="50" y1="26" x2="68" y2="26" stroke="currentColor" strokeWidth="1.2" />
-        <line className="creature__slide-line creature__slide-line--3" x1="50" y1="32" x2="72" y2="32" stroke="currentColor" strokeWidth="1.2" />
-        <line x1="46" y1="36" x2="78" y2="36" stroke="currentColor" strokeWidth="1.4" />
-        <line x1="62" y1="36" x2="62" y2="42" stroke="currentColor" strokeWidth="1.4" />
-        <g className="creature__person creature__person--present">
-          <circle cx="22" cy="32" r="5" fill="currentColor" />
-          <rect x="18" y="36" width="8" height="14" rx="2" fill="currentColor" />
-          <line x1="22" y1="50" x2="18" y2="60" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="22" y1="50" x2="26" y2="60" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="19" y1="40" x2="14" y2="46" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line className="creature__arm-pointer" x1="25" y1="40" x2="44" y2="26" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-        </g>
-      </svg>
-    );
-  } else if (kind === "teach") {
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="32" ry="3" /></g>
-        <rect x="44" y="14" width="34" height="26" rx="2" fill="currentColor" opacity="0.18" />
-        <rect x="44" y="14" width="34" height="26" rx="2" fill="none" stroke="currentColor" strokeWidth="1.2" />
-        <path className="creature__chalk creature__chalk--1" d="M48 22 q4 4 8 0 q4 -4 8 0" fill="none" stroke="currentColor" strokeWidth="1.2" />
-        <path className="creature__chalk creature__chalk--2" d="M48 30 q3 -3 6 0 q3 3 6 0 q3 -3 6 0" fill="none" stroke="currentColor" strokeWidth="1.2" />
-        <g className="creature__person creature__person--teach">
-          <circle cx="26" cy="30" r="5" fill="currentColor" />
-          <rect x="22" y="34" width="8" height="14" rx="2" fill="currentColor" />
-          <line x1="26" y1="48" x2="22" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="26" y1="48" x2="30" y2="58" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="23" y1="38" x2="18" y2="44" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <line className="creature__arm-write" x1="29" y1="38" x2="44" y2="32" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-        </g>
-      </svg>
-    );
-  } else {
-    // wave (default)
-    body = (
-      <svg viewBox="0 0 90 70" className="creature__svg" aria-hidden="true">
-        <g className="creature__shadow"><ellipse cx="46" cy="64" rx="22" ry="3" /></g>
-        <g className="creature__person creature__person--wave">
-          <circle cx="46" cy="22" r="6" fill="currentColor" />
-          <rect x="40" y="28" width="12" height="18" rx="2" fill="currentColor" />
-          <line x1="46" y1="46" x2="40" y2="60" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-          <line x1="46" y1="46" x2="52" y2="60" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-          <line x1="40" y1="32" x2="34" y2="42" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-          <g className="creature__wave-arm">
-            <line x1="52" y1="32" x2="60" y2="20" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-            <circle cx="60" cy="18" r="2" fill="currentColor" />
-          </g>
-        </g>
-      </svg>
+  onKey = (e) => {
+    if (e.key !== "Escape") return;
+    if (this.state.expanded) this.closeExpanded();
+    else if (this.state.menuOpen) this.setState({ menuOpen: false });
+    else if (this.state.buddyOpen) this.setState({ buddyOpen: false });
+  };
+
+  onDocClick = (e) => {
+    if (!this.state.menuOpen) return;
+    const menu = document.querySelector(".nav__menu");
+    if (menu && !menu.contains(e.target)) this.setState({ menuOpen: false });
+  };
+
+  // ── theme ─────────────────────────────────────────────────────────────────
+  applyTheme(next, persist) {
+    document.documentElement.setAttribute("data-theme", next);
+    if (persist) {
+      try { localStorage.setItem("theme", next); } catch (e) { /* storage blocked */ }
+    }
+    this.setState({ theme: next });
+  }
+
+  // ── hero animations ───────────────────────────────────────────────────────
+  startTyper() {
+    const words = (this.props.data.profile && this.props.data.profile.typingWords) || [];
+    if (!words.length) return;
+    if (this.reduced) { this.setState({ typed: words[0] }); return; }
+
+    let idx = 0;
+    let len = 0;
+    let phase = "type";
+    const step = () => {
+      if (this.dead) return;
+      const word = words[idx];
+      let delay = 70;
+      if (phase === "type") {
+        len++;
+        if (len >= word.length) { phase = "hold"; delay = 1700; }
+      } else if (phase === "hold") {
+        phase = "del";
+        delay = 35;
+      } else {
+        len--;
+        delay = 35;
+        if (len <= 0) { phase = "type"; idx = (idx + 1) % words.length; delay = 300; }
+      }
+      this.setState({ typed: word.slice(0, Math.max(0, len)) });
+      this.timers.push(setTimeout(step, delay));
+    };
+    step();
+  }
+
+  countUp() {
+    if (this.reduced) { this.setState({ metricP: 1 }); return; }
+    const t0 = performance.now() + 350;
+    const dur = 1400;
+    const tick = (now) => {
+      if (this.dead) return;
+      const p = Math.min(1, Math.max(0, (now - t0) / dur));
+      this.setState({ metricP: 1 - Math.pow(1 - p, 3) });
+      if (p < 1) this.raf = requestAnimationFrame(tick);
+    };
+    this.raf = requestAnimationFrame(tick);
+  }
+
+  fmtMetric(value, p) {
+    const m = /^([\d.]+)(.*)$/.exec(value);
+    if (!m) return value;
+    const n = parseFloat(m[1]);
+    const dec = (m[1].split(".")[1] || "").length;
+    return (n * p).toFixed(dec) + m[2];
+  }
+
+  // ── FLIP expand / collapse ────────────────────────────────────────────────
+  // The dialog animates out of the card that opened it: measure the trigger,
+  // express it as a transform away from the dialog's resting position, and let
+  // the ov-in keyframe run it back to zero.
+  flipTransform(el) {
+    if (!el || this.reduced) return "none";
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width / 2 - window.innerWidth / 2;
+    const cy = r.top + r.height / 2 - window.innerHeight / 2;
+    const sc = Math.max(0.5, Math.min(1, r.width / Math.min(780, window.innerWidth * 0.9)));
+    return "translate(" + cx.toFixed(1) + "px," + cy.toFixed(1) + "px) scale(" + sc.toFixed(3) + ")";
+  }
+
+  openExpanded(payload, ev) {
+    const el = ev && ev.currentTarget;
+    this.lastTrigger = el;
+    this.setState({ expanded: payload, ovFrom: this.flipTransform(el), ovClosing: false });
+    this.timers.push(setTimeout(() => {
+      if (this.closeRef.current) this.closeRef.current.focus();
+    }, 60));
+  }
+
+  closeExpanded = () => {
+    const el = this.lastTrigger;
+    this.setState({ ovFrom: this.flipTransform(el), ovClosing: true });
+    this.timers.push(setTimeout(() => {
+      this.setState({ expanded: null, ovClosing: false });
+      if (el && el.focus) el.focus();
+    }, this.reduced ? 0 : 380));
+  };
+
+  // ── research assistant ────────────────────────────────────────────────────
+  answer(q) {
+    const D = this.props.data;
+    const t = q.toLowerCase();
+    const rules = [
+      [/talk|present|aapor|keynote/, "One conference presentation: the 80th Annual AAPOR Conference in St. Louis, MO on May 16, 2025 — transformer-based EV sentiment research over a 1.1M+ post pipeline, 91.6% DistilBERT accuracy, and measurable LLM sentiment bias. Details are in the Talks section."],
+      [/publicat|publish|paper|article|journal|conference|scholar|orcid/, "Two research outputs: a Springer journal article on supply-chain sustainability using fuzzy-AHP with 200+ experts (2024), and an AAPOR 2025 conference paper on EV sentiment using DistilBERT at 91.6% accuracy over 1.1M+ posts. Five more works are in the 2026 pipeline via ORCID."],
+      [/skill|technolog|program|python|stack|pytorch/, "Top groups: Survey & Research Methods (98%), AI/ML (95%), Core AI Systems (91%), Programming (84%). Stack includes Python, R, PyTorch, TensorFlow, Hugging Face, LangChain, and AWS/Azure/GCP."],
+      [/educat|degree|university|gpa|bits|umd/, "M.S. Survey & Data Science at UMD (GPA 3.814/4.0, JPSM Dean's Fellow 2025–26) and B.E. Civil Engineering with a Data Science minor from BITS Pilani (GPA 3.327/4.0)."],
+      [/project|build|portfolio/, "20 projects in the Projects section — EV sentiment (1.1M+ posts, 91.6%), football market value (7,023 player-seasons), LEXNet (97% smaller CNN), and the 129K-tract broadband pipeline. Click any card for the full case study."],
+      [/contact|email|reach|connect|phone/, "Email " + D.profile.email + " · LinkedIn, GitHub, Scholar and ORCID links are all in the Contact section. Based in " + D.profile.location + "."],
+      [/github|repo|code|commit/, "44 public repositories at github.com/namo507. Featured: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, career-ops."],
+      [/geospatial|census|broadband|michigan|epidemiol/, "At U. Michigan ISR: a geospatial pipeline across 129,572 U.S. census tracts and 3 RUCA strata — 100% broadband completeness, 28.6% less baseline missingness, and significant rural inflections (p < 0.01)."],
+      [/teach|course|student|surv735/, "TA for SURV735 (Data Privacy & Confidentiality) at JPSM, supporting 23 graduate students, plus a Canvas LMS redesign for 10+ instructors and 125+ students: +30% satisfaction, −40% setup time."],
+      [/award|fellow|achiev|honor/, "JPSM Dean's Fellowship (AY 2025–26), 1st rank in HRD among 180 students at BITS Pilani, Top 10 in Water & Wastewater Treatment, and Microsoft Azure AI Fundamentals certification."],
+      [/experience|job|role|position|current|now\b|work/, "Currently Data Scientist II at the Institute for Mind and Brain, University of South Carolina — a React/TypeScript/Python analytics platform, REDCap and clinical EHR pipelines, and PyTorch CNN-LSTM/Transformer models across 260 participants. Earlier: SDSC at UMD, U. Michigan ISR, JPSM, Legistify, Accenture."],
+      [/survey|methodolog|sampling|causal|measurement/, "Core area: survey methodology and data science — trustworthy data integration, AI-enabled quality assurance, causal inference, and privacy-preserving measurement."],
+      [/hello|hi\b|hey|who are you|what can you do/, "Hi — ask me about publications, projects, skills, experience, teaching, or how to get in touch. Every answer comes straight from this site's data."],
+    ];
+    for (const [re, out] of rules) if (re.test(t)) return out;
+    return "Namit is a Data Scientist II at the Institute for Mind and Brain (U. South Carolina) and an M.S. Survey & Data Science graduate from UMD, working on survey methodology, causal inference, and responsible AI. 20 projects, 2 publications, 44 repositories. What would you like to know?";
+  }
+
+  sendBuddy = () => {
+    const q = this.state.buddyInput.trim();
+    if (!q) return;
+    const msgs = this.state.buddyMsgs.concat([
+      { role: "user", content: q },
+      { role: "assistant", content: this.answer(q) },
+    ]);
+    this.setState({ buddyMsgs: msgs, buddyInput: "" });
+    this.timers.push(setTimeout(() => {
+      const el = this.msgsRef.current;
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 60));
+  };
+
+  // ── render helpers ────────────────────────────────────────────────────────
+  navRef(id) {
+    return this.navRefs[id] || (this.navRefs[id] = React.createRef());
+  }
+
+  get sections() {
+    return sectionsFor(this.props.data);
+  }
+
+  renderNav(profile) {
+    const { active, scrolled, menuOpen, ind, fadeL, fadeR, theme } = this.state;
+    const dark = theme === "dark";
+    const activeLabel = (this.sections.find(([id]) => id === active) || [null, "Sections"])[1];
+    const mask = fadeL || fadeR
+      ? "linear-gradient(90deg, " + (fadeL ? "transparent 0, #000 22px" : "#000 0") + ", " +
+        (fadeR ? "#000 calc(100% - 22px), transparent 100%" : "#000 100%") + ")"
+      : "none";
+
+    return (
+      <header className="nav-wrap">
+        <nav className="nav" aria-label="Primary" data-scrolled={scrolled ? "1" : undefined}>
+          <button
+            className="nav__brand"
+            onClick={() => window.scrollTo({ top: 0, behavior: this.reduced ? "auto" : "smooth" })}
+            aria-label="Back to top"
+          >
+            <img
+              className="nav__avatar"
+              src={profile.avatarUrl}
+              alt=""
+              width="30"
+              height="30"
+              loading="eager"
+              /* fetchpriority stays lowercase: React 18 forwards unknown
+                 lowercase attributes to the DOM silently; the camelCase form
+                 is only recognized from React 19 onward. */
+              fetchpriority="high"
+            />
+            <span className="nav__name" data-hide-mobile="1">{profile.name}</span>
+          </button>
+
+          <div className="nav__menu">
+            <button
+              className="nav__menu-btn"
+              onClick={(e) => { e.stopPropagation(); this.setState({ menuOpen: !menuOpen }); }}
+              aria-expanded={menuOpen ? "true" : "false"}
+              aria-haspopup="menu"
+            >
+              <span>{active === "home" ? "Sections" : activeLabel}</span>
+              <span className="nav__caret" aria-hidden="true" style={{ transform: "rotate(" + (menuOpen ? 180 : 0) + "deg)" }}>▼</span>
+            </button>
+            {menuOpen ? (
+              <div className="nav__menu-pop" role="menu" aria-label="Sections">
+                {this.sections.map(([id, label], i) => (
+                  <button
+                    key={id}
+                    className="nav__menu-item"
+                    role="menuitem"
+                    aria-current={active === id ? "true" : undefined}
+                    onClick={() => { this.setState({ menuOpen: false }); this.go(id)(); }}
+                  >
+                    <span>{label}</span>
+                    <span className="nav__menu-num" aria-hidden="true">{"0" + (i + 1)}</span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <div
+            className="nav__row"
+            ref={this.scrollerRef}
+            onScroll={this.readNavEdges}
+            style={{ WebkitMaskImage: mask, maskImage: mask }}
+          >
+            <span
+              className="nav__ind"
+              aria-hidden="true"
+              style={{
+                width: ind.w + "px",
+                transform: "translateX(" + ind.x + "px)",
+                opacity: ind.ready ? 1 : 0,
+              }}
+            />
+            {this.sections.map(([id, label]) => (
+              <button
+                key={id}
+                className="nav__link"
+                ref={this.navRef(id)}
+                onClick={this.go(id)}
+                aria-current={active === id ? "true" : undefined}
+              >{label}</button>
+            ))}
+          </div>
+
+          <div className="nav__actions">
+            <button
+              className="theme-toggle"
+              onClick={() => this.applyTheme(dark ? "light" : "dark", true)}
+              aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+              title={dark ? "Switch to light theme" : "Switch to dark theme"}
+            >
+              <span aria-hidden="true">{dark ? "☀" : "☾"}</span>
+            </button>
+            <a className="btn btn--primary nav__cta" href={profile.pdfUrl} target="_blank" rel="noopener">CV ↗</a>
+          </div>
+        </nav>
+      </header>
     );
   }
 
-  return (
-    <span className={cls} style={styleVars} aria-hidden="true">
-      {body}
-    </span>
-  );
-}
-
-function SectionTitle({ num, eyebrow, title, lead }) {
-  return (
-    <div className="reveal">
-      <div className="section-title-row">
+  renderHead(num, eyebrow, title, lead, scene) {
+    return (
+      <div className="sec__head" data-reveal="1">
         <div>
-          <p className="eyebrow">{eyebrow}</p>
-          <h2 className="h-section">{title}</h2>
+          <p className="eyebrow">{num} — {eyebrow}</p>
+          <h2 className="sec__title">{title}</h2>
+          <p className="sec__lead">{lead}</p>
         </div>
-        <div className="section-title-row__num">{num}</div>
+        <div className="scene" data-scene={scene} aria-hidden="true" />
       </div>
-      {lead && <p style={{ color: "var(--ink-soft)", maxWidth: 720, marginBottom: 32 }}>{lead}</p>}
-    </div>
-  );
-}
+    );
+  }
 
-function HeroConnectWorkflow({ data, onJump }) {
-  const workflowLinks = [
-    {
-      label: "Email",
-      url: "mailto:" + data.profile.email,
-      meta: "reply first",
-      accent: true,
-    },
-    {
-      label: "LinkedIn",
-      url: "https://www.linkedin.com/in/namit-shrivastava-baab47204/",
-      meta: "network",
-    },
-    {
-      label: "GitHub",
-      url: "https://github.com/namo507",
-      meta: "code",
-    },
-    {
-      label: "Scholar",
-      url: "https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en",
-      meta: "papers",
-    },
-  ];
+  render() {
+    const D = this.props.data;
+    const P = D.profile;
+    const s = this.state;
+    const li = D.linkedin;
+    const seeded = li && li.meta.source === "linkedin-curated-seed";
+    const validated = li ? formatSyncDate(li.meta.last_successful_sync_at) : "";
 
-  return (
-    <div className="hero-connect card reveal">
-      <div className="hero-connect__header">
-        <div>
-          <p className="eyebrow">Connect workflow</p>
-          <h3 className="h-card hero-connect__title">Follow the signal, not the scavenger hunt.</h3>
-        </div>
-        <button className="hero-connect__jump" onClick={() => onJump("contact")}>Open contact</button>
-      </div>
+    const tags = ["All"].concat(Array.from(new Set(D.projects.flatMap((p) => p.tags))).slice(0, 9));
+    const visible = s.filter === "All" ? D.projects : D.projects.filter((p) => p.tags.includes(s.filter));
+    const langTotal = D.github.languageMix.reduce((a, l) => a + l.count, 0);
+    const langFill = s.active === "code" || s.skillsIn ? 1 : 0;
+    const ov = s.expanded;
 
-      <p className="hero-connect__copy">Start with email, then branch into code, papers, or the professional internet.</p>
+    return (
+      <React.Fragment>
+        {this.renderNav(P)}
 
-      <div className="hero-connect__map">
-        <svg className="hero-connect__svg" viewBox="0 0 520 280" aria-hidden="true" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="workflow-line" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="rgba(127,230,210,0.12)" />
-              <stop offset="45%" stopColor="rgba(127,230,210,0.9)" />
-              <stop offset="100%" stopColor="rgba(168,197,255,0.75)" />
-            </linearGradient>
-          </defs>
-          <path d="M 110 140 C 170 140, 208 92, 298 70" />
-          <path d="M 110 140 C 170 140, 208 128, 298 116" />
-          <path d="M 110 140 C 170 140, 208 164, 298 164" />
-          <path d="M 110 140 C 170 140, 208 206, 298 210" />
-          <circle cx="110" cy="140" r="9" />
-        </svg>
-
-        <div className="hero-connect__hub">
-          <span className="hero-connect__hub-label">Start here</span>
-          <strong>Connect</strong>
-          <span className="hero-connect__hub-meta">survey + ML + applied systems</span>
-        </div>
-
-        {workflowLinks.map((link, index) => (
-          <a
-            key={link.label}
-            className={"hero-connect__node hero-connect__node--" + (index + 1) + (link.accent ? " hero-connect__node--accent" : "")}
-            href={link.url}
-            target={link.url.startsWith("mailto:") ? undefined : "_blank"}
-            rel={link.url.startsWith("mailto:") ? undefined : "noopener"}
-          >
-            <span className="hero-connect__node-label">{link.label}</span>
-            <span className="hero-connect__node-meta">{link.meta}</span>
-          </a>
-        ))}
-      </div>
-
-      <div className="hero-connect__footer">
-        <span>{data.profile.location}</span>
-        <span>{data.profile.phone}</span>
-      </div>
-    </div>
-  );
-}
-
-// ── Sections ────────────────────────────────────────────────────────────────
-function Hero({ data, onJump }) {
-  const word = useTypewriter(data.profile.typingWords);
-  return (
-    <section id="home" className="section">
-      <div className="section__container">
-        <div className="hero">
-          <div className="reveal">
-            <p className="eyebrow">{data.profile.eyebrow}</p>
-            <p className="hero__typer">
-              <span style={{ color: "var(--ink-mute)" }}>Currently building&nbsp;</span>
-              <b>{word}</b>
-              <span className="cursor" />
-            </p>
-            <h1 className="h-display">{data.profile.headline}</h1>
-            <p className="hero__lead">{data.profile.summary}</p>
-            <div className="btn-row">
-              <button className="btn btn--primary" onClick={() => onJump("cv")}>View CV →</button>
-              <button className="btn" onClick={() => onJump("publications")}>Publications</button>
-              <button className="btn" onClick={() => onJump("projects")}>Projects</button>
-              <a className="btn" href={data.github.profileUrl} target="_blank" rel="noopener">GitHub ↗</a>
-            </div>
-            <div className="metric-grid">
-              {data.metrics.map((m, i) => {
-                const metricFacts = [
-                  "Geospatial integration across all 129,572 US census tracts at U. Michigan ISR — 100% broadband completeness achieved.",
-                  "Multi-source NLP pipeline: 1.1M+ Reddit posts + 40 NYT articles using DistilBERT. Presented at AAPOR 2025.",
-                  "Logo-similarity detection at Legistify — 2.4M images processed at 92% precision, cutting manual review by 70%.",
-                  "DistilBERT at 91.6% accuracy topped all 10 model comparisons on the EV sentiment analysis task.",
-                ];
-                return (
-                  <Metric key={i} v={m.value} k={m.label}
-                    onMouseEnter={() => window.BUDDY_SHOW?.({ title: m.value + " · " + m.label, fact: metricFacts[i] })}
-                    onMouseLeave={() => window.BUDDY_CLEAR?.()}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="hero__visuals">
-            <div className="orb-stage reveal">
-              <div className="orb-ring"><div className="orb-ring__node" style={{"--col":"#69d7c3"}} /></div>
-              <div className="orb-ring orb-ring--2"><div className="orb-ring__node" style={{"--col":"#8fb6ff", left:"30%"}} /></div>
-              <div className="orb-ring orb-ring--3"><div className="orb-ring__node" style={{"--col":"#f1b76a", left:"70%"}} /></div>
-              <div className="orb orb--core" />
-              <div className="orb" style={{ "--col": "#8fb6ff", inset: "5% 70% 70% 5%", animationDelay: "-3s" }} />
-              <div className="orb" style={{ "--col": "#f1b76a", inset: "65% 8% 12% 70%", animationDelay: "-7s" }} />
-              <div className="orb" style={{ "--col": "#ff8a9b", inset: "55% 65% 18% 18%", animationDelay: "-11s" }} />
-            </div>
-            <HeroConnectWorkflow data={data} onJump={onJump} />
-          </div>
-        </div>
-
-        {/* Ribbon */}
-        <div className="ribbon">
-          <div className="ribbon__track">
-            {[...data.profile.typingWords, "Survey-aware AI", "Causal inference", "Geospatial epidemiology", "Privacy-preserving deployment", ...data.profile.typingWords].map((w, i) => (
-              <React.Fragment key={i}>
-                <span style={{color: i % 2 ? "var(--accent-warm)" : "var(--accent)"}}>● {w}</span>
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        {/* interests cloud */}
-        <div className="reveal" style={{ marginTop: 18 }}>
-          <p className="eyebrow">Research interests</p>
-          <div>{data.interests.map((i) => <Tag key={i}>{i}</Tag>)}</div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CVSection({ data }) {
-  const wideCards = experienceSpans(data.experience);
-  return (
-    <section id="cv" className="section">
-      <div className="section__container">
-        <SectionTitle num="01" eyebrow="Curriculum Vitae" title="Experience, education, results, and skills." lead="Quantified outcomes across research, infrastructure, public health, and ML engineering." />
-
-        {/* Impact */}
-        <div className="grid-4 reveal">
-          {data.results.map((r, i) => {
-            const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b"][i];
-            return (
-              <div className="card" key={i}
-                onMouseEnter={() => window.BUDDY_SHOW?.({ title: r.metric + " — " + r.title, fact: r.detail })}
-                onMouseLeave={() => window.BUDDY_CLEAR?.()}
-              >
-                <span className="card__circle" style={{"--col": c}} />
-                <p className="card__meta">Impact</p>
-                <div className="metric__v" style={{fontSize:36}}>{r.metric}</div>
-                <h3 className="h-card" style={{marginTop:8}}>{r.title}</h3>
-                <p className="card__sub">{r.detail}</p>
-                <TileCreature kind="chart" color={c} delay={i * 0.18} />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Experience timeline */}
-        <h3 className="h-card reveal" style={{marginTop:48, marginBottom:16, fontSize:22}}>Professional Experience</h3>
-        <div className="grid-2">
-          {data.experience.map((r, i) => {
-            const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff"][i % 6];
-            return (
-              <div className={"card reveal" + (wideCards[i] ? " card--wide" : "")} key={i}
-                onMouseEnter={() => window.BUDDY_SHOW?.({ title: r.role + " @ " + r.org, fact: r.bullets[0] })}
-                onMouseLeave={() => window.BUDDY_CLEAR?.()}
-              >
-                <span className="card__circle" style={{"--col": c}} />
-                <p className="card__meta">
-                  {r.dates} · {r.location}
-                  {r.current ? <span className="card__badge">Current</span> : null}
+        <main id="content">
+          {/* ── Home ───────────────────────────────────────────────────── */}
+          <section id="home" className="sec sec--home">
+            <div className="hero">
+              <div data-reveal="1" data-in="1">
+                <p className="eyebrow">{P.eyebrow}</p>
+                <p className="hero__typed" aria-live="polite">
+                  Currently building <b>{s.typed}</b>
+                  <span className="caret" aria-hidden="true" />
                 </p>
-                <h4 className="h-card">{r.role}</h4>
-                <p className="card__sub" style={{color:"var(--accent)"}}>{r.org}</p>
-                <ul className="card__bullets">
-                  {r.bullets.map((b, j) => <li key={j}>{b}</li>)}
-                </ul>
-                <TileCreature kind="desk" color={c} delay={i * 0.22} />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Skills */}
-        <h3 className="h-card reveal" style={{marginTop:48, marginBottom:16, fontSize:22}}>Technical Skills</h3>
-        <div className="grid-2">
-          {data.skills.map((s, i) => {
-            const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff","#7ad6ff"][i % 7];
-            return (
-              <div className="skill reveal" key={s.name}
-                onMouseEnter={() => window.BUDDY_SHOW?.({ title: s.name + " · " + s.score + "%", fact: s.summary + " · Tools: " + s.tools.slice(0, 4).join(", ") })}
-                onMouseLeave={() => window.BUDDY_CLEAR?.()}
-              >
-                <span className="card__circle" style={{"--col": c}} />
-                <div className="skill__head">
-                  <div>
-                    <div className="skill__tier">{s.tier}</div>
-                    <div className="h-card" style={{marginTop:4}}>{s.name}</div>
-                  </div>
-                  <div className="metric__v" style={{fontSize:24, color: s.featured ? "var(--accent)" : "var(--ink)"}}>{s.score}%</div>
+                <h1 className="hero__title">{P.headline}</h1>
+                <p className="hero__summary">{P.summary}</p>
+                <div className="btn-row hero__actions">
+                  <button className="btn btn--primary" onClick={this.go("experience")}>View experience →</button>
+                  <button className="btn" onClick={this.go("publications")}>Publications</button>
+                  <button className="btn" onClick={this.go("projects")}>Projects</button>
+                  <a className="btn" href={D.github.profileUrl} target="_blank" rel="noopener">GitHub ↗</a>
                 </div>
-                <p className="card__sub">{s.summary}</p>
-                <div className="skill__bar"><div className="skill__fill" style={{"--w": s.score/100}} /></div>
-                <div>{s.tools.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-                <TileCreature kind="gear" color={c} delay={i * 0.15} />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Education */}
-        <h3 className="h-card reveal" style={{marginTop:48, marginBottom:16, fontSize:22}}>Education</h3>
-        <div className="grid-2">
-          {data.education.map((e, i) => {
-            const c = ["#8fb6ff","#f1b76a"][i];
-            return (
-              <div className="card reveal" key={i}
-                onMouseEnter={() => window.BUDDY_SHOW?.({ title: e.degree, fact: e.institution + " · " + e.dates + " · " + e.highlights.join(", ") })}
-                onMouseLeave={() => window.BUDDY_CLEAR?.()}
-              >
-                <span className="card__circle" style={{"--col": c}} />
-                <p className="card__meta">{e.dates} · {e.location}</p>
-                <h4 className="h-card">{e.degree}</h4>
-                <p className="card__sub" style={{color:"var(--accent)"}}>{e.institution}</p>
-                <div style={{marginTop:10}}>{e.highlights.map((h) => <Tag key={h} accent>{h}</Tag>)}</div>
-                <div style={{marginTop:10}}>{e.coursework.map((c2) => <Tag key={c2}>{c2}</Tag>)}</div>
-                <TileCreature kind="read" color={c} delay={i * 0.3} />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Achievements + Service */}
-        <div className="grid-2 reveal" style={{marginTop:48}}>
-          <div className="card">
-            <p className="card__meta">Achievements</p>
-            <ul className="card__bullets">{data.achievements.map((a) => <li key={a}>{a}</li>)}</ul>
-            <TileCreature kind="wave" color="#bcd86c" delay={0} />
-          </div>
-          <div className="card">
-            <p className="card__meta">Service & Leadership</p>
-            <ul className="card__bullets">
-              {data.service.map((s) => <li key={s.org}><b>{s.role}</b> · {s.org} <span style={{color:"var(--ink-mute)"}}>({s.dates})</span><br/>{s.note}</li>)}
-            </ul>
-            <TileCreature kind="wave" color="#c8a4ff" delay={0.4} />
-          </div>
-        </div>
-
-        <div className="btn-row reveal" style={{marginTop:32}}>
-          <a className="btn btn--primary" href={data.profile.pdfUrl} target="_blank" rel="noopener">Download PDF CV</a>
-          <a className="btn" href={"mailto:" + data.profile.email}>Email</a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PublicationsSection({ data }) {
-  return (
-    <section id="publications" className="section">
-      <div className="section__container">
-        <SectionTitle num="02" eyebrow="Research Output" title="Publications, papers, and scholarly work." lead="Peer-reviewed and conference research at the intersection of survey methodology, NLP, and applied AI." />
-        <div className="grid-2">
-          {data.publications.map((p, i) => {
-            const c = ["#8fb6ff","#ff8a9b"][i];
-            return (
-              <a className="card reveal" key={i} href={p.url} target="_blank" rel="noopener" style={{display:"block"}}
-                onMouseEnter={() => window.BUDDY_SHOW?.({ title: p.category + " · " + p.date, fact: p.excerpt })}
-                onMouseLeave={() => window.BUDDY_CLEAR?.()}
-              >
-                <span className="card__circle" style={{"--col": c}} />
-                <p className="card__meta">{p.category} · {p.date}</p>
-                <h3 className="h-card">{p.title}</h3>
-                <p className="card__sub" style={{color:"var(--accent)"}}>{p.venue}</p>
-                <p className="card__sub" style={{marginTop:10}}>{p.excerpt}</p>
-                <div className="grid-3" style={{marginTop:16, gap:8}}>
-                  {p.stats.map((s) => (
-                    <div key={s.k} className="stat-chip">
-                      <div className="metric__v" style={{fontSize:22, color:"var(--accent-cool)"}}>{s.v}</div>
-                      <div className="metric__k">{s.k}</div>
+                <div className="hero__metrics">
+                  {D.metrics.map((m) => (
+                    <div key={m.label}>
+                      <div className="metric__v">{this.fmtMetric(m.value, s.metricP)}</div>
+                      <div className="metric__k">{m.label}</div>
                     </div>
                   ))}
                 </div>
-                <p style={{marginTop:14, color:"var(--ink-mute)", fontSize:12, fontFamily:"var(--mono)"}}>{p.citation}</p>
-                <div style={{marginTop:14, color:"var(--accent)"}}>Read paper ↗</div>
-                <TileCreature kind="paper" color={c} delay={i * 0.35} />
-              </a>
-            );
-          })}
-        </div>
-
-        {/* 2026 research pipeline — titles verified against the public ORCID record. */}
-        {Array.isArray(data.worksInProgress) && data.worksInProgress.length > 0 && (
-          <div className="card reveal pipeline-card" style={{marginTop: 24}}>
-            <p className="card__meta">2026 research pipeline · via ORCID</p>
-            <ul className="card__bullets">
-              {data.worksInProgress.map((w) => (
-                <li key={w.title}><b>{w.title}</b> <span style={{color: "var(--ink-mute)"}}>· {w.kind} · {w.year}</span></li>
-              ))}
-            </ul>
-            <TileCreature kind="paper" color="#a8c5ff" delay={0.2} />
-          </div>
-        )}
-
-        <div className="btn-row reveal" style={{marginTop:24}}>
-          <a className="btn btn--primary" href="https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar ↗</a>
-          <a className="btn" href="https://orcid.org/0009-0005-7920-8350" target="_blank" rel="noopener">ORCID ↗</a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProjectsSection({ data }) {
-  const [filter, setFilter] = useState("All");
-  const tags = useMemo(() => {
-    const set = new Set(["All"]);
-    data.projects.forEach((p) => p.tags.forEach((t) => set.add(t)));
-    return [...set].slice(0, 10);
-  }, [data.projects]);
-  const visible = filter === "All" ? data.projects : data.projects.filter((p) => p.tags.includes(filter));
-  const colors = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff","#7ad6ff"];
-
-  return (
-    <section id="projects" className="section">
-      <div className="section__container">
-        <SectionTitle num="03" eyebrow="Selected Work" title="Projects spanning ML, methodology, and engineering." lead="20 selected projects from graduate research, undergraduate work, and applied builds. Click through for code or LinkedIn writeups." />
-
-        <div className="reveal" style={{marginBottom:24}}>
-          {tags.map((t) => (
-            <button key={t} className="tag" onClick={() => setFilter(t)}
-              aria-pressed={filter === t}
-              style={{cursor:"pointer", background: filter===t? "var(--accent)":"var(--surface-2)", color: filter===t? "var(--accent-contrast)":"var(--ink-soft)", borderColor: filter===t? "var(--accent)":"var(--line)", padding:"6px 12px", marginRight:6}}>
-              {t}
-            </button>
-          ))}
-        </div>
-
-        <div className="project-grid">
-          {visible.map((p, i) => {
-            const c = colors[i % colors.length];
-            return (
-              <a className="project reveal" key={p.id} href={p.url} target="_blank" rel="noopener"
-                onMouseEnter={() => window.BUDDY_SHOW?.({ title: "PROJECT " + p.id + " · " + p.type, fact: p.excerpt + " Tags: " + p.tags.join(", ") + "." })}
-                onMouseLeave={() => window.BUDDY_CLEAR?.()}
-              >
-                <span className="project__circle" style={{"--col": c, "--ang": (i*48)+"deg"}} />
-                <p className="project__id">PROJECT · {p.id}</p>
-                <h3 className="h-card" style={{marginTop:10}}>{p.title}</h3>
-                <p className="card__meta" style={{marginTop:6}}>{p.type} · {p.date} · {p.venue}</p>
-                <p className="card__sub" style={{marginTop:10}}>{p.excerpt}</p>
-                <div style={{marginTop:14}}>{p.tags.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-                <div style={{marginTop:14, color:"var(--accent)", fontSize:13, fontFamily:"var(--display)"}}>Open ↗</div>
-                <TileCreature kind="build" color={c} delay={(i % 5) * 0.18} />
-              </a>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function GitHubSection({ data }) {
-  const g = data.github;
-  return (
-    <section id="github" className="section">
-      <div className="section__container">
-        <SectionTitle num="04" eyebrow="Code Portfolio" title="Public repositories, automation workflows, and starred builds." lead="Repository showcase across research code, NLP, multilevel modeling, automation prototypes, and the source for this very site." />
-
-        <div className="metric-grid reveal">
-          {g.stats.map((s) => {
-            const ghFacts = {
-              "Public repositories": "44 public repos built across NLP, ML, survey methodology, and web development — all at github.com/namo507.",
-              "Original builds": "31 repos built from scratch, not forks. Full ownership of design, code, and documentation.",
-              "Starred spotlight": "7 repositories pinned as featured work: AAPOR EV Sentiment, Moneyball FC, office-doc-redactor, and more.",
-              "Total accessible": "57 total accessible repositories including collaborations, class projects, and forks.",
-            };
-            return (
-              <Metric key={s.k} v={s.v} k={s.k} color="var(--accent-cool)"
-                onMouseEnter={() => window.BUDDY_SHOW?.({ title: s.v + " " + s.k, fact: ghFacts[s.k] || "GitHub @namo507 — 57 total repositories." })}
-                onMouseLeave={() => window.BUDDY_CLEAR?.()}
-              />
-            );
-          })}
-        </div>
-
-        <div className="grid-2 reveal" style={{marginTop:32}}>
-          <div className="card">
-            <p className="card__meta">Language Mix</p>
-            <div style={{marginTop:10}}>
-              {g.languageMix.map((l) => <Tag key={l.lang}>{l.lang} · {l.count}</Tag>)}
+              </div>
+              <div className="hero__visual">
+                <div className="scene hero__scene" data-scene="globe" aria-hidden="true" />
+                <figure className="portrait">
+                  <img src={P.avatarUrl} alt={"Portrait of " + P.name} />
+                  <figcaption className="portrait__cap">
+                    <div className="portrait__role">{P.role}</div>
+                    <div className="portrait__loc">{P.location}</div>
+                  </figcaption>
+                </figure>
+              </div>
             </div>
-            <TileCreature kind="gear" color="#7ad6ff" delay={0} />
-          </div>
-          <div className="card">
-            <p className="card__meta">What this code covers</p>
-            <ul className="card__bullets">
-              <li>Research pipelines: survey methodology, NLP, multilevel modeling, public opinion analysis.</li>
-              <li>Applied AI prototypes: Office add-ins, n8n workflows, simulation frameworks.</li>
-              <li>Repository docs that link source code back to portfolio work and CV artifacts.</li>
-            </ul>
-            <TileCreature kind="commit" color="#c8a4ff" delay={0.4} />
-          </div>
-        </div>
-
-        <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>Featured Repositories</h3>
-        <div className="grid-3">
-          {g.featured.map((r, i) => {
-            const c = ["#69d7c3","#8fb6ff","#f1b76a","#ff8a9b","#bcd86c","#c8a4ff","#7ad6ff"][i % 7];
-            return (
-              <a className="repo reveal" key={r.name} href={r.url} target="_blank" rel="noopener"
-                onMouseEnter={() => window.BUDDY_SHOW?.({ title: r.name + " · " + r.lang, fact: r.desc + (r.metric ? " · " + r.metricLabel + ": " + r.metric : "") })}
-                onMouseLeave={() => window.BUDDY_CLEAR?.()}
-              >
-                <span className="card__circle" style={{"--col": c}} />
-                <p className="repo__lang">● {r.lang}</p>
-                <h4 className="repo__name">{r.name}</h4>
-                <p className="repo__desc">{r.desc}</p>
-                <div className="repo__metric"><b>{r.metric}</b> {r.metricLabel}</div>
-                <TileCreature kind="commit" color={c} delay={i * 0.2} />
-              </a>
-            );
-          })}
-        </div>
-
-        <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>Recently Updated</h3>
-        <div className="grid-4">
-          {g.recent.map((r) => (
-            <a className="repo reveal" key={r.name} href={r.url} target="_blank" rel="noopener">
-              <p className="repo__lang">● {r.lang}</p>
-              <h4 className="repo__name" style={{fontSize:15}}>{r.name}</h4>
-              <p className="card__meta" style={{marginTop:8}}>{r.updated}</p>
-            </a>
-          ))}
-        </div>
-
-        <div className="btn-row reveal" style={{marginTop:32}}>
-          <a className="btn btn--primary" href={g.profileUrl} target="_blank" rel="noopener">@namo507 on GitHub ↗</a>
-          <a className="btn" href={g.reposUrl} target="_blank" rel="noopener">All repositories</a>
-          <a className="btn" href={g.starredUrl} target="_blank" rel="noopener">Starred spotlight</a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function LinkedInSection({ data }) {
-  const linkedin = data.linkedin;
-  if (!linkedin) return null;
-  const sourceView = getLinkedInSourceView(linkedin.meta);
-
-  return (
-    <section id="linkedin-signals" className="section">
-      <div className="section__container">
-        <SectionTitle
-          num="05"
-          eyebrow={sourceView.eyebrow}
-          title={sourceView.title}
-          lead={sourceView.lead}
-        />
-
-        <div className="grid-2">
-          <div className="card linkedin-card linkedin-card--hero reveal" style={{display:"flex", flexDirection:"column"}}>
-            <div className="linkedin-card__eyebrow-row">
-              <p className="card__meta">{sourceView.snapshotLabel}</p>
-              <span className="linkedin-card__badge">{sourceView.badge}</span>
+            <div className="interests" data-reveal="1">
+              <span className="interests__label">Research interests</span>
+              {D.interests.map((i) => <span className="pill" key={i}>{i}</span>)}
             </div>
-            <h3 className="h-card">{linkedin.profile.headline_short}</h3>
-            <p className="linkedin-card__summary">{linkedin.profile.about_short}</p>
-            <p className="linkedin-card__source-note">{sourceView.note}</p>
-            <div className="linkedin-card__tags">
-              {(linkedin.profile.top_skills || []).slice(0, 6).map((skill) => <Tag key={skill}>{skill}</Tag>)}
-            </div>
-            <p className="linkedin-card__meta-line">
-              {[linkedin.profile.current_role, linkedin.profile.organization, linkedin.profile.location].filter(Boolean).join(" · ")}
-            </p>
-            <p className="linkedin-card__meta-line linkedin-card__meta-line--secondary">{sourceView.metaLine}</p>
-            <div className="btn-row linkedin-card__actions">
-              <a className="btn btn--primary" href={linkedin.profile.profile_url} target="_blank" rel="noopener">Open LinkedIn ↗</a>
-            </div>
-          </div>
+          </section>
 
-          <div className="card linkedin-card reveal" style={{display:"flex", flexDirection:"column"}}>
-            <div className="linkedin-card__eyebrow-row">
-              <p className="card__meta">{sourceView.updatesLabel}</p>
-              <span className="linkedin-card__badge linkedin-card__badge--muted">{linkedin.updates.length} cards</span>
-            </div>
-            <div className="linkedin-card__stack">
-              {linkedin.updates.length ? linkedin.updates.map((item) => (
-                <a className="linkedin-card__item" key={item.id} href={item.canonical_url || linkedin.profile.profile_url} target="_blank" rel="noopener">
-                  <span>{item.posted_relative || item.kind}</span>
-                  <strong>{item.title}</strong>
-                  <p>{item.summary_short}</p>
-                </a>
-              )) : (
-                <p className="linkedin-card__empty">{sourceView.seeded ? "The curated snapshot is live, but no highlight cards were defined in the current seed data." : "Validated LinkedIn data is available, but the public profile did not expose recent activity cards on the last successful sync."}</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {linkedin.experience.length ? (
-          <>
-            <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>{sourceView.experienceLabel}</h3>
-            <div className="grid-2">
-              {linkedin.experience.map((item) => (
-                <div className="card linkedin-card reveal" key={item.id}>
-                  <p className="card__meta">{[item.date_range, item.location].filter(Boolean).join(" · ")}</p>
-                  <h3 className="h-card">{item.role}</h3>
-                  <p className="card__sub" style={{color:"var(--accent)"}}>{item.organization}</p>
-                  <ul className="card__bullets">
-                    {(item.bullets && item.bullets.length ? item.bullets : [item.description_short]).slice(0, 2).map((bullet) => <li key={bullet}>{bullet}</li>)}
-                  </ul>
-                  {item.canonical_url ? <div className="btn-row linkedin-card__actions"><a className="btn" href={item.canonical_url} target="_blank" rel="noopener">Open source item ↗</a></div> : null}
+          {/* ── Experience ─────────────────────────────────────────────── */}
+          <section id="experience" className="sec">
+            {this.renderHead("01", "Experience",
+              "Research, infrastructure, and ML engineering roles.",
+              "Quantified outcomes across public health, open data, survey methodology, and applied AI. Click a role for the full record.",
+              "helix")}
+            <div id="exp-timeline" className="exp">
+              <div className="exp__rail" aria-hidden="true" />
+              <div className="exp__rail exp__rail--fill" aria-hidden="true" style={{ "--fill": Math.min(1, Math.max(0, s.expProgress)) }} />
+              {D.experience.map((r) => (
+                <div className="exp__row" data-reveal="1" key={r.org + r.role}>
+                  <div className="exp__aside">
+                    <span className={"exp__dot" + (r.current ? " exp__dot--current" : "")} aria-hidden="true" />
+                    <div className="exp__meta" data-hide-mobile="1">{r.dates}<br />{r.location}</div>
+                  </div>
+                  <button
+                    className="card card--exp"
+                    aria-haspopup="dialog"
+                    onClick={(ev) => this.openExpanded({
+                      kicker: r.dates + " · " + r.location,
+                      title: r.role,
+                      subtitle: r.org,
+                      body: r.bullets[0],
+                      bullets: r.bullets.slice(1),
+                      hasBullets: r.bullets.length > 1,
+                    }, ev)}
+                  >
+                    <div className="card__meta-row">
+                      <span className="card__meta">{r.dates} · {r.location}</span>
+                      {r.current ? <span className="badge">Current</span> : null}
+                    </div>
+                    <h3 className="card__title">{r.role}</h3>
+                    <p className="card__org">{r.org}</p>
+                    <p className="card__body">{r.bullets[0]}</p>
+                    <p className="card__more">
+                      {r.bullets.length > 1 ? "+" + (r.bullets.length - 1) + " more — open full record" : "Open full record"}
+                    </p>
+                  </button>
                 </div>
               ))}
             </div>
-          </>
-        ) : null}
+          </section>
 
-        {linkedin.featured.length ? (
-          <>
-            <h3 className="h-card reveal" style={{marginTop:40, marginBottom:14, fontSize:22}}>{sourceView.featuredLabel}</h3>
-            <div className="grid-2">
-              {linkedin.featured.map((item) => (
-                <a className="card linkedin-card reveal" key={item.id} href={item.url || linkedin.profile.profile_url} target="_blank" rel="noopener" style={{display:"flex", flexDirection:"column"}}>
-                  <p className="card__meta">{[item.type, item.subtitle].filter(Boolean).join(" · ")}</p>
-                  <h3 className="h-card">{item.title}</h3>
-                  <p className="linkedin-card__summary">{item.summary_short}</p>
-                  <div className="linkedin-card__open">Open item ↗</div>
-                </a>
+          {/* ── Projects ───────────────────────────────────────────────── */}
+          <section id="projects" className="sec">
+            {this.renderHead("02", "Selected work",
+              "Projects spanning ML, methodology, and engineering.",
+              "20 selected projects from graduate research, undergraduate work, and applied builds. Filter by method; open a card for the case study and source.",
+              "lattice")}
+            <div className="filters" role="group" aria-label="Filter projects" data-reveal="1">
+              {tags.map((t) => (
+                <button
+                  key={t}
+                  className="filter"
+                  aria-pressed={s.filter === t ? "true" : "false"}
+                  onClick={() => this.setState({ filter: t })}
+                >{t}</button>
               ))}
             </div>
-          </>
-        ) : null}
-      </div>
-    </section>
-  );
-}
-
-function TalksSection({ data }) {
-  return (
-    <section id="talks" className="section">
-      <div className="section__container">
-        <SectionTitle num="06" eyebrow="Talks & Presentations" title="Communicating research methods and technical results." lead="Conference presentations translating transformer-based methods, sentiment analysis, and survey workflows." />
-
-        <div className="grid-2">
-          {data.talks.map((t, i) => (
-            <a className="card reveal" key={i} href={t.url} target="_blank" rel="noopener" style={{display:"block"}}
-              onMouseEnter={() => window.BUDDY_SHOW?.({ title: t.type + " · " + t.date, fact: t.excerpt })}
-              onMouseLeave={() => window.BUDDY_CLEAR?.()}
-            >
-              <span className="card__circle" style={{"--col": "#ff8a9b"}} />
-              <p className="card__meta">{t.type} · {t.date} · {t.location}</p>
-              <h3 className="h-card">{t.title}</h3>
-              <p className="card__sub" style={{color:"var(--accent-pop)"}}>{t.venue}</p>
-              <p className="card__sub" style={{marginTop:12}}>{t.excerpt}</p>
-              <div style={{marginTop:14, color:"var(--accent-pop)"}}>Conference page ↗</div>
-              <TileCreature kind="present" color="#ff8a9b" delay={i * 0.25} />
-            </a>
-          ))}
-          <div className="card reveal" style={{display:"flex",flexDirection:"column",justifyContent:"center"}}>
-            <p className="card__meta">Snapshot</p>
-            <h3 className="h-card">{data.talks.length} talk · 1 distinct venue · 2025</h3>
-            <p className="card__sub">Most recent presentation: AAPOR 2025, St. Louis, MO. Looking ahead to AAPOR 2026 and methods workshops in 2026.</p>
-            <TileCreature kind="chart" color="#a8c5ff" delay={0.5} />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function TeachingSection({ data }) {
-  return (
-    <section id="teaching" className="section">
-      <div className="section__container">
-        <SectionTitle num="07" eyebrow="Teaching Practice" title="Course delivery, privacy instruction, and academic infrastructure." lead="Teaching and graduate-assistantship work across the Joint Program in Survey Methodology (JPSM) at the University of Maryland." />
-
-        <div className="grid-2">
-          {data.teaching.map((t, i) => {
-            const c = ["#bcd86c","#c8a4ff"][i];
-            return (
-              <div className="card reveal" key={i}
-                onMouseEnter={() => window.BUDDY_SHOW?.({ title: t.title + " · " + t.type, fact: t.excerpt + " · " + t.bullets.join(" · ") })}
-                onMouseLeave={() => window.BUDDY_CLEAR?.()}
-              >
-                <span className="card__circle" style={{"--col": c}} />
-                <p className="card__meta">{t.type} · {t.date}</p>
-                <h3 className="h-card">{t.title}</h3>
-                <p className="card__sub" style={{color:"var(--accent)"}}>{t.venue}</p>
-                <p className="card__sub" style={{marginTop:10}}>{t.excerpt}</p>
-                <ul className="card__bullets">{t.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
-                <TileCreature kind="teach" color={c} delay={i * 0.3} />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ContactSection({ data }) {
-  const linkedinUrl = data.linkedin?.profile?.profile_url || "https://www.linkedin.com/in/namit-shrivastava-baab47204/";
-  return (
-    <section id="contact" className="section" style={{paddingBottom: 120}}>
-      <div className="section__container">
-        <SectionTitle num="08" eyebrow="Get in touch" title="Good work usually starts with a sharp hello." />
-
-        <div className="contact-card reveal">
-          <p className="eyebrow">Connect</p>
-          <h2 className="h-section" style={{maxWidth:780}}>Bring survey puzzles, ML tangles, geospatial detours, or just a well-aimed note.</h2>
-          <div className="btn-row" style={{marginTop:18}}>
-            <a className="btn btn--primary" href={"mailto:"+data.profile.email}>Email · {data.profile.email}</a>
-            <a className="btn" href={linkedinUrl} target="_blank" rel="noopener">LinkedIn ↗</a>
-            <a className="btn" href="https://github.com/namo507" target="_blank" rel="noopener">GitHub ↗</a>
-            <a className="btn" href="https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar ↗</a>
-            <a className="btn" href="https://orcid.org/0009-0005-7920-8350" target="_blank" rel="noopener">ORCID ↗</a>
-          </div>
-          <p style={{marginTop:30, color:"var(--ink-mute)", fontSize:13, fontFamily:"var(--mono)"}}>{data.profile.location} · {data.profile.phone}</p>
-          <TileCreature kind="wave" color="#7fe6d2" delay={0.2} />
-        </div>
-
-        <p style={{marginTop:60, color:"var(--ink-mute)", fontSize:12, fontFamily:"var(--mono)", textAlign:"center"}}>
-          © 2026 Namit Shrivastava · <a href="/classic/" style={{color:"var(--accent)"}}>Classic view</a> · <a href="https://github.com/namo507/namo507.github.io" target="_blank" rel="noopener" style={{color:"var(--accent)"}}>Source ↗</a>
-        </p>
-      </div>
-    </section>
-  );
-}
-
-// ── AI Buddy helpers ─────────────────────────────────────────────────────────
-function getPrecomputedResponse(query, data) {
-  const q = query.toLowerCase();
-  if (q.match(/publish|paper|article|research|journal|conference|scholar/)) {
-    return "Namit has 2 research outputs: a Springer journal article on supply chain sustainability using fuzzy-AHP with 200+ experts (2024), and an AAPOR 2025 conference paper on EV sentiment analysis using DistilBERT at 91.6% accuracy over 1.1M+ posts.";
-  }
-  if (q.match(/skill|technolog|program|python|ml\b|machine learning|stack/)) {
-    return "Top skills: Survey Methodology (98%), AI/ML (95%), Core AI Systems (91%), Programming (84%). Stack: Python, R, PyTorch, TensorFlow, Hugging Face, LangChain, and cloud platforms (AWS, Azure, GCP).";
-  }
-  if (q.match(/educat|degree|university|college|gpa|grade|bits|umd/)) {
-    return "M.S. in Survey & Data Science at UMD (GPA 3.814/4.0, JPSM Dean's Fellow 2025-26). B.E. in Civil Engineering with Data Science minor from BITS Pilani (GPA 3.327/4.0).";
-  }
-  // "work" deliberately omitted here — "work history"/"work experience" belong
-  // to the experience branch further down, which this rule used to swallow.
-  if (q.match(/project|build|portfolio/)) {
-    return "20+ projects: EV sentiment (1.1M+ posts, 91.6% accuracy), football market value (7,023 rows, €38bn), LEXNet (97% smaller CNN), geospatial broadband analysis (129K+ tracts). See the Projects section!";
-  }
-  if (q.match(/contact|email|reach|connect|message|phone/)) {
-    return "Email: " + data.profile.email + " · LinkedIn: linkedin.com/in/namit-shrivastava-baab47204/ · GitHub: github.com/namo507. Based in " + data.profile.location + ".";
-  }
-  if (q.match(/github|repo|code|open.?source|commit/)) {
-    return "44 public repos on GitHub (@namo507). Featured: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, career-ops. Python, R, TypeScript stack.";
-  }
-  if (q.match(/linkedin/)) {
-    return "LinkedIn profile auto-synced via GitHub Actions every 5 days. Data passes fetch → parse → diff → schema validation before rendering into the portfolio.";
-  }
-  if (q.match(/ollama|local.?llm|llm|model|ai\b/)) {
-    return "To unlock AI-powered responses, install Ollama at ollama.ai and run: \"ollama pull llama3.2\". Once running on localhost:11434, I'll connect automatically and give richer answers!";
-  }
-  if (q.match(/fellowship|award|achiev|honor|recogni/)) {
-    return "Awards: JPSM Dean's Fellowship (AY 2025-26), 1st rank in HRD among 180 students at BITS Pilani, Top 10 in Water & Wastewater Treatment, Microsoft Azure AI Fundamentals certified.";
-  }
-  if (q.match(/teach|course|student|ta\b|assistant|surv735/)) {
-    return "TA for SURV735 (Data Privacy & Confidentiality) at JPSM, UMD — guiding 23 grad students. Also redesigned Canvas LMS for 10+ instructors, 125+ students: +30% satisfaction, -40% setup time.";
-  }
-  if (q.match(/experience|job|work history|role|position|internship|current|now\b/)) {
-    return "Currently Data Scientist II at the Institute for Mind and Brain, University of South Carolina — shipping a React/TypeScript/Python analytics platform, REDCap and clinical EHR pipelines, and PyTorch CNN-LSTM/Transformer models. Before that: Social Data Science Center (UMD), U. Michigan ISR, JPSM Teaching TA, Legistify ML Engineer (92% precision, 2.4M images), Accenture (89% threat classification). Full timeline in the CV section!";
-  }
-  if (q.match(/survey|methodology|data.?collection|sampling|measurement/)) {
-    return "Core research area: Survey & Data Science. Focus on trustworthy data integration, AI-enabled data collection quality assurance frameworks, causal inference, and privacy-preserving methods.";
-  }
-  if (q.match(/geospatial|census|broadband|michigan|epidemiol/)) {
-    return "At U. Michigan ISR: deployed geospatial pipeline across 129,572 US census tracts & 3 RUCA strata. Achieved 100% broadband completeness, reduced missingness by 28.6%.";
-  }
-  if (q.match(/hello|hi\b|hey|greet|who are you|what can you do/)) {
-    return "Hi! I'm Namit's research assistant. I know about his publications, projects, skills, and experience. Ask me anything — or hover over any tile for instant insights about that section!";
-  }
-  return "Namit is a Data Scientist II at the Institute for Mind and Brain, University of South Carolina, and an M.S. Survey & Data Science graduate from UMD (GPA 3.814, Dean's Fellow), specializing in survey methodology, causal inference, and responsible AI. 20+ projects, 2 publications, 44 GitHub repos. What would you like to know?";
-}
-
-// ── AiBuddy Component ────────────────────────────────────────────────────────
-function AiBuddy({ data, activeSection }) {
-  const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([{
-    role: "assistant",
-    content: "Hi! I'm Namit's research assistant ✦ Hover any tile for instant insights, or ask me about his research, projects, and skills!",
-  }]);
-  const [input, setInput] = useState("");
-  const [insight, setInsight] = useState(null);
-  const [ollamaStatus, setOllamaStatus] = useState("checking");
-  const [ollamaModel, setOllamaModel] = useState(null);
-  const [thinking, setThinking] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [factIdx, setFactIdx] = useState(0);
-  const msgEndRef = useRef(null);
-  const inputRef = useRef(null);
-
-  // Expose global setters so tile hover handlers (in sections) can feed insights
-  useEffect(() => {
-    window.BUDDY_SHOW = (ins) => { setInsight(ins); setShowTooltip(true); };
-    window.BUDDY_CLEAR = () => { setInsight(null); setShowTooltip(false); };
-    return () => { delete window.BUDDY_SHOW; delete window.BUDDY_CLEAR; };
-  }, []);
-
-  // Check Ollama availability on mount (silent — never blocks UI)
-  useEffect(() => {
-    (async () => {
-      try {
-        const ctrl = new AbortController();
-        const tid = setTimeout(() => ctrl.abort(), 2800);
-        const res = await fetch("http://localhost:11434/api/tags", { signal: ctrl.signal });
-        clearTimeout(tid);
-        if (!res.ok) { setOllamaStatus("unavailable"); return; }
-        const d = await res.json();
-        const models = d.models || [];
-        if (models.length > 0) {
-          setOllamaStatus("available");
-          const preferred = ["llama3.2", "llama3", "mistral", "phi3", "qwen", "gemma"];
-          const hit = preferred.reduce((f, p) => f || models.find(m => m.name.startsWith(p)), null);
-          setOllamaModel(hit ? hit.name : models[0].name);
-        } else {
-          setOllamaStatus("unavailable");
-        }
-      } catch { setOllamaStatus("unavailable"); }
-    })();
-  }, []);
-
-  // Auto-scroll
-  useEffect(() => {
-    if (open && msgEndRef.current) msgEndRef.current.scrollIntoView({ behavior: "smooth" });
-  }, [messages, open]);
-
-  // Focus input on open
-  useEffect(() => {
-    if (open && inputRef.current) setTimeout(() => inputRef.current?.focus(), 180);
-  }, [open]);
-
-  const sectionInsights = useMemo(() => ({
-    home: { title: "Portfolio Overview", fact: "129K+ census tracts · 1.1M+ social posts processed · 2.4M images in ML workflows · 91.6% best model accuracy." },
-    cv: { title: "CV Highlights", fact: "GPA 3.814/4.0 at UMD · JPSM Dean's Fellow 2025-26 · 5 professional roles spanning research, ML engineering, and TA positions." },
-    publications: { title: "Research Output", fact: "Springer journal (2024) + AAPOR 2025 conference paper. DistilBERT 91.6% on 1.1M+ EV posts. +0.57 LLM sentiment bias discovered." },
-    projects: { title: "Project Portfolio", fact: "20 projects: LEXNet (97% smaller CNN), Voice recognition (98.3%), Football market €38bn, Broadband pipeline 129K tracts." },
-    github: { title: "Code Portfolio", fact: "41 public repos · Python, R, TypeScript · Featured: AAPOR EV Analysis, Moneyball FC, office-doc-redactor, live-meeting-copilot." },
-    "linkedin-signals": { title: "LinkedIn Signals", fact: "Auto-synced via GitHub Actions every 5 days. Data passes fetch → parse → diff → schema validation before rendering." },
-    talks: { title: "Conference Talks", fact: "AAPOR 80th Annual, St. Louis MO, May 2025. Pipeline: 1.1M+ posts → DistilBERT → 10 Groq LLM variants compared." },
-    teaching: { title: "Teaching Practice", fact: "TA for SURV735 at JPSM. Canvas LMS redesign for 125+ students. +30% satisfaction · -40% setup time · 100% accessibility." },
-    contact: { title: "Contact", fact: "College Park, MD · namit507@gmail.com · Open to research collaborations, data science work, and survey methodology discussions." },
-  }), []);
-
-  const funFacts = useMemo(() => [
-    { title: "📊 Census Scale", fact: "129,572 US census tracts analyzed — every single tract in the country — for broadband completeness research." },
-    { title: "🤖 Model Accuracy", fact: "DistilBERT hits 91.6% accuracy on 1.1M+ EV sentiment posts from Reddit & NYT at AAPOR 2025." },
-    { title: "⚡ LEXNet Speed", fact: "LEXNet CNN: 97% smaller, 93% faster than baseline, +4% accuracy improvement over standard architectures." },
-    { title: "🎙️ Voice AI", fact: "Voice gender recognition: 98.3% accuracy — only 11 misclassifications on the full held-out test set." },
-    { title: "⚽ Football Markets", fact: "€38bn football transfer market modeled with 7,023 player-season observations. 78% of player-level variance explained." },
-    { title: "🩸 Community Impact", fact: "Organized a 2-day blood donation drive: 60+ volunteers, 1,000+ donor records, 844 successful donations." },
-    { title: "🏆 Dean's Fellow", fact: "JPSM Dean's Fellowship awarded at University of Maryland for AY 2025-26." },
-    { title: "🔍 Sentiment Bias", fact: "+0.57 systematic positive bias found in LLM sentiment outputs vs Reddit data. F(2,549)=28.43, p<0.001." },
-    { title: "📡 Broadband Pipeline", fact: "Geospatial pipeline: 129,572 US census tracts × 3 RUCA strata — 100% completeness, -28.6% baseline missingness." },
-    { title: "🖼️ Image ML", fact: "Multilabel CNN on 42,520 road-surface images → 86.67% accuracy, 88.19% F1 across 5 distress categories." },
-  ], []);
-
-  const displayInsight = insight || sectionInsights[activeSection] || null;
-
-  const buildSystemPrompt = useCallback(() => (
-    "You are an AI portfolio assistant for " + data.profile.name + ", a " + data.profile.role +
-    " at UMD. Help visitors learn about their work concisely (max 2-3 sentences). " +
-    "Key facts: GPA 3.814, JPSM Dean's Fellow 2025-26. " +
-    "Publications: Springer supply chain article + AAPOR 2025 EV sentiment (91.6% DistilBERT). " +
-    "Projects: LEXNet, football market analysis, geospatial broadband pipeline. " +
-    "Email: " + data.profile.email
-  ), [data]);
-
-  const sendMessage = useCallback(async () => {
-    const trimmed = input.trim();
-    if (!trimmed || thinking) return;
-    setInput("");
-    const newMsgs = [...messages, { role: "user", content: trimmed }];
-    setMessages(newMsgs);
-    setThinking(true);
-    let reply;
-    if (ollamaStatus === "available" && ollamaModel) {
-      try {
-        const ctrl = new AbortController();
-        const tid = setTimeout(() => ctrl.abort(), 35000);
-        const res = await fetch("http://localhost:11434/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: ollamaModel,
-            messages: [
-              { role: "system", content: buildSystemPrompt() },
-              ...newMsgs.slice(-6).map(m => ({ role: m.role, content: m.content })),
-            ],
-            stream: false,
-          }),
-          signal: ctrl.signal,
-        });
-        clearTimeout(tid);
-        reply = res.ok ? ((await res.json()).message?.content || getPrecomputedResponse(trimmed, data)) : getPrecomputedResponse(trimmed, data);
-      } catch { reply = getPrecomputedResponse(trimmed, data); }
-    } else {
-      reply = getPrecomputedResponse(trimmed, data);
-    }
-    setMessages(prev => [...prev, { role: "assistant", content: reply }]);
-    setThinking(false);
-  }, [input, messages, thinking, ollamaStatus, ollamaModel, data, buildSystemPrompt]);
-
-  const handleKey = useCallback((e) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  }, [sendMessage]);
-
-  const ollamaLabel = ollamaStatus === "checking" ? "Checking Ollama…" :
-    ollamaStatus === "available" ? "✓ Ollama · " + ollamaModel : "Ollama offline · keyword mode";
-
-  return (
-    <>
-      <div className="ai-buddy">
-        {showTooltip && displayInsight && !open && (
-          <div className="ai-buddy__tooltip">
-            <div className="ai-buddy__tooltip-title">{displayInsight.title}</div>
-            <div className="ai-buddy__tooltip-body">{displayInsight.fact}</div>
-          </div>
-        )}
-        <button
-          className={"ai-buddy__orb" + (open ? " ai-buddy__orb--open" : "")}
-          onClick={() => setOpen(o => !o)}
-          aria-label={open ? "Close AI assistant" : "Open AI research assistant"}
-        >
-          <span className="ai-buddy__orb-icon">{open ? "✕" : "✦"}</span>
-        </button>
-      </div>
-
-      {open && (
-        <div className="ai-buddy__panel" role="dialog" aria-label="AI Research Assistant">
-          <div className="ai-buddy__panel-header">
-            <div>
-              <div className="ai-buddy__panel-title">✦ Research Assistant</div>
-              <div className={"ai-buddy__ollama-status" + (ollamaStatus === "available" ? " ai-buddy__ollama-status--ok" : "")}>{ollamaLabel}</div>
+            <p className="filter-count" aria-live="polite">
+              {visible.length} {visible.length === 1 ? "project" : "projects"}{s.filter === "All" ? "" : " · " + s.filter}
+            </p>
+            <div className="project-grid" data-cardgrid="1">
+              {visible.map((p, i) => (
+                <button
+                  key={p.id}
+                  className="card card--project"
+                  data-span={i % 7 === 0 ? 2 : 1}
+                  data-reveal="1"
+                  aria-haspopup="dialog"
+                  onClick={(ev) => this.openExpanded({
+                    kicker: "Project " + p.id + " · " + p.type,
+                    title: p.title,
+                    subtitle: p.date + " · " + p.venue,
+                    body: p.excerpt,
+                    tags: p.tags,
+                    hasTags: true,
+                    url: p.url,
+                    urlLabel: p.url.includes("github.com") ? "Open repository ↗" : "Open writeup ↗",
+                  }, ev)}
+                >
+                  <div className="card__head">
+                    <span>Project · {p.id}</span>
+                    <span className="card__type">{p.type}</span>
+                  </div>
+                  <h3 className="card__title">{p.title}</h3>
+                  <p className="card__excerpt" style={{ WebkitLineClamp: i % 7 === 0 ? 5 : 4 }}>{p.excerpt}</p>
+                  <div className="card__foot">
+                    {p.tags.map((tg) => <span className="tag" key={tg}>{tg}</span>)}
+                    <span className="card__date">{p.date}</span>
+                  </div>
+                </button>
+              ))}
             </div>
-            <button className="ai-buddy__close" onClick={() => setOpen(false)} aria-label="Close">✕</button>
-          </div>
+          </section>
 
-          {/* Rotating fun fact — click to cycle */}
-          <div className="ai-buddy__insight" onClick={() => setFactIdx(i => (i + 1) % funFacts.length)} title="Click for next fact">
-            <span className="ai-buddy__insight-label">✦ Research fact · tap to rotate</span>
-            <span className="ai-buddy__insight-text">{funFacts[factIdx].title} — {funFacts[factIdx].fact}</span>
-          </div>
-
-          {/* Current section or tile insight */}
-          {displayInsight && (
-            <div className="ai-buddy__section-insight">
-              <span className="ai-buddy__insight-label">{displayInsight.title}</span>
-              <span className="ai-buddy__insight-text">{displayInsight.fact}</span>
+          {/* ── Publications ───────────────────────────────────────────── */}
+          <section id="publications" className="sec">
+            {this.renderHead("03", "Research output",
+              "Publications, papers, and scholarly work.",
+              "Peer-reviewed and conference research at the intersection of survey methodology, NLP, and applied AI.",
+              "stack")}
+            <div className="pub-grid">
+              {D.publications.map((p) => (
+                <button
+                  key={p.title}
+                  className="card card--pub"
+                  data-reveal="1"
+                  aria-haspopup="dialog"
+                  onClick={(ev) => this.openExpanded({
+                    kicker: p.category + " · " + p.date,
+                    title: p.title,
+                    subtitle: p.venue,
+                    body: p.excerpt,
+                    stats: p.stats,
+                    hasStats: true,
+                    bullets: [p.citation],
+                    hasBullets: true,
+                    url: p.url,
+                    urlLabel: "Read paper ↗",
+                  }, ev)}
+                >
+                  <div className="mono-meta">{p.category} · {p.date}</div>
+                  <h3 className="card__title">{p.title}</h3>
+                  <p className="card__venue">{p.venue}</p>
+                  <p className="card__body">{p.excerpt}</p>
+                  <div className="stat-row">
+                    {p.stats.map((st) => (
+                      <div className="stat" key={st.k}>
+                        <div className="stat__v">{st.v}</div>
+                        <div className="stat__k">{st.k}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="card__cite">
+                    <span>{p.citation}</span>
+                    <span className="card__cite-cta">Read paper ↗</span>
+                  </div>
+                </button>
+              ))}
             </div>
-          )}
 
-          <div className="ai-buddy__messages">
-            {messages.map((m, i) => (
-              <div key={i} className={"ai-buddy__msg ai-buddy__msg--" + m.role}>{m.content}</div>
-            ))}
-            {thinking && (
-              <div className="ai-buddy__msg ai-buddy__msg--assistant ai-buddy__msg--thinking">
-                <span className="ai-buddy__dots"><span /><span /><span /></span>
+            <div className="wip" data-reveal="1">
+              <div className="wip__head">
+                <p className="mono-meta">2026 research pipeline · via ORCID</p>
+                <a href="https://orcid.org/0009-0005-7920-8350" target="_blank" rel="noopener"
+                   style={{ fontFamily: "var(--mono)", fontSize: "11.5px" }}>0009-0005-7920-8350 ↗</a>
               </div>
-            )}
-            <div ref={msgEndRef} />
-          </div>
+              <ul className="wip__list">
+                {D.worksInProgress.map((w) => (
+                  <li className="wip__row" key={w.title}>
+                    <span style={{ textWrap: "pretty" }}>{w.title}</span>
+                    <span className="wip__kind">{w.kind} · {w.year}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div className="ai-buddy__input-row">
-            <input
-              ref={inputRef}
-              className="ai-buddy__input"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKey}
-              placeholder="Ask about research, projects…"
-              disabled={thinking}
-              aria-label="Ask a question"
-            />
-            <button
-              className="ai-buddy__send"
-              onClick={sendMessage}
-              disabled={thinking || !input.trim()}
-              aria-label="Send"
-            >→</button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+            <div className="btn-row" style={{ marginTop: "28px" }} data-reveal="1">
+              <a className="btn btn--primary" href="https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar ↗</a>
+              <a className="btn" href="https://orcid.org/0009-0005-7920-8350" target="_blank" rel="noopener">ORCID ↗</a>
+            </div>
+          </section>
 
-// ── Top-level App ───────────────────────────────────────────────────────────
-function App() {
-  const data = useMemo(
-    () => mergeLinkedInIntoSite(mergePortfolioSyncIntoSite(window.SITE, window.PORTFOLIO_SYNC), window.LINKEDIN_SYNC),
-    []
-  );
-  const navIds = data.navigation.map((n) => n.id);
-  const active = useActiveSection(navIds);
-  const { theme, toggleTheme } = useTheme();
-  useReveal();
+          {/* ── Skills ─────────────────────────────────────────────────── */}
+          <section id="skills" className="sec">
+            {this.renderHead("04", "Technical skills",
+              "Methods first, then the stack that ships them.",
+              "Seven skill groups, each scored by depth of use across research and production work.",
+              "rings")}
+            <div id="skills-grid" className="skill-grid" data-cardgrid="1" data-reveal="1">
+              {D.skills.map((k, i) => (
+                <div className="skill" data-span={i === 0 ? 2 : 1} key={k.name}>
+                  <div className="skill__head">
+                    <div>
+                      <div className="mono-meta">{k.tier}</div>
+                      <h3 className="skill__name">{k.name}</h3>
+                    </div>
+                    <div className={"skill__score" + (k.featured ? " skill__score--featured" : "")}>{k.score}%</div>
+                  </div>
+                  <p className="skill__summary">{k.summary}</p>
+                  <div className="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={k.score} aria-label={k.name}>
+                    <div className="meter__fill" style={{ "--fill": s.skillsIn || this.reduced ? k.score / 100 : 0, "--delay": (i * 70) + "ms" }} />
+                  </div>
+                  <div className="skill__tools">
+                    {k.tools.map((t) => <span className="tag" key={t}>{t}</span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
 
-  const jump = useCallback((id) => {
-    const el = document.getElementById(id);
-    if (el) window.scrollTo({ top: el.offsetTop - 60, behavior: "smooth" });
-  }, []);
+          {/* ── Code ───────────────────────────────────────────────────── */}
+          <section id="code" className="sec">
+            {this.renderHead("05", "Code portfolio",
+              "Public repositories, automation workflows, and starred builds.",
+              "Repository showcase across research code, NLP, multilevel modeling, automation prototypes, and the source for this very site. Counts sync from the GitHub API.",
+              "cubes")}
+            <div className="gh-stats" data-reveal="1">
+              {D.github.stats.map((g) => (
+                <div className="gh-stat" key={g.k}>
+                  <div className="metric__v">{g.v}</div>
+                  <div className="metric__k">{g.k}</div>
+                </div>
+              ))}
+            </div>
 
-  return (
-    <>
-      <nav className="nav" aria-label="Primary">
-        <div className="nav__brand">
-          <div className={"nav__brand-mark" + (data.profile.avatarUrl ? " nav__brand-mark--photo" : "") }>
-            {/* fetchpriority stays lowercase: React 18 forwards unknown
-                lowercase attributes to the DOM silently; the camelCase form
-                is only recognized from React 19 onward. */}
-            {data.profile.avatarUrl ? (
-              <img
-                src={data.profile.avatarUrl}
-                alt={data.profile.name + " profile portrait"}
-                loading="eager"
-                fetchpriority="high"
-              />
-            ) : null}
-          </div>
-          <div className="nav__brand-text">Namit Shrivastava <span>· Survey Methodology · Data Science</span></div>
-        </div>
-        <div className="nav__links">
-          {data.navigation.map((n) => (
-            <button key={n.id}
-              className={"nav__link" + (active === n.id ? " nav__link--active" : "")}
-              aria-current={active === n.id ? "true" : undefined}
-              onClick={() => jump(n.id)}>{n.label}</button>
-          ))}
-        </div>
-        <div className="nav__actions">
-          <button
-            className="theme-toggle"
-            onClick={toggleTheme}
-            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-            aria-pressed={theme === "light"}
-            title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            <div className="gh-panels" data-reveal="1">
+              <div className="panel">
+                <p className="mono-meta">Language mix · {langTotal} tagged repos</p>
+                <div className="langbar" aria-hidden="true">
+                  {D.github.languageMix.map((l, i) => (
+                    <div
+                      className="langbar__seg"
+                      key={l.lang}
+                      style={{
+                        "--pct": ((l.count / langTotal) * 100) + "%",
+                        "--op": (1 - i * 0.11).toFixed(2),
+                        "--fill": langFill,
+                        "--delay": (i * 60) + "ms",
+                      }}
+                    />
+                  ))}
+                </div>
+                <ul className="langlist">
+                  {D.github.languageMix.map((l, i) => (
+                    <li key={l.lang}>
+                      <span className="langlist__swatch" aria-hidden="true" style={{ "--op": (1 - i * 0.11).toFixed(2) }} />
+                      {l.lang} <span className="langlist__count">{l.count}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="panel">
+                <p className="mono-meta">What this code covers</p>
+                <ul className="dot-list" style={{ marginTop: "14px" }}>
+                  <li><span className="dot-list__dot" aria-hidden="true" />Research pipelines: survey methodology, NLP, multilevel modeling, public opinion analysis.</li>
+                  <li><span className="dot-list__dot" aria-hidden="true" />Applied AI prototypes: Office add-ins, n8n workflows, simulation frameworks.</li>
+                  <li><span className="dot-list__dot" aria-hidden="true" />Repository docs that link source code back to portfolio work and CV artifacts.</li>
+                </ul>
+              </div>
+            </div>
+
+            <h3 className="repos-title" data-reveal="1">Featured repositories</h3>
+            <div className="repo-grid">
+              {D.github.featured.map((r) => (
+                <button
+                  key={r.name}
+                  className="card repo"
+                  data-reveal="1"
+                  aria-haspopup="dialog"
+                  onClick={(ev) => this.openExpanded({
+                    kicker: r.lang + " · repository",
+                    title: r.name,
+                    subtitle: r.metric + " " + r.metricLabel,
+                    body: r.desc,
+                    url: r.url,
+                    urlLabel: "Open on GitHub ↗",
+                  }, ev)}
+                >
+                  <div className="repo__head">
+                    <span className="repo__lang">{r.lang}</span>
+                    <span className="repo__metric">{r.metric} <span>{r.metricLabel}</span></span>
+                  </div>
+                  <h4 className="repo__name">{r.name}</h4>
+                  <p className="repo__desc">{r.desc}</p>
+                  <span className="repo__cta">Open repo ↗</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="recent" data-reveal="1">
+              <ul>
+                {D.github.recent.map((r) => (
+                  <li key={r.name}>
+                    <a href={r.url} target="_blank" rel="noopener">
+                      <span className="recent__name">{r.name}</span>
+                      <span className="recent__lang">{r.lang}</span>
+                      <span className="recent__updated">{r.updated}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          {/* ── LinkedIn signals ───────────────────────────────────────── */}
+          {li ? (
+            <section id="signals" className="sec">
+              {this.renderHead("06",
+                seeded ? "LinkedIn snapshot" : "LinkedIn signals",
+                seeded
+                  ? "A curated LinkedIn snapshot, rendered safely while live sync catches up."
+                  : "Public profile changes, normalized before they touch the layout.",
+                seeded
+                  ? "Driven by a curated, validated snapshot that keeps the portfolio complete while public LinkedIn fetches are rate-limited."
+                  : "Machine-managed cards render only when public LinkedIn data passes fetch, parse, diff, and schema validation.",
+                "wave")}
+              <div className="li-grid">
+                <div className="li-card" data-reveal="1">
+                  <div className="li-card__head">
+                    <span>{seeded ? "Profile snapshot" : "Current public snapshot"}</span>
+                    <span className="badge li-card__badge">{seeded ? "Curated snapshot" : "Public sync"}</span>
+                  </div>
+                  <h3 className="li-card__headline">{li.profile.headline_short}</h3>
+                  <p className="li-card__about">{li.profile.about_short}</p>
+                  <div className="li-card__skills">
+                    {(li.profile.top_skills || []).slice(0, 6).map((k) => <span className="tag" key={k}>{k}</span>)}
+                  </div>
+                  <p className="li-card__meta">
+                    {[li.profile.current_role, li.profile.organization, li.profile.location].filter(Boolean).join(" · ")}
+                  </p>
+                  <p className="li-card__meta">{validated ? "Last validated snapshot · " + validated : "Validated snapshot"}</p>
+                  <div className="li-card__cta">
+                    <a className="btn btn--primary btn--sm" href={li.profile.profile_url} target="_blank" rel="noopener">Open LinkedIn ↗</a>
+                  </div>
+                </div>
+                <div className="li-card" data-reveal="1">
+                  <div className="mono-meta">{seeded ? "Recent highlights" : "Latest public updates"}</div>
+                  <ul className="li-updates">
+                    {(li.updates || []).slice(0, 3).map((u) => (
+                      <li key={u.title}>
+                        <a
+                          href={u.canonical_url && u.canonical_url.startsWith("http") ? u.canonical_url : li.profile.profile_url}
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          <span className="li-updates__kind">{u.posted_relative || u.kind}</span>
+                          <strong className="li-updates__title">{u.title}</strong>
+                          <p className="li-updates__summary">{u.summary_short}</p>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <p className="li-note" data-reveal="1">
+                {li.meta.warning || "Live public LinkedIn data is currently driving these cards."}
+              </p>
+            </section>
+          ) : null}
+
+          {/* ── Talks ──────────────────────────────────────────────────── */}
+          <section id="talks" className="sec">
+            {this.renderHead("07", "Talks & presentations",
+              "Communicating research methods and technical results.",
+              "Conference presentations translating transformer-based methods, sentiment analysis, and survey workflows.",
+              "rings")}
+            <div className="card-grid-340">
+              {D.talks.map((t) => (
+                <a className="card card--talk" href={t.url} target="_blank" rel="noopener" data-reveal="1" key={t.title}>
+                  <div className="mono-meta">{t.type} · {t.date} · {t.location}</div>
+                  <h3 className="card__title">{t.title}</h3>
+                  <p className="card__venue">{t.venue}</p>
+                  <p className="card__body">{t.excerpt}</p>
+                  <span className="card__cta">Conference page ↗</span>
+                </a>
+              ))}
+              <div className="snapshot" data-reveal="1">
+                <p className="mono-meta">Snapshot</p>
+                <h3 className="snapshot__title">
+                  {D.talks.length} {D.talks.length === 1 ? "talk" : "talks"} · 1 distinct venue · 2025
+                </h3>
+                <p className="snapshot__body">
+                  Most recent presentation: AAPOR 2025, St. Louis, MO. Looking ahead to AAPOR 2026 and methods workshops in 2026.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* ── Teaching ───────────────────────────────────────────────── */}
+          <section id="teaching" className="sec">
+            {this.renderHead("08", "Teaching practice",
+              "Course delivery, privacy instruction, and academic infrastructure.",
+              "Teaching and graduate-assistantship work across the Joint Program in Survey Methodology at the University of Maryland.",
+              "wave")}
+            <div className="card-grid-340">
+              {D.teaching.map((t) => (
+                <div className="card card--teach" data-reveal="1" key={t.title}>
+                  <div className="mono-meta">{t.type} · {t.date}</div>
+                  <h3 className="card__title">{t.title}</h3>
+                  <p className="card__venue">{t.venue}</p>
+                  <p className="card__body">{t.excerpt}</p>
+                  <ul className="dot-list">
+                    {t.bullets.map((b) => (
+                      <li key={b}><span className="dot-list__dot" aria-hidden="true" />{b}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ── Contact ────────────────────────────────────────────────── */}
+          <section id="contact" className="sec sec--contact">
+            <div className="contact" data-reveal="1">
+              <div className="scene contact__scene" data-scene="globe" aria-hidden="true" />
+              <div className="contact__inner">
+                <p className="eyebrow">09 — Get in touch</p>
+                <h2 className="contact__title">
+                  Bring survey puzzles, ML tangles, geospatial detours, or just a well-aimed note.
+                </h2>
+                <div className="btn-row contact__actions">
+                  <a className="btn btn--primary btn--lg" href={"mailto:" + P.email}>Email · {P.email}</a>
+                  {D.links.filter((l) => l.label !== "Email").map((l) => (
+                    <a className="btn btn--lg" href={l.url.replace("&amp;", "&")} target="_blank" rel="noopener" key={l.label}>
+                      {l.label} ↗
+                    </a>
+                  ))}
+                </div>
+                <p className="contact__meta">{P.location} · {P.phone}</p>
+              </div>
+            </div>
+            <footer className="site-foot">
+              <span>© 2026 {P.name}</span>
+              <span className="site-foot__links">
+                <a href={P.siteUrl} target="_blank" rel="noopener">Live site</a>
+                <a href="https://github.com/namo507/namo507.github.io" target="_blank" rel="noopener">Source ↗</a>
+              </span>
+            </footer>
+          </section>
+        </main>
+
+        {/* ── Detail overlay ───────────────────────────────────────────── */}
+        {ov ? (
+          <div
+            className="overlay"
+            role="presentation"
+            data-closing={s.ovClosing ? "1" : undefined}
+            onClick={this.closeExpanded}
           >
-            {/* Sun / moon glyphs are decorative; the accessible name lives on the button. */}
-            <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
-          </button>
-          <a className="nav__cta" href={data.profile.pdfUrl} target="_blank" rel="noopener">Download CV</a>
-        </div>
-      </nav>
+            <div
+              className="overlay__dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-label={ov.title}
+              onClick={(e) => e.stopPropagation()}
+              style={{ "--ov-from": s.ovFrom }}
+            >
+              <button className="overlay__close" onClick={this.closeExpanded} aria-label="Close detail" ref={this.closeRef}>✕</button>
+              <p className="overlay__kicker">{ov.kicker}</p>
+              <h2 className="overlay__title">{ov.title}</h2>
+              <p className="overlay__subtitle">{ov.subtitle}</p>
+              <p className="overlay__body">{ov.body}</p>
+              {ov.hasBullets ? (
+                <ul className="overlay__bullets">
+                  {ov.bullets.map((b) => (
+                    <li key={b}><span className="dot-list__dot" aria-hidden="true" />{b}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {ov.hasStats ? (
+                <div className="overlay__stats">
+                  {ov.stats.map((st) => (
+                    <div className="stat" key={st.k}>
+                      <div className="stat__v">{st.v}</div>
+                      <div className="stat__k">{st.k}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              {ov.hasTags ? (
+                <div className="overlay__tags">
+                  {ov.tags.map((tg) => <span className="tag" key={tg}>{tg}</span>)}
+                </div>
+              ) : null}
+              <div className="overlay__foot">
+                {ov.url ? (
+                  <a className="btn btn--primary" href={ov.url} target="_blank" rel="noopener">{ov.urlLabel}</a>
+                ) : null}
+                <button className="btn" onClick={this.closeExpanded}>Close</button>
+              </div>
+              <p className="overlay__hint">Esc closes · returns to the card you opened</p>
+            </div>
+          </div>
+        ) : null}
 
-      <main id="content">
-        <Hero data={data} onJump={jump} />
-        <CVSection data={data} />
-        <PublicationsSection data={data} />
-        <ProjectsSection data={data} />
-        <GitHubSection data={data} />
-        <LinkedInSection data={data} />
-        <TalksSection data={data} />
-        <TeachingSection data={data} />
-        <ContactSection data={data} />
-      </main>
-      <AiBuddy data={data} activeSection={active} />
-    </>
-  );
+        {/* ── Research assistant ───────────────────────────────────────── */}
+        <div className="buddy">
+          {s.buddyOpen ? (
+            <div className="buddy__panel" role="dialog" aria-label="Research assistant">
+              <div className="buddy__head">
+                <div>
+                  <div className="buddy__title">Research assistant</div>
+                  <div className="buddy__sub">Keyword mode · answers from site data</div>
+                </div>
+                <button className="buddy__close" onClick={() => this.setState({ buddyOpen: false })} aria-label="Close assistant">✕</button>
+              </div>
+              <button className="buddy__fact" onClick={() => this.setState({ factIdx: s.factIdx + 1 })}>
+                <span className="buddy__fact-label">Research fact · tap to rotate</span>
+                <span className="buddy__fact-text">{FACTS[s.factIdx % FACTS.length]}</span>
+              </button>
+              <div className="buddy__msgs" ref={this.msgsRef}>
+                {(s.buddyMsgs.length ? s.buddyMsgs : [{
+                  role: "assistant",
+                  content: "Ask me about the research, projects, or skills on this page — answers come from the site's own data.",
+                }]).map((m, i) => (
+                  <div className={"buddy__msg" + (m.role === "user" ? " buddy__msg--user" : "")} key={i}>{m.content}</div>
+                ))}
+              </div>
+              <div className="buddy__form">
+                <input
+                  className="buddy__input"
+                  value={s.buddyInput}
+                  onChange={(e) => this.setState({ buddyInput: e.target.value })}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); this.sendBuddy(); } }}
+                  placeholder="Ask about research, projects…"
+                  aria-label="Ask the research assistant"
+                />
+                <button className="buddy__send" onClick={this.sendBuddy} aria-label="Send question">→</button>
+              </div>
+            </div>
+          ) : null}
+          <button
+            className="buddy__fab"
+            onClick={() => this.setState({ buddyOpen: !s.buddyOpen })}
+            aria-label={s.buddyOpen ? "Close research assistant" : "Open research assistant"}
+            aria-expanded={s.buddyOpen ? "true" : "false"}
+          >
+            <span className="buddy__ping" aria-hidden="true" />
+            <span aria-hidden="true">{s.buddyOpen ? "✕" : "✦"}</span>
+          </button>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+function App() {
+  const data = useMemo(buildData, []);
+  return <Portfolio data={data} />;
 }
 
 const mountApp = () => {

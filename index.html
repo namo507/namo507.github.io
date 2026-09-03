@@ -3,39 +3,44 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Namit Shrivastava — Animated Portfolio</title>
-  <meta name="description" content="Graduate Researcher | Survey Methodology & Data Science | University of Maryland" />
+  <title>Namit Shrivastava — Survey Methodology & Data Science</title>
+  <meta name="description" content="Data Scientist II and M.S. Survey & Data Science — survey methodology, causal inference, and responsible AI." />
   <link rel="canonical" href="https://namo507.github.io/" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Namit Shrivastava — Survey Methodology & Data Science" />
-  <meta property="og:description" content="Graduate Researcher | Survey Methodology & Data Science | University of Maryland" />
+  <meta property="og:description" content="Data Scientist II and M.S. Survey & Data Science — survey methodology, causal inference, and responsible AI." />
   <meta property="og:url" content="https://namo507.github.io/" />
   <meta property="og:image" content="https://namo507.github.io/images/IMG_6432.jpg" />
   <meta name="twitter:card" content="summary" />
-  <meta name="theme-color" content="#06070c" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#0b0c11" />
   <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
   <link rel="alternate icon" href="/images/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-180x180.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script>
     /* Pre-paint theme init — runs before the stylesheet paints so there is no
        flash when a visitor prefers (or previously chose) the light theme.
-       Shares the "theme" localStorage key with the classic Jekyll view. */
+       Shares the "theme" localStorage key with the classic Jekyll view.
+       `data-js` gates the reveal-on-scroll transitions: without JS the content
+       must render already visible rather than stuck at opacity 0. */
     (function () {
       try {
         var t = localStorage.getItem("theme");
         if (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) t = "light";
         document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
-      } catch (e) { /* storage unavailable — keep dark default */ }
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+      document.documentElement.setAttribute("data-js", "1");
     })();
   </script>
-  <link rel="stylesheet" href="/assets/cosmic/styles.css?v=20260728c" />
+  <link rel="stylesheet" href="/assets/cosmic/styles.css?v=20260903a" />
 </head>
 <body data-screen-label="portfolio">
-  <a class="skip-link" href="#app">Skip to content</a>
-  <canvas id="bg-canvas"></canvas>
+  <a class="skip-link" href="#content">Skip to content</a>
   <div id="app"></div>
 
   <!-- Production React builds: no dev-mode console warnings, ~3x smaller payload. -->
@@ -43,8 +48,11 @@
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 
-  <script src="/assets/cosmic/data.js?v=20260728a"></script>
+  <script src="/assets/cosmic/data.js?v=20260903a"></script>
   <script>
+    /* Both generated files are machine-managed and may be absent or stale; the
+       app renders from window.SITE alone if either fetch fails, so resolve on
+       error too and never block the mount. */
     window.PORTFOLIO_SYNC = {
       meta: { sync_status: "unavailable" },
       experience: [],
@@ -72,10 +80,22 @@
       document.head.appendChild(script);
     });
   </script>
-  <script src="/assets/cosmic/bg-circles.js?v=20260728a"></script>
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script type="text/babel" data-presets="react" src="/assets/cosmic/app.jsx?v=20260728a"></script>
-  <script src="/assets/cosmic/three-scene.js?v=20260728c" defer></script>
-  <script src="/assets/cosmic/interactions-3d.js?v=20260728a" defer></script>
+
+  <script type="text/babel" data-presets="react" src="/assets/cosmic/app.jsx?v=20260903a"></script>
+
+  <script type="module">
+    /* Section explainer scenes. Loaded after the app so the mount points exist;
+       Explainers3D.mount() is idempotent and app.jsx also polls for it, so
+       whichever finishes first wins. Any failure here (blocked CDN, no WebGL)
+       leaves the page fully readable — the scenes are decorative. */
+    try {
+      const T = await import("https://unpkg.com/three@0.160.0/build/three.module.min.js");
+      window.THREE = T;
+      await import("/assets/cosmic/explainers-3d.js?v=20260903a");
+      if (window.Explainers3D) window.Explainers3D.mount();
+    } catch (e) {
+      /* decorative only */
+    }
+  </script>
 </body>
 </html>
