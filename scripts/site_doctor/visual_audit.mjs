@@ -69,8 +69,15 @@ function startServer(root) {
 // Geometry symmetry analysis, evaluated in the page context.
 function measureTiles(selectors) {
   const rects = [];
+  // One rect per element, not per selector match. A tile can carry several of
+  // these classes at once (a repo card is `class="card repo"`), and measuring
+  // it once per match put two identical rects in the same row — which the gap
+  // analysis below reads as a tile overlapping itself by its own width.
+  const seen = new Set();
   for (const sel of selectors) {
     for (const el of document.querySelectorAll(sel)) {
+      if (seen.has(el)) continue;
+      seen.add(el);
       const r = el.getBoundingClientRect();
       if (r.width > 0 && r.height > 0) {
         rects.push({ sel, x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height) });
