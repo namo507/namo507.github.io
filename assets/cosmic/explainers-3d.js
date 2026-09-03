@@ -76,7 +76,14 @@ const BUILDERS = {
       new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(1.005, 1)),
       lineMaterial(0.22)
     );
-    group.add(cloud, shell);
+    // A tilted orbit ring: reads as coverage/reach beyond the sphere, and gives
+    // the hero globe a silhouette wider than the portrait sitting in front.
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(1.34, 0.006, 6, 160),
+      new THREE.MeshBasicMaterial({ color: state.accent.clone(), transparent: true, opacity: 0.42, depthWrite: false })
+    );
+    ring.rotation.x = Math.PI / 3;
+    group.add(cloud, shell, ring);
     return (t) => {
       group.rotation.y = t * 0.18;
       group.rotation.x = Math.sin(t * 0.12) * 0.16;
@@ -274,8 +281,14 @@ function register(el) {
   scene.add(group);
   const update = BUILDERS[kind](group);
 
+  // The camera frames a ~2-unit object across the viewport's SHORT axis. A wide
+  // mount point (the hero, whose box is much wider than the portrait it sits
+  // behind) would otherwise render its object no larger than the box's height,
+  // leaving it hidden behind the foreground card. `data-scene-zoom` pulls the
+  // camera in for those, so the object bleeds past the element as intended.
+  const zoom = Math.max(1, parseFloat(el.getAttribute("data-scene-zoom")) || 1);
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 0, 4.2);
+  camera.position.set(0, 0, 4.2 / zoom);
 
   const entry = { el, scene, camera, group, update, visible: false };
   state.entries.push(entry);

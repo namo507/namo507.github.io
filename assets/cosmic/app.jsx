@@ -598,7 +598,7 @@ class Portfolio extends React.Component {
                 </div>
               </div>
               <div className="hero__visual">
-                <div className="scene hero__scene" data-scene="globe" aria-hidden="true" />
+                <div className="scene hero__scene" data-scene="globe" data-scene-zoom="1.45" aria-hidden="true" />
                 <figure className="portrait">
                   <img src={P.avatarUrl} alt={"Portrait of " + P.name} />
                   <figcaption className="portrait__cap">
