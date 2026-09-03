@@ -107,17 +107,13 @@ INK_TOKENS = {
     "--ink": "primary",
     "--ink-soft": "secondary",
     "--ink-mute": "tertiary",
-    "--ink-faint": "caption",
     "--accent": "accent",
-    "--accent-warm": "accent",
-    "--accent-cool": "accent",
-    "--accent-pop": "accent",
 }
-SURFACE_TOKENS = ("--bg", "--panel", "--panel-strong")
+SURFACE_TOKENS = ("--bg", "--bg-2", "--surface", "--surface-2")
 
-# The canonical background a text token is judged against. The panels are
+# The canonical background a text token is judged against. The card surfaces are
 # semi-transparent, so they are alpha-composited over --bg before scoring.
-DEFAULT_SURFACE_TOKEN = "--panel"
+DEFAULT_SURFACE_TOKEN = "--surface"
 
 # Auto-fix is allowed to recolor these roles to reach AA. Caption tokens are
 # only flagged (never recolored) to respect the deliberate "dim caption" intent.
@@ -127,22 +123,27 @@ AUTOFIX_ROLES = {"primary", "secondary", "tertiary", "accent"}
 # Tile alignment policy
 # ---------------------------------------------------------------------------
 # Selectors that render as rectangular content "tiles/cards" and should share a
-# consistent corner radius. Pills (999px) and circles (50%) are excluded, as is
-# hero scaffolding (.hero-connect*) whose larger radii are intentional.
+# consistent corner radius. Pills (999px) and circles (50%) are excluded, as are
+# the larger shells whose radii are deliberately off the tile scale: the contact
+# panel (32px), the detail overlay (26px) and the portrait frame (28px).
 TILE_SELECTORS = (
-    ".card", ".project", ".skill", ".stat", ".metric",
-    ".repo", ".contact-card", ".linkedin-card__item",
+    ".card", ".card--pub", ".card--talk", ".skill", ".stat",
+    ".gh-stat", ".panel", ".repo", ".recent", ".li-card",
+    ".wip", ".snapshot",
 )
 # Canonical radius scale (px). Outliers within CARD_RADIUS_RANGE are snapped to
 # the nearest canonical value so every tile aligns to the same rhythm.
-CANONICAL_RADIUS_SCALE = (12, 16, 18, 22)
-CARD_RADIUS_MIN, CARD_RADIUS_MAX = 12, 32
+CANONICAL_RADIUS_SCALE = (14, 16, 18, 20, 22)
+CARD_RADIUS_MIN, CARD_RADIUS_MAX = 12, 24
 # Radius values to leave alone (intentional pills / circles).
 RADIUS_IGNORE = (50, 999)
 
 # Grid gaps that should be consistent across multi-column tile grids.
-GRID_GAP_SELECTORS = (".grid-2", ".grid-3", ".grid-4", ".project-grid")
-CANONICAL_GRID_GAP = 18  # px
+GRID_GAP_SELECTORS = (
+    ".project-grid", ".pub-grid", ".skill-grid", ".repo-grid",
+    ".gh-stats", ".gh-panels", ".li-grid", ".card-grid-340",
+)
+CANONICAL_GRID_GAP = 14  # px
 
 # ---------------------------------------------------------------------------
 # Asset / link audit

@@ -28,7 +28,7 @@ const REPORT_DIR = path.join(__dirname, "reports");
 const SHOT_DIR = path.join(REPORT_DIR, "screenshots");
 
 const PAGES = ["/", "/cv/", "/portfolio/", "/publications/", "/github/"];
-const TILE_SELECTORS = [".card", ".project", ".skill", ".metric", ".repo", ".contact-card"];
+const TILE_SELECTORS = [".card", ".skill", ".gh-stat", ".panel", ".repo", ".li-card"];
 const VIEWPORTS = [
   { name: "desktop", width: 1440, height: 900 },
   { name: "mobile", width: 390, height: 844 },

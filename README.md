@@ -81,6 +81,25 @@ This website is built using:
 - **Academic Pages** - Template theme (fork of Minimal Mistakes)
 - **Markdown** - Content formatting
 
+### Animated homepage
+
+`index.html` is served ahead of the Jekyll pages and renders a React single-page
+portfolio. The two views share the `theme` localStorage key, so the light/dark
+choice carries across the whole site.
+
+| File | Role |
+| --- | --- |
+| `assets/cosmic/app.jsx` | The React app. Compiled in the browser by Babel standalone. |
+| `assets/cosmic/styles.css` | Design tokens and every component class. `scripts/site_doctor` parses this file directly, so its token names and tile selectors are mirrored in `scripts/site_doctor/config.py`. |
+| `assets/cosmic/explainers-3d.js` | Per-section Three.js scenes, mounted onto `[data-scene]` elements. One WebGL context renders every scene through scissored viewports, so adding sections does not add contexts. |
+| `assets/cosmic/data.js` | Hand-authored site content (`window.SITE`). |
+| `assets/cosmic/portfolio-sync.generated.js` | Machine-managed overlay from the weekly ESD sync. |
+| `assets/cosmic/linkedin.generated.js` | Machine-managed LinkedIn snapshot. |
+
+Both generated files are optional at runtime: the loader resolves on error and
+the app renders from `window.SITE` alone, so a failed or stale sync degrades to
+a smaller page rather than a broken one.
+
 ## Repository Structure
 
 ```
