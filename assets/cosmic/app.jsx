@@ -161,9 +161,7 @@ class Portfolio extends React.Component {
 
     this.io = new IntersectionObserver((entries) => entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
-      entry.target.setAttribute("data-in", "1");
-      if (entry.target.id === "skills-grid" && !this.state.skillsIn) this.setState({ skillsIn: true });
-      this.io.unobserve(entry.target);
+      this.reveal(entry.target);
     }), { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
     this.observeAll();
     this.mo = new MutationObserver(() => this.observeAll());
@@ -176,6 +174,7 @@ class Portfolio extends React.Component {
     this.countUp();
     this.mountScenes(0);
     this.timers.push(setTimeout(this.measureNav, 60));
+    this.timers.push(setTimeout(this.sweepReveals, 900));
   }
 
   componentDidUpdate() {
@@ -195,6 +194,7 @@ class Portfolio extends React.Component {
     if (this.osMq) this.osMq.removeEventListener("change", this.onOS);
     this.timers.forEach(clearTimeout);
     this.timers = [];
+    clearTimeout(this._sweepT);
     if (this.raf) cancelAnimationFrame(this.raf);
     if (this.io) this.io.disconnect();
     if (this.mo) this.mo.disconnect();
@@ -214,6 +214,8 @@ class Portfolio extends React.Component {
   // ── scroll / nav ──────────────────────────────────────────────────────────
   onScroll = () => {
     if (this.dead) return;
+    clearTimeout(this._sweepT);
+    this._sweepT = setTimeout(this.sweepReveals, 140);
     const probe = window.innerHeight * 0.38;
     let cur = "home";
     for (const [id] of this.sections) {
@@ -269,6 +271,31 @@ class Portfolio extends React.Component {
     const left = overflow && sc.scrollLeft > 4;
     const right = overflow && sc.scrollLeft < sc.scrollWidth - sc.clientWidth - 4;
     if (left !== this.state.fadeL || right !== this.state.fadeR) this.setState({ fadeL: left, fadeR: right });
+  };
+
+  reveal(el) {
+    if (!el || el.getAttribute("data-in") === "1") return;
+    el.setAttribute("data-in", "1");
+    if (el.id === "skills-grid" && !this.state.skillsIn) this.setState({ skillsIn: true });
+    this.io.unobserve(el);
+  }
+
+  /* IntersectionObserver only reports threshold *crossings*, and it samples at
+     rendering opportunities. Scroll fast enough -- a trackpad flick, a held
+     Page Down, a jump to a far section -- and an element can sit below the
+     viewport at one sample and above it at the next, crossing nothing. No
+     entry ever fires, so it stays at opacity 0 and the visitor scrolls back to
+     a blank stretch of page.
+
+     So the observer keeps driving the animation, and this catches the rest:
+     debounced past the end of a scroll, anything still hidden whose top has
+     already gone by is revealed outright. */
+  sweepReveals = () => {
+    if (this.dead) return;
+    const cutoff = window.innerHeight;
+    document.querySelectorAll("[data-reveal]:not([data-in])").forEach((el) => {
+      if (el.getBoundingClientRect().top < cutoff) this.reveal(el);
+    });
   };
 
   observeAll() {

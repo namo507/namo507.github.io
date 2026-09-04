@@ -23,7 +23,9 @@
   --line-2: rgba(255, 255, 255, .2);
   --ink: #f2f1ec;
   --ink-soft: #bdbcb4;
-  --ink-mute: #8a8981;
+  /* Same story as the light theme: 4.36:1 on the raised card surface, under
+     AA. #94938b clears 4.5 everywhere in this theme (worst case 4.96). */
+  --ink-mute: #94938b;
   --accent: #8b93ff;
   --accent-ink: #0b0c11;
   --accent-tint: rgba(139, 147, 255, .12);
@@ -63,7 +65,10 @@
   --line-2: rgba(20, 21, 26, .24);
   --ink: #14151a;
   --ink-soft: #44464f;
-  --ink-mute: #6b6d76;
+  /* 4.39:1 at #6b6d76 on the light card surface -- just under AA, and only
+     visible once the reveal fix stopped leaving these cards at opacity 0.
+     #5c5e67 clears 4.5 on every surface in this theme (worst case 4.89). */
+  --ink-mute: #5c5e67;
   --accent: #3f47c9;
   --accent-ink: #ffffff;
   --accent-tint: rgba(63, 71, 201, .1);
