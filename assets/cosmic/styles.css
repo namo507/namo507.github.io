@@ -34,6 +34,10 @@
      exceeding 94vw. Prose does not over-stretch with it: .sec__lead and
      .hero__sub are capped in ch, not by the shell. */
   --shell: min(94vw, 1560px);
+  /* Vertical rhythm. Was clamp(72px, 10vh, 120px), which left 204-222px of
+     empty page between every pair of sections on a 1020px-tall viewport.
+     Named because the section divider positions itself against it. */
+  --sec-pad-y: clamp(52px, 6.4vh, 88px);
   /* Grid track minimums. Fluid so a wider shell grows the cards rather than
      packing in more, narrower ones -- column count stays roughly stable from
      1280px up and the extra width goes into each card. */
@@ -195,6 +199,7 @@ img { display: block; max-width: 100%; }
   /* The wildcard above already halts the aurora, but say it outright: the
      ambient layer stays as a still wash rather than a one-frame twitch. */
   body::after, html::before { animation: none; }
+  .sec + .sec::after { animation: none; transform: translateX(0); opacity: .35; }
 }
 
 /* ── Shared atoms ─────────────────────────────────────────────────────────── */
@@ -203,6 +208,7 @@ img { display: block; max-width: 100%; }
   font-size: 11.5px;
   letter-spacing: .14em;
   text-transform: uppercase;
+  font-weight: 500;
   color: var(--accent);
 }
 
@@ -461,7 +467,49 @@ img { display: block; max-width: 100%; }
 .sec {
   max-width: var(--shell);
   margin: 0 auto;
-  padding: clamp(72px, 10vh, 120px) clamp(20px, 5vw, 64px);
+  padding: var(--sec-pad-y) clamp(20px, 5vw, 64px);
+  position: relative;
+}
+
+/* Divider in the space between two sections. Because sections are adjacent
+   siblings with padding and no margins, the border-box edge at top:0 is the
+   exact midpoint of the gap, so the rule needs no magic offset.
+
+   The travelling mark gives the gap something to do without adding a third
+   thing to read: one small accent square easing along the hairline, rotating
+   as it goes. It is decoration, so it lives on pseudo-elements and is hidden
+   from assistive tech by construction. */
+.sec + .sec::before,
+.sec + .sec::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  pointer-events: none;
+}
+
+.sec + .sec::before {
+  top: 0;
+  transform: translateX(-50%);
+  width: min(620px, 54%);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-2) 20%, var(--line-2) 80%, transparent);
+  opacity: .5;
+}
+
+.sec + .sec::after {
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: .45;
+  animation: sec-mark 19s var(--ease) infinite;
+}
+
+@keyframes sec-mark {
+  0%, 100% { transform: translateX(-124px) rotate(0deg); opacity: .12; }
+  50%      { transform: translateX(124px) rotate(135deg); opacity: .5; }
 }
 
 .sec--home { padding: clamp(120px, 18vh, 180px) clamp(20px, 5vw, 64px) clamp(40px, 6vh, 72px); }
@@ -488,7 +536,9 @@ img { display: block; max-width: 100%; }
 
 .sec__lead {
   margin-top: 14px;
-  max-width: 62ch;
+  max-width: 68ch;
+  font-size: 17px;
+  line-height: 1.62;
   color: var(--ink-soft);
   text-wrap: pretty;
 }
@@ -536,8 +586,8 @@ img { display: block; max-width: 100%; }
 .hero__summary {
   margin-top: 24px;
   max-width: 60ch;
-  font-size: 16.5px;
-  line-height: 1.65;
+  font-size: 17.5px;
+  line-height: 1.68;
   color: var(--ink-soft);
   text-wrap: pretty;
 }
@@ -672,8 +722,8 @@ button.card:hover, a.card:hover {
 
 .card__body {
   margin-top: 12px;
-  font-size: 14.5px;
-  line-height: 1.6;
+  font-size: 15.25px;
+  line-height: 1.62;
   color: var(--ink-soft);
   text-wrap: pretty;
 }

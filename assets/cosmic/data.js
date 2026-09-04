@@ -13,7 +13,7 @@ window.SITE = {
     pdfUrl: "/files/namit-shrivastava-cv.pdf",
     siteUrl: "https://namo507.github.io",
     summary:
-      "Data Scientist II with expertise in survey methodology, causal inference, geospatial epidemiology, and statistical modeling. Published in Springer and presented at AAPOR on transformer-based sentiment analysis. Research agenda focuses on trustworthy data integration frameworks that fuse survey methodology with generative AI, deep learning, and privacy-preserving methods to advance automated data collection, quality assurance, and responsible measurement at scale.",
+      "I build measurement systems for research that has to hold up. Right now that means an NIH-funded infant cohort at USC \u2014 heart rate, behaviour, and clinical records folded into something a scientist can actually reason about. Before that: census tracts, transfer markets, and a million posts about electric cars. Published with Springer, presented at AAPOR. Most of the work is the unglamorous half \u2014 making sure the numbers mean what everyone assumes they mean.",
     typingWords: [
       "survey-aware AI systems",
       "geospatial measurement pipelines",
@@ -155,37 +155,37 @@ window.SITE = {
   skills: [
     {
       name: "Survey & Research Methods", score: 98, tier: "Research core", featured: true,
-      summary: "Survey design, causal inference, sampling, data quality, and statistical frameworks.",
+      summary: "How to ask a question so the answer survives contact with reality.",
       tools: ["Survey Methodology", "Causal Inference", "Applied Sampling", "Total Survey Error", "Data Quality", "Experimental Design", "Geospatial Analysis", "Statistical Modeling"],
     },
     {
       name: "AI / ML", score: 95, tier: "Applied ML focus", featured: true,
-      summary: "Production model development across transformers, deep learning, and modern ML.",
+      summary: "Models that leave the notebook and keep working.",
       tools: ["PyTorch", "TensorFlow", "Keras", "Hugging Face", "LangChain", "LlamaIndex", "LangGraph", "PySpark", "NLTK", "spaCy", "scikit-learn"],
     },
     {
       name: "Core AI Systems", score: 91, tier: "Modeling backbone",
-      summary: "Concepts that connect research questions to deployable intelligent systems.",
+      summary: "The bridge between a research question and something that runs.",
       tools: ["LLMs", "Generative AI", "RLHF/DPO", "Deep Learning", "NLP", "Computer Vision", "MLOps"],
     },
     {
       name: "Programming", score: 84, tier: "Analysis languages",
-      summary: "Coding stack for statistical research, automation, and prototyping.",
+      summary: "The everyday tools \u2014 analysis, automation, and quick prototypes.",
       tools: ["Python", "R", "Java", "C++", "JavaScript", "TypeScript", "HTML/CSS", "Bash"],
     },
     {
       name: "Data & Databases", score: 82, tier: "Data infrastructure",
-      summary: "Query, storage, and scalable processing tools.",
+      summary: "Getting data in, out, and back again without losing any of it.",
       tools: ["SQL", "PostgreSQL", "MySQL", "MongoDB", "Cassandra", "Snowflake", "Neo4j", "Pinecone", "Spark", "Kafka"],
     },
     {
       name: "Cloud & Analytics", score: 74, tier: "Platform support",
-      summary: "Cloud, BI, and reporting platforms used to operationalize research.",
+      summary: "Where the findings go once somebody other than me needs them.",
       tools: ["AWS", "Azure", "GCP", "Tableau", "Power BI", "MLflow", "Qualtrics", "STATA"],
     },
     {
       name: "DevOps & Delivery", score: 70, tier: "Delivery layer",
-      summary: "Deployment and app-delivery tooling.",
+      summary: "Shipping it, then keeping it up.",
       tools: ["Git", "Docker", "Kubernetes", "Jenkins", "REST APIs", "Django", "Flask", "Angular", "React", "Terraform", "Ansible"],
     },
   ],

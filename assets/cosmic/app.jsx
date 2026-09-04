@@ -617,8 +617,8 @@ class Portfolio extends React.Component {
           {/* ── Experience ─────────────────────────────────────────────── */}
           <section id="experience" className="sec">
             {this.renderHead("01", "Experience",
-              "Research, infrastructure, and ML engineering roles.",
-              "Quantified outcomes across public health, open data, survey methodology, and applied AI. Click a role for the full record.",
+              "From a volunteer registry to an NIH infant cohort.",
+              "Seven roles, two countries, and domains that kept changing \u2014 disaster relief, legal tech, public health, survey methodology. The job underneath stayed the same: take data somebody has to trust, and make it worth trusting. Open a role for the whole story.",
               "helix")}
             <div id="exp-timeline" className="exp">
               <div className="exp__rail" aria-hidden="true" />
@@ -660,8 +660,8 @@ class Portfolio extends React.Component {
           {/* ── Projects ───────────────────────────────────────────────── */}
           <section id="projects" className="sec">
             {this.renderHead("02", "Selected work",
-              "Projects spanning ML, methodology, and engineering.",
-              "20 selected projects from graduate research, undergraduate work, and applied builds. Filter by method; open a card for the case study and source.",
+              "Twenty projects, and what each one actually took.",
+              "Football transfer markets, air pollution, electric vehicles, forest cover. The subjects wander; the method doesn\u2019t. Filter by approach, or open a card to see how one really went.",
               "lattice")}
             <div className="filters" role="group" aria-label="Filter projects" data-reveal="1">
               {tags.map((t) => (
@@ -713,8 +713,8 @@ class Portfolio extends React.Component {
           {/* ── Publications ───────────────────────────────────────────── */}
           <section id="publications" className="sec">
             {this.renderHead("03", "Research output",
-              "Publications, papers, and scholarly work.",
-              "Peer-reviewed and conference research at the intersection of survey methodology, NLP, and applied AI.",
+              "Two papers, both about listening properly.",
+              "One on keeping supply chains standing when everything goes wrong, published by Springer. One on what a million social posts really say about electric vehicles \u2014 and where the sentiment scores quietly lie \u2014 presented at AAPOR.",
               "stack")}
             <div className="pub-grid">
               {D.publications.map((p) => (
@@ -781,8 +781,8 @@ class Portfolio extends React.Component {
           {/* ── Skills ─────────────────────────────────────────────────── */}
           <section id="skills" className="sec">
             {this.renderHead("04", "Technical skills",
-              "Methods first, then the stack that ships them.",
-              "Seven skill groups, each scored by depth of use across research and production work.",
+              "Methods first. The stack is just how they ship.",
+              "Seven groups, scored by how far I\u2019ve actually pushed each one rather than how many I can name. Survey methodology sits on top because the rest of it exists to serve that.",
               "rings")}
             <div id="skills-grid" className="skill-grid" data-cardgrid="1" data-reveal="1">
               {D.skills.map((k, i) => (
@@ -809,8 +809,8 @@ class Portfolio extends React.Component {
           {/* ── Code ───────────────────────────────────────────────────── */}
           <section id="code" className="sec">
             {this.renderHead("05", "Code portfolio",
-              "Public repositories, automation workflows, and starred builds.",
-              "Repository showcase across research code, NLP, multilevel modeling, automation prototypes, and the source for this very site. Counts sync from the GitHub API.",
+              "All of it is public, including this page.",
+              "Research code, NLP experiments, a few automation prototypes, and the repository that builds the site you\u2019re reading. The counts come straight from the GitHub API, so they\u2019re as honest as the last sync.",
               "cubes")}
             <div className="gh-stats" data-reveal="1">
               {D.github.stats.map((g) => (
@@ -906,11 +906,11 @@ class Portfolio extends React.Component {
               {this.renderHead("06",
                 seeded ? "LinkedIn snapshot" : "LinkedIn signals",
                 seeded
-                  ? "A curated LinkedIn snapshot, rendered safely while live sync catches up."
-                  : "Public profile changes, normalized before they touch the layout.",
+                  ? "LinkedIn, on a deliberate delay."
+                  : "What LinkedIn says, checked before it lands.",
                 seeded
-                  ? "Driven by a curated, validated snapshot that keeps the portfolio complete while public LinkedIn fetches are rate-limited."
-                  : "Machine-managed cards render only when public LinkedIn data passes fetch, parse, diff, and schema validation.",
+                  ? "LinkedIn turns away automated readers, so this falls back to a snapshot I check by hand. It would rather admit it is a snapshot than pretend to be live."
+                  : "Updates only appear here once they survive fetch, parse, diff, and schema validation. If anything looks wrong, nothing renders at all.",
                 "wave")}
               <div className="li-grid">
                 <div className="li-card" data-reveal="1">
@@ -959,8 +959,8 @@ class Portfolio extends React.Component {
           {/* ── Talks ──────────────────────────────────────────────────── */}
           <section id="talks" className="sec">
             {this.renderHead("07", "Talks & presentations",
-              "Communicating research methods and technical results.",
-              "Conference presentations translating transformer-based methods, sentiment analysis, and survey workflows.",
+              "Explaining the method, not just the result.",
+              "AAPOR 2025, on what transformer models can and can\u2019t tell you about public opinion \u2014 and the places a confident sentiment score is simply wrong.",
               "rings")}
             <div className="card-grid-340">
               {D.talks.map((t) => (
@@ -987,8 +987,8 @@ class Portfolio extends React.Component {
           {/* ── Teaching ───────────────────────────────────────────────── */}
           <section id="teaching" className="sec">
             {this.renderHead("08", "Teaching practice",
-              "Course delivery, privacy instruction, and academic infrastructure.",
-              "Teaching and graduate-assistantship work across the Joint Program in Survey Methodology at the University of Maryland.",
+              "Teaching the part everyone would rather skip.",
+              "Two years at Maryland\u2019s Joint Program in Survey Methodology \u2014 a graduate course on privacy and confidentiality for 23 students, plus the Canvas infrastructure keeping 10+ instructors and 125+ of their students unblocked.",
               "wave")}
             <div className="card-grid-340">
               {D.teaching.map((t) => (
