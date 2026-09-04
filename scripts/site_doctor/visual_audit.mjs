@@ -119,6 +119,13 @@ async function run() {
     // The homepage renders via in-browser Babel; give the app a moment to mount.
     if (pagePath === "/") {
       await page.waitForTimeout(3500);
+    } else {
+      // Every other page still needs a beat. The theme sets a 0.2s transition on
+      // interactive elements, and axe run straight off networkidle reads whatever
+      // colour the element is passing through: the /cv/ LinkedIn button reported
+      // 1.1:1 on #dee8eb/#e9f3f5 mid-transition, while it actually settles at
+      // 5.64:1. That phantom was the last thing keeping the health issue open.
+      await page.waitForTimeout(700);
     }
 
     // 1. axe-core accessibility scan.

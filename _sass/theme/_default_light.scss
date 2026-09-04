@@ -6,7 +6,11 @@
 $gray                       : #60708a;
 $dark-gray                  : #243145;
 $darker-gray                : #16202f;
-$light-gray                 : #8d98aa;
+// #8d98aa rendered muted text at 2.87:1 on the footer surface and 2.59:1 on
+// --global-surface-color, well under WCAG AA. #636e87 clears 4.5:1 on every
+// light surface in this theme (worst case 4.54 on #edf2f8) while staying far
+// lighter than body text at #243145, so the hierarchy is unchanged.
+$light-gray                 : #636e87;
 $lighter-gray               : #dde4ef;
 
 /* Color codes used for the site */
