@@ -5,13 +5,13 @@ window.LINKEDIN_SYNC = Object.freeze({
     "source": "linkedin-curated-seed",
     "profile_url": "https://www.linkedin.com/in/namit-shrivastava-baab47204/",
     "schema_version": 2,
-    "last_attempted_sync_at": "2026-09-04T04:34:19+00:00",
-    "last_successful_sync_at": "2026-09-04T04:34:19+00:00",
-    "last_meaningful_change_at": "2026-09-04T04:34:19+00:00",
-    "generated_asset_version": "linkedin-seed-2026-09-04T0434-cd2c4863",
+    "last_attempted_sync_at": "2026-09-04T17:19:25+00:00",
+    "last_successful_sync_at": "2026-09-04T17:19:25+00:00",
+    "last_meaningful_change_at": "2026-09-04T17:19:25+00:00",
+    "generated_asset_version": "linkedin-seed-2026-09-04T1719-cd2c4863",
     "content_hash": "cd2c4863e4321ee67d1337449caa9bcfc0b18a4b56d7d1db2cfc6677a4ba0d15",
     "generator": "scripts/sync_linkedin_content.py",
-    "warning": "Showing a curated LinkedIn snapshot sourced from portfolio-owned profile data until the first live public sync succeeds."
+    "warning": "Curated snapshot, verified by hand. Live sync resumes when LinkedIn allows it."
   },
   "profile": {
     "full_name": "Namit Shrivastava",
@@ -32,7 +32,7 @@ window.LINKEDIN_SYNC = Object.freeze({
       "Statistical Modeling",
       "Responsible AI"
     ],
-    "last_synced_at": "2026-09-04T04:34:19+00:00",
+    "last_synced_at": "2026-09-04T17:19:25+00:00",
     "source": "linkedin"
   },
   "experience": [
