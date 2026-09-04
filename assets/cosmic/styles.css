@@ -106,8 +106,8 @@ body::before {
 }
 
 /* Drifting aurora behind everything. Two soft blobs on one fixed layer, plus a
-   third counter-drifting on html::before, each on its own period so they never
-   visibly loop together. Pseudo-elements rather than markup so app.jsx is
+   third counter-drifting on html::before. 46s and 61s are coprime, so the two
+   layers only realign every ~47 minutes and never visibly loop together. Pseudo-elements rather than markup so app.jsx is
    untouched, and position:fixed so the layer costs no layout.
 
    Every gradient fades to transparent well before the element's edge, so
@@ -128,12 +128,12 @@ body::after {
   background:
     radial-gradient(34% 30% at 18% 22%, var(--aurora-1), transparent 68%),
     radial-gradient(30% 28% at 84% 68%, var(--aurora-2), transparent 66%);
-  animation: aurora-drift-a 68s cubic-bezier(.45, 0, .55, 1) infinite;
+  animation: aurora-drift-a 46s cubic-bezier(.45, 0, .55, 1) infinite;
 }
 
 html::before {
   background: radial-gradient(28% 26% at 62% 12%, var(--aurora-2), transparent 64%);
-  animation: aurora-drift-b 91s cubic-bezier(.45, 0, .55, 1) infinite;
+  animation: aurora-drift-b 61s cubic-bezier(.45, 0, .55, 1) infinite;
 }
 
 @keyframes aurora-drift-a {
