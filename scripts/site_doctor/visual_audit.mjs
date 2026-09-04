@@ -120,13 +120,34 @@ async function run() {
     if (pagePath === "/") {
       await page.waitForTimeout(3500);
     } else {
-      // Every other page still needs a beat. The theme sets a 0.2s transition on
-      // interactive elements, and axe run straight off networkidle reads whatever
-      // colour the element is passing through: the /cv/ LinkedIn button reported
-      // 1.1:1 on #dee8eb/#e9f3f5 mid-transition, while it actually settles at
-      // 5.64:1. That phantom was the last thing keeping the health issue open.
-      await page.waitForTimeout(700);
+      await page.waitForTimeout(400);
     }
+
+    /* Freeze transitions and animations before measuring. The theme puts a 0.2s
+       transition on interactive elements, and axe reads whatever colour an
+       element is passing through: /cv/'s LinkedIn button reported 1.1:1 on
+       #dee8eb/#e9f3f5 mid-transition against a settled 5.64:1. A fixed delay
+       only moved the race -- the next CI run failed on /portfolio/ instead --
+       because a cold runner is slower than a warm laptop. Removing the
+       transient states is deterministic where waiting for them is not.
+
+       This measures the resting state, which is the one a reader actually sees.
+       The screenshots below inherit the freeze too, which makes them
+       deterministic rather than catching a drifting aurora mid-cycle. The
+       homepage's own 3.5s mount wait is untouched, so React still renders and
+       the reveal observer still runs before anything is measured. */
+    await page.addStyleTag({
+      content: `*, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+      }`,
+    });
+    await page.evaluate(() => {
+      // Let any in-flight animation land on its final frame before we read colours.
+      document.getAnimations().forEach((a) => { try { a.finish(); } catch {} });
+    });
+    await page.waitForTimeout(120);
 
     // 1. axe-core accessibility scan.
     try {
