@@ -17,6 +17,15 @@ on:
       - '_data/**'
       - '_pages/**'
       - 'scripts/site_doctor/**'
+      # Asset directories matter here: the doctor's link pass exists to catch
+      # broken references, and deleting an image or a PDF is exactly what
+      # breaks one. Removing images/IMG_0244.jpg and "CV content/" triggered
+      # no run at all, so the check that would have caught a mistake there
+      # never ran.
+      - 'images/**'
+      - 'files/**'
+      - 'index.html'
+      - '_config.yml'
       - '.github/workflows/site-health.yml'
 
 # Serialize with the other auto-committing workflows so two bots never push to
