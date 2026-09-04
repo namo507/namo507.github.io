@@ -13,7 +13,7 @@ window.SITE = {
     pdfUrl: "/files/namit-shrivastava-cv.pdf",
     siteUrl: "https://namo507.github.io",
     summary:
-      "Graduate researcher with expertise in survey methodology, causal inference, geospatial epidemiology, and statistical modeling. Published in Springer and presented at AAPOR on transformer-based sentiment analysis. Research agenda focuses on trustworthy data integration frameworks that fuse survey methodology with generative AI, deep learning, and privacy-preserving methods to advance automated data collection, quality assurance, and responsible measurement at scale.",
+      "Data Scientist II with expertise in survey methodology, causal inference, geospatial epidemiology, and statistical modeling. Published in Springer and presented at AAPOR on transformer-based sentiment analysis. Research agenda focuses on trustworthy data integration frameworks that fuse survey methodology with generative AI, deep learning, and privacy-preserving methods to advance automated data collection, quality assurance, and responsible measurement at scale.",
     typingWords: [
       "survey-aware AI systems",
       "geospatial measurement pipelines",

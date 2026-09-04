@@ -1,7 +1,7 @@
 ---
 permalink: /about/
 title: "Home (Classic)"
-excerpt: "Graduate researcher at the intersection of survey methodology, trustworthy AI, and computational social science."
+excerpt: "Data Scientist II working at the intersection of survey methodology, trustworthy AI, and computational social science."
 author_profile: true
 hide_title: true
 hide_excerpt: true
