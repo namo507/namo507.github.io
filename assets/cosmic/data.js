@@ -6,7 +6,7 @@ window.SITE = {
     pronouns: "he/him",
     headline: "Designing rigorous measurement systems for AI-enabled research.",
     eyebrow: "Survey Methodology · Data Science · Responsible AI",
-    role: "Graduate Researcher · University of Maryland",
+    role: "Data Scientist II · Institute for Mind and Brain, USC",
     location: "San Diego, CA, USA",
     email: "namit507@gmail.com",
     phone: "(240) 476-8513",
