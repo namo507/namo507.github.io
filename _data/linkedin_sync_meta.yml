@@ -5,10 +5,10 @@ linkedin_sync_meta:
   source: linkedin-curated-seed
   profile_url: https://www.linkedin.com/in/namit-shrivastava-baab47204/
   schema_version: 2
-  last_attempted_sync_at: '2026-09-04T03:22:28+00:00'
-  last_successful_sync_at: '2026-09-04T03:22:28+00:00'
-  last_meaningful_change_at: '2026-09-04T03:22:28+00:00'
-  generated_asset_version: linkedin-seed-2026-09-04T0322-1a36c104
+  last_attempted_sync_at: '2026-09-04T03:25:58+00:00'
+  last_successful_sync_at: '2026-09-04T03:25:58+00:00'
+  last_meaningful_change_at: '2026-09-04T03:25:58+00:00'
+  generated_asset_version: linkedin-seed-2026-09-04T0325-1a36c104
   content_hash: 1a36c1046bd0646cd5518556feca8447d5082606e316691ee30c0613c3808228
   generator: scripts/sync_linkedin_content.py
   warning: Showing a curated LinkedIn snapshot sourced from portfolio-owned profile
