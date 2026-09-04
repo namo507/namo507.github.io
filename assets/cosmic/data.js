@@ -7,7 +7,7 @@ window.SITE = {
     headline: "Designing rigorous measurement systems for AI-enabled research.",
     eyebrow: "Survey Methodology · Data Science · Responsible AI",
     role: "Graduate Researcher · University of Maryland",
-    location: "College Park, MD, USA",
+    location: "San Diego, CA, USA",
     email: "namit507@gmail.com",
     phone: "(240) 476-8513",
     pdfUrl: "/files/namit-shrivastava-cv.pdf",
