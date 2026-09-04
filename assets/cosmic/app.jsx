@@ -396,22 +396,22 @@ class Portfolio extends React.Component {
     const D = this.props.data;
     const t = q.toLowerCase();
     const rules = [
-      [/talk|present|aapor|keynote/, "One conference presentation: the 80th Annual AAPOR Conference in St. Louis, MO on May 16, 2025 — transformer-based EV sentiment research over a 1.1M+ post pipeline, 91.6% DistilBERT accuracy, and measurable LLM sentiment bias. Details are in the Talks section."],
-      [/publicat|publish|paper|article|journal|conference|scholar|orcid/, "Two research outputs: a Springer journal article on supply-chain sustainability using fuzzy-AHP with 200+ experts (2024), and an AAPOR 2025 conference paper on EV sentiment using DistilBERT at 91.6% accuracy over 1.1M+ posts. Five more works are in the 2026 pipeline via ORCID."],
-      [/skill|technolog|program|python|stack|pytorch/, "Top groups: Survey & Research Methods (98%), AI/ML (95%), Core AI Systems (91%), Programming (84%). Stack includes Python, R, PyTorch, TensorFlow, Hugging Face, LangChain, and AWS/Azure/GCP."],
-      [/educat|degree|university|gpa|bits|umd/, "M.S. Survey & Data Science at UMD (GPA 3.814/4.0, JPSM Dean's Fellow 2025–26) and B.E. Civil Engineering with a Data Science minor from BITS Pilani (GPA 3.327/4.0)."],
-      [/project|build|portfolio/, "20 projects in the Projects section — EV sentiment (1.1M+ posts, 91.6%), football market value (7,023 player-seasons), LEXNet (97% smaller CNN), and the 129K-tract broadband pipeline. Click any card for the full case study."],
+      [/talk|present|aapor|keynote/, "One so far \u2014 AAPOR\u2019s 80th, St. Louis, May 2025. I took the EV sentiment work there: 1.1M+ posts, DistilBERT at 91.6%, and the part people asked about most, where the LLMs were quietly biased. Full details in Talks."],
+      [/publicat|publish|paper|article|journal|conference|scholar|orcid/, "Two so far. A Springer article on keeping supply chains sustainable through disruption \u2014 fuzzy-AHP over 200+ experts, 2024 \u2014 and the AAPOR 2025 paper on EV sentiment, DistilBERT at 91.6% across 1.1M+ posts. Five more are working their way through the 2026 pipeline; ORCID has them."],
+      [/skill|technolog|program|python|stack|pytorch/, "Strongest ground is survey and research methods (98%), then AI/ML (95%), core AI systems (91%) and programming (84%). Day to day that means Python and R, PyTorch and TensorFlow, Hugging Face and LangChain, on whichever of AWS, Azure or GCP the project lives."],
+      [/educat|degree|university|gpa|bits|umd/, "An M.S. in Survey & Data Science from Maryland \u2014 3.817/4.0, and a JPSM Dean's Fellow in 2025\u201326. Before that, civil engineering at BITS Pilani with a data science minor, 3.327/4.0. The route here was not a straight line."],
+      [/project|build|portfolio/, "Twenty of them. The ones I get asked about most: EV sentiment across 1.1M+ posts at 91.6%, football market value over 7,023 player-seasons, LEXNet squeezing a CNN down by 97%, and the broadband pipeline covering 129K census tracts. Open any card for how it actually went."],
       [/contact|email|reach|connect|phone/, "Email " + D.profile.email + " · LinkedIn, GitHub, Scholar and ORCID links are all in the Contact section. Based in " + D.profile.location + "."],
-      [/github|repo|code|commit/, "44 public repositories at github.com/namo507. Featured: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, career-ops."],
-      [/geospatial|census|broadband|michigan|epidemiol/, "At U. Michigan ISR: a geospatial pipeline across 129,572 U.S. census tracts and 3 RUCA strata — 100% broadband completeness, 28.6% less baseline missingness, and significant rural inflections (p < 0.01)."],
-      [/teach|course|student|surv735/, "TA for SURV735 (Data Privacy & Confidentiality) at JPSM, supporting 23 graduate students, plus a Canvas LMS redesign for 10+ instructors and 125+ students: +30% satisfaction, −40% setup time."],
-      [/award|fellow|achiev|honor/, "JPSM Dean's Fellowship (AY 2025–26), 1st rank in HRD among 180 students at BITS Pilani, Top 10 in Water & Wastewater Treatment, and Microsoft Azure AI Fundamentals certification."],
-      [/experience|job|role|position|current|now\b|work/, "Currently Data Scientist II at the Institute for Mind and Brain, University of South Carolina — a React/TypeScript/Python analytics platform, REDCap and clinical EHR pipelines, and PyTorch CNN-LSTM/Transformer models across 260 participants. Earlier: SDSC at UMD, U. Michigan ISR, JPSM, Legistify, Accenture."],
-      [/survey|methodolog|sampling|causal|measurement/, "Core area: survey methodology and data science — trustworthy data integration, AI-enabled quality assurance, causal inference, and privacy-preserving measurement."],
-      [/hello|hi\b|hey|who are you|what can you do/, "Hi — ask me about publications, projects, skills, experience, teaching, or how to get in touch. Every answer comes straight from this site's data."],
+      [/github|repo|code|commit/, "44 public repositories, all at github.com/namo507. The ones worth starting with: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, and career-ops."],
+      [/geospatial|census|broadband|michigan|epidemiol/, "That was Michigan\u2019s Institute for Social Research \u2014 a geospatial pipeline over 129,572 census tracts and 3 RUCA strata. It closed the broadband gaps completely, cut baseline missingness by 28.6%, and turned up rural inflection points that held at p < 0.01."],
+      [/teach|course|student|surv735/, "I TA\u2019d SURV735, data privacy and confidentiality, for 23 graduate students at JPSM. Alongside it I rebuilt the Canvas setup 10+ instructors and 125+ students depend on \u2014 satisfaction up 30%, setup time down 40%."],
+      [/award|fellow|achiev|honor/, "A JPSM Dean's Fellowship for 2025\u201326, first out of 180 in HRD at BITS Pilani, a top-ten finish in Water & Wastewater Treatment, and Microsoft\u2019s Azure AI Fundamentals along the way."],
+      [/experience|job|role|position|current|now\b|work/, "Right now, Data Scientist II at the Institute for Mind and Brain in South Carolina \u2014 an analytics platform in React, TypeScript and Python, REDCap and clinical EHR pipelines feeding it, and PyTorch CNN-LSTM and Transformer models across 260 participants. Before that: SDSC at Maryland, Michigan\u2019s ISR, JPSM, Legistify, Accenture."],
+      [/survey|methodolog|sampling|causal|measurement/, "That\u2019s the centre of it. Getting different sources to agree without quietly corrupting each other, checking quality without a human reading every row, drawing causal conclusions that survive scrutiny, and measuring people without exposing them."],
+      [/hello|hi\b|hey|who are you|what can you do/, "Hello. Ask me about the papers, the projects, the skills, where I\u2019ve worked, what I\u2019ve taught, or how to reach me. I only answer from what\u2019s already on this page \u2014 nothing invented."],
     ];
     for (const [re, out] of rules) if (re.test(t)) return out;
-    return "Namit is a Data Scientist II at the Institute for Mind and Brain (U. South Carolina) and an M.S. Survey & Data Science graduate from UMD, working on survey methodology, causal inference, and responsible AI. 20 projects, 2 publications, 44 repositories. What would you like to know?";
+    return "Not sure I follow \u2014 try me on the papers, the projects, the skills, the roles, the teaching, or how to get in touch. Short version: Namit is a Data Scientist II at the Institute for Mind and Brain in South Carolina, with a survey and data science master's from Maryland. Twenty projects, two papers, 44 repositories.";
   }
 
   sendBuddy = () => {
@@ -850,9 +850,9 @@ class Portfolio extends React.Component {
               <div className="panel">
                 <p className="mono-meta">What this code covers</p>
                 <ul className="dot-list" style={{ marginTop: "14px" }}>
-                  <li><span className="dot-list__dot" aria-hidden="true" />Research pipelines: survey methodology, NLP, multilevel modeling, public opinion analysis.</li>
-                  <li><span className="dot-list__dot" aria-hidden="true" />Applied AI prototypes: Office add-ins, n8n workflows, simulation frameworks.</li>
-                  <li><span className="dot-list__dot" aria-hidden="true" />Repository docs that link source code back to portfolio work and CV artifacts.</li>
+                  <li><span className="dot-list__dot" aria-hidden="true" />Research code \u2014 survey methodology, NLP, multilevel models, and public opinion.</li>
+                  <li><span className="dot-list__dot" aria-hidden="true" />Prototypes that escaped the notebook \u2014 Office add-ins, n8n workflows, simulations.</li>
+                  <li><span className="dot-list__dot" aria-hidden="true" />Docs that tie each repository back to the work it came from.</li>
                 </ul>
               </div>
             </div>
@@ -951,7 +951,7 @@ class Portfolio extends React.Component {
                 </div>
               </div>
               <p className="li-note" data-reveal="1">
-                {li.meta.warning || "Live public LinkedIn data is currently driving these cards."}
+                {li.meta.warning || "These cards are running on live LinkedIn data right now."}
               </p>
             </section>
           ) : null}
@@ -1098,7 +1098,7 @@ class Portfolio extends React.Component {
               <div className="buddy__head">
                 <div>
                   <div className="buddy__title">Research assistant</div>
-                  <div className="buddy__sub">Keyword mode · answers from site data</div>
+                  <div className="buddy__sub">Keyword matching \u00b7 no model behind it</div>
                 </div>
                 <button className="buddy__close" onClick={() => this.setState({ buddyOpen: false })} aria-label="Close assistant">✕</button>
               </div>
@@ -1109,7 +1109,7 @@ class Portfolio extends React.Component {
               <div className="buddy__msgs" ref={this.msgsRef}>
                 {(s.buddyMsgs.length ? s.buddyMsgs : [{
                   role: "assistant",
-                  content: "Ask me about the research, projects, or skills on this page — answers come from the site's own data.",
+                  content: "Ask about the research, the projects, or the skills here. Answers come only from this page.",
                 }]).map((m, i) => (
                   <div className={"buddy__msg" + (m.role === "user" ? " buddy__msg--user" : "")} key={i}>{m.content}</div>
                 ))}
