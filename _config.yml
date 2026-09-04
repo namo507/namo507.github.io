@@ -188,6 +188,11 @@ exclude:
   - local
   - log
   - node_modules
+  # Jekyll's `node_modules` entry matches the root directory only. The
+  # site_doctor toolchain installs Playwright under scripts/site_doctor/,
+  # which otherwise copies ~20MB of vendored HTML into _site and makes the
+  # asset audit report Playwright's own relative links as broken site links.
+  - scripts/site_doctor/node_modules
   - package.json*
   - Rakefile
   - README

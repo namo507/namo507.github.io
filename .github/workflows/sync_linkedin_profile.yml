@@ -37,6 +37,10 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          # Required: the repo has no .ruby-version or .tool-versions file, so
+          # the action errors out without it. Matches the other workflows and
+          # the Dockerfile (ruby:3.3).
+          ruby-version: '3.3'
           bundler-cache: true
 
       - name: Verify site build
