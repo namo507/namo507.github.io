@@ -59,6 +59,16 @@
   }
 }
 
+/* Two bare sibling <a> collapse to "Sitemap Terms & Privacy" -- one phrase
+   rather than two links. Same flex/gap treatment as the copyright row below,
+   which is this footer's established pattern for a row of small meta items. */
+.page__footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
 .page__footer-copyright {
   font-family: $global-font-family;
   font-size: $type-size-7;
