@@ -129,10 +129,21 @@ async function checkMotion(page, label, out, reduced = false) {
     if (settled?.rafActive) throw new Error('WebGL keeps scheduling frames with reduced motion enabled');
   } else {
     if (!before.animations.some(a => a.state === "running")) throw new Error("No running homepage CSS animations");
-    await page.waitForTimeout(180);
-    const advanced = await page.evaluate(times => document.getAnimations().some((a, i) =>
-      a.playState === "running" && a.currentTime > (times[i]?.time ?? Infinity)), before.animations);
-    if (!advanced) throw new Error("Homepage animation frames did not advance");
+    /* Pairing the two getAnimations() samples by array index was flaky: the order
+       is not guaranteed stable and the set itself changes as animations start and
+       finish between probes, so a running animation could end up compared against
+       a different one's timestamp. That failed a deploy on `/ desktop light`
+       while the identical page passed moments earlier, and reproduced locally on
+       the third consecutive run. Compare the furthest-advanced running animation
+       instead: order-independent, and unaffected by the set changing. */
+    const furthest = list => Math.max(0, ...list.filter(a => a.state === "running")
+      .map(a => Number(a.time) || 0));
+    await page.waitForTimeout(320);
+    const afterAnimations = await page.evaluate(() => document.getAnimations()
+      .map(a => ({ time: a.currentTime, state: a.playState })));
+    if (furthest(afterAnimations) <= furthest(before.animations)) {
+      throw new Error("Homepage animation frames did not advance");
+    }
     const after = await page.evaluate(() => window.Explainers3D?.diagnostics());
     if (!before.canvas || !before.scenes || !before.webgl?.ready || !after) {
       /* The explainer scenes are decorative and index.html swallows any failure
