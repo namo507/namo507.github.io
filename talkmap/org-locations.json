@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "locations": {
+    "St. Louis, MO, USA": {
+      "latitude": 38.6254063,
+      "longitude": -90.190009
+    }
+  },
+  "talks": [
+    {
+      "title": "Analyzing Public Perceptions and Sentiment of Electric Vehicles in the Era of Sustainable Transformation",
+      "venue": "80th Annual AAPOR Conference",
+      "location": "St. Louis, MO, USA"
+    }
+  ]
+}
