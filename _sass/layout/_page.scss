@@ -102,10 +102,15 @@
 .home-hero,
 .archive__item {
   &[data-reveal] {
-    opacity: 0;
-    transform: translateY(24px);
+    opacity: 1;
+    transform: none;
     transition: opacity 0.6s ease, transform 0.6s ease;
     transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  html[data-reveals-ready="1"] &[data-reveal]:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(24px);
   }
 
   &.is-visible {
@@ -203,13 +208,13 @@
 }
 
 .button-link--primary {
-  color: #06131d;
+  color: var(--global-accent-ink);
   background: var(--global-accent-color);
   border-color: transparent;
   font-weight: 700;
 
   &:hover {
-    color: #06131d;
+    color: var(--global-accent-ink);
     background: var(--global-link-color-hover);
   }
 }
@@ -1753,6 +1758,17 @@
   --cv-skill-accent: #ff9a7a;
 }
 
+// Pastel accents suit the dark cards; use corresponding ink colors on light cards.
+html:not([data-theme="dark"]) {
+  .cv-skill-card[data-theme="research"] { --cv-skill-accent: #245d8b; }
+  .cv-skill-card[data-theme="ml"] { --cv-skill-accent: #096b59; }
+  .cv-skill-card[data-theme="core"] { --cv-skill-accent: #674191; }
+  .cv-skill-card[data-theme="data"] { --cv-skill-accent: #315ba8; }
+  .cv-skill-card[data-theme="engineering"] { --cv-skill-accent: #855310; }
+  .cv-skill-card[data-theme="cloud"] { --cv-skill-accent: #245d8b; }
+  .cv-skill-card[data-theme="delivery"] { --cv-skill-accent: #963f27; }
+}
+
 .cv-skill-card--featured {
   box-shadow: 0 22px 48px var(--global-shadow-color);
 
@@ -2184,12 +2200,12 @@
 }
 
 .github-repo-card__action--primary {
-  color: #06131d;
+  color: var(--global-accent-ink);
   background: var(--global-accent-color);
   border-color: transparent;
 
   &:hover {
-    color: #06131d;
+    color: var(--global-accent-ink);
     background: var(--global-link-color-hover);
   }
 }

@@ -29,26 +29,37 @@
     (function () {
       try {
         var t = localStorage.getItem("theme");
-        if (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) t = "light";
+        if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
         document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
       } catch (e) {
-        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-theme", window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
       }
+      var color = document.querySelector('meta[name="theme-color"]');
+      if (color) color.content = document.documentElement.getAttribute("data-theme") === "light" ? "#f4f4f1" : "#0b0c11";
       document.documentElement.setAttribute("data-js", "1");
     })();
   </script>
-  <link rel="stylesheet" href="/assets/cosmic/styles.css?v=20260904g" />
+  <link rel="stylesheet" href="/assets/cosmic/styles.css?v=20260905a" />
 </head>
 <body data-screen-label="portfolio">
   <a class="skip-link" href="#content">Skip to content</a>
-  <div id="app"></div>
+  <div id="app">
+    <main id="content" class="app-fallback">
+      <h1>Namit Shrivastava</h1>
+      <p>Survey methodology, data science, and responsible AI.</p>
+      <p>Explore my research, projects, and experience, or download my CV.</p>
+      <div class="btn-row">
+        <a href="/about/">Full portfolio</a>
+        <a href="/publications/">Publications</a>
+        <a href="/portfolio/">Projects</a>
+        <a href="/files/namit-shrivastava-cv.pdf">Download CV</a>
+        <a href="mailto:namit507@gmail.com">Email</a>
+      </div>
+      <noscript><p>The full portfolio works without JavaScript.</p></noscript>
+    </main>
+  </div>
 
-  <!-- Production React builds: no dev-mode console warnings, ~3x smaller payload. -->
-  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
-
-  <script src="/assets/cosmic/data.js?v=20260904g"></script>
+  <script src="/assets/cosmic/data.js?v=20260905a"></script>
   <script>
     /* Both generated files are machine-managed and may be absent or stale; the
        app renders from window.SITE alone if either fetch fails, so resolve on
@@ -81,17 +92,16 @@
     });
   </script>
 
-  <script type="text/babel" data-presets="react" src="/assets/cosmic/app.jsx?v=20260904g"></script>
+  <!-- React and JSX are compiled into a local production bundle in CI. -->
+  <script defer src="/assets/cosmic/app.min.js?v=20260905a"></script>
 
   <script type="module">
     /* Section explainer scenes. Loaded after the app so the mount points exist;
        Explainers3D.mount() is idempotent and app.jsx also polls for it, so
-       whichever finishes first wins. Any failure here (blocked CDN, no WebGL)
+       whichever finishes first wins. Any failure here (missing module, no WebGL)
        leaves the page fully readable — the scenes are decorative. */
     try {
-      const T = await import("https://unpkg.com/three@0.160.0/build/three.module.min.js");
-      window.THREE = T;
-      await import("/assets/cosmic/explainers-3d.js?v=20260904g");
+      await import("/assets/cosmic/explainers-3d.min.js?v=20260905a");
       if (window.Explainers3D) window.Explainers3D.mount();
     } catch (e) {
       /* decorative only */

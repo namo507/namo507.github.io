@@ -90,14 +90,13 @@ CLEAN_EXCLUDE_SUBSTRINGS = (
 AA_NORMAL_RATIO = 4.5
 AA_LARGE_RATIO = 3.0
 
-# Role -> minimum required contrast. Caption-only tokens are intentionally dim
-# in the design ("captions only"), so they are held to the large-text bar and
-# flagged rather than aggressively recolored, preserving the author's intent.
+# Token roles cannot prove rendered font size, so every text token uses the
+# normal-text requirement. The browser audit evaluates actual large text.
 TOKEN_ROLE_MIN_RATIO = {
     "primary": AA_NORMAL_RATIO,
     "secondary": AA_NORMAL_RATIO,
     "tertiary": AA_NORMAL_RATIO,
-    "caption": AA_LARGE_RATIO,
+    "caption": AA_NORMAL_RATIO,
     "accent": AA_NORMAL_RATIO,
 }
 
@@ -158,6 +157,7 @@ IGNORE_LINK_PREFIXES = ("http://", "https://", "mailto:", "tel:", "#", "data:", 
 # Other automation workflows whose health we monitor. If their most recent run
 # failed, the doctor reports it and (optionally) re-dispatches them.
 MONITORED_WORKFLOWS = (
+    "pages.yml",
     "sync_github_showcase.yml",
     "sync_linkedin_profile.yml",
     "scrape_talks.yml",

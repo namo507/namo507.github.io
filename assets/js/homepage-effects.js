@@ -35,6 +35,10 @@ const initializeHomepageEffects = () => {
     let isDeleting = false;
 
     const step = () => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        element.textContent = words[0];
+        return;
+      }
       const activeWord = words[wordIndex];
       const nextCount = isDeleting ? characterCount - 1 : characterCount + 1;
       const safeCount = Math.max(0, Math.min(activeWord.length, nextCount));
@@ -70,6 +74,10 @@ const initializeHomepageEffects = () => {
     }
 
     const updatePointerPosition = (event) => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        element.style.setProperty('--pointer-opacity', '0');
+        return;
+      }
       const bounds = element.getBoundingClientRect();
       const relativeX = ((event.clientX - bounds.left) / bounds.width) * 100;
       const relativeY = ((event.clientY - bounds.top) / bounds.height) * 100;

@@ -4,7 +4,6 @@ __pycache__/
 
 # Node + Playwright install (restored in CI)
 node_modules/
-package-lock.json
 
 # Generated audit artifacts (uploaded as workflow artifacts, not committed)
 reports/

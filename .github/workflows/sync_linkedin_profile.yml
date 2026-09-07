@@ -5,90 +5,30 @@ on:
   schedule:
     - cron: '23 6 */5 * *'
 
-# Shared with the other auto-committing workflows so no two bots push to master
-# at the same time (also prevents overlapping LinkedIn syncs).
 concurrency:
   group: repo-autocommit
   cancel-in-progress: false
 
+permissions:
+  contents: write
+
 jobs:
   sync:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
+    timeout-minutes: 15
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - uses: actions/checkout@v7
         with:
-          python-version: '3.11'
-
-      - name: Install LinkedIn sync dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r scripts/requirements-linkedin-sync.txt
-
-      - name: Refresh LinkedIn-generated portfolio data
+          ref: main
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-site
+      - name: Refresh LinkedIn data while preserving the validated snapshot
         run: python scripts/sync_linkedin_content.py --verbose
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          # Required: the repo has no .ruby-version or .tool-versions file, so
-          # the action errors out without it. Matches the other workflows and
-          # the Dockerfile (ruby:3.3).
-          ruby-version: '3.3'
-          bundler-cache: true
-
-      - name: Verify site build
-        run: bundle exec jekyll build
-
-      - name: Commit generated data if changed
+      - name: Validate and commit changed content
         run: |
-          changed="$(git diff --name-only -- \
-            _data/linkedin_profile.yml \
-            _data/linkedin_experience.yml \
-            _data/linkedin_featured.yml \
-            _data/linkedin_updates.yml \
-            _data/linkedin_sync_meta.yml \
-            _data/linkedin_snapshot.json \
-            assets/cosmic/linkedin.generated.js)"
-
-          if [[ -z "$changed" ]]; then
-            echo "No LinkedIn changes to commit"
-            exit 0
-          fi
-
-          message="chore: sync LinkedIn-derived portfolio content"
-          if echo "$changed" | grep -q '^_data/linkedin_updates.yml$'; then
-            message="chore: refresh LinkedIn activity cards"
-          elif echo "$changed" | grep -q '^_data/linkedin_experience.yml$'; then
-            message="chore: refresh LinkedIn experience data"
-          elif echo "$changed" | grep -q '^_data/linkedin_profile.yml$'; then
-            message="chore: sync LinkedIn profile summary"
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add \
-            _data/linkedin_profile.yml \
-            _data/linkedin_experience.yml \
-            _data/linkedin_featured.yml \
-            _data/linkedin_updates.yml \
-            _data/linkedin_sync_meta.yml \
-            _data/linkedin_snapshot.json \
+          bash scripts/ci/commit-generated.sh 'chore: refresh LinkedIn portfolio content' \
+            _data/linkedin_profile.yml _data/linkedin_experience.yml \
+            _data/linkedin_featured.yml _data/linkedin_updates.yml \
+            _data/linkedin_sync_meta.yml _data/linkedin_snapshot.json \
             assets/cosmic/linkedin.generated.js
-          git commit -m "$message"
-          # Rebase-and-retry push so a concurrent bot push cannot reject this one.
-          for attempt in 1 2 3 4 5; do
-            if git push origin HEAD:master; then
-              exit 0
-            fi
-            echo "Push rejected (attempt $attempt); rebasing."
-            git pull --rebase origin master || true
-            sleep $((attempt * 3))
-          done
-          echo "::warning::Could not push LinkedIn sync after 5 attempts."

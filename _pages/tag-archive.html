@@ -6,7 +6,21 @@ author_profile: true
 ---
 
 {% include base_path %}
-{% include group-by-array collection=site.posts field="tags" %}
+
+{% comment %}
+  Every page with `tags` renders links to /tags/#<slug> via _includes/tag-list.html,
+  and that includes all 20 portfolio items. Grouping site.posts alone emitted
+  anchors only for tags that happen to appear on a post, so 85 portfolio tag links
+  pointed at headings that were never generated -- the link resolved, the anchor
+  did not, and the reader landed at the top of the page. Group every collection
+  that can carry tags so each link has a target.
+{% endcomment %}
+{% assign tagged_docs = site.posts %}
+{% assign tagged_docs = tagged_docs | concat: site.portfolio %}
+{% assign tagged_docs = tagged_docs | concat: site.publications %}
+{% assign tagged_docs = tagged_docs | concat: site.talks %}
+{% assign tagged_docs = tagged_docs | concat: site.teaching %}
+{% include group-by-array collection=tagged_docs field="tags" %}
 
 {% for tag in group_names %}
   {% assign posts = group_items[forloop.index0] %}

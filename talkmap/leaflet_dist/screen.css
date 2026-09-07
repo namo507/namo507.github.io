@@ -1,7 +1,8 @@
 
 	#map {
-		width: 800px; 
-		height: 600px; 
+		width: 100%;
+		height: min(75vh, 600px);
+		min-height: 280px;
 		border: 1px solid #ccc;
 	}
 

@@ -1,0 +1,150 @@
+name: Build, verify, and deploy Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Sync GitHub Showcase, Sync LinkedIn Profile, Scrape Talk Locations, Site Health (daily doctor)]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.event.pull_request.number || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  source:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.sha }}
+          persist-credentials: false
+      - id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  verify:
+    needs: source
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-site
+        with:
+          visual: 'true'
+      - name: Run automation regression tests
+        # scripts/tests/ does not exist yet. `unittest discover` on a missing
+        # start directory raises ImportError and exits 1, which failed verify
+        # and so blocked deploy entirely -- the pipeline could never ship.
+        # Run the suite when it is there, say so plainly when it is not.
+        run: |
+          if [ -d scripts/tests ]; then
+            python -m unittest discover -s scripts/tests -v
+          else
+            echo "No scripts/tests/ directory; skipping automation regression tests."
+          fi
+      - name: Build production site
+        env:
+          JEKYLL_ENV: production
+        run: bundle exec jekyll build --trace
+      - name: Record the verified source revision
+        env:
+          VERIFIED_SHA: ${{ needs.source.outputs.sha }}
+        run: |
+          python -c 'import json, os; from pathlib import Path; Path("_site/site-revision.json").write_text(json.dumps({"sha": os.environ["VERIFIED_SHA"]}) + "\n")'
+      - name: Verify rendered pages, contrast, interactions, and motion
+        run: node scripts/site_doctor/visual_audit.mjs
+      - name: Verify data and all internal links
+        if: success() || failure()
+        run: python scripts/site_doctor/doctor.py --check --strict
+      - name: Upload verification reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pages-verification
+          path: scripts/site_doctor/reports/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload verified Pages artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  docker:
+    needs: source
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: scripts/site_doctor/package-lock.json
+      - name: Install container rendering checks
+        run: |
+          npm ci --prefix scripts/site_doctor --no-audit --no-fund
+          cd scripts/site_doctor
+          npx playwright install --with-deps chromium
+      - name: Validate Compose configuration
+        run: docker compose config --quiet
+      - name: Build the standalone Docker image
+        env:
+          VERIFIED_SHA: ${{ needs.source.outputs.sha }}
+        run: docker build --build-arg SITE_REVISION="$VERIFIED_SHA" --tag namo507-portfolio:ci .
+      - name: Verify container health, routes, and restart recovery
+        env:
+          DOCKER_VISUAL_AUDIT: '1'
+        run: bash scripts/ci/docker-smoke.sh namo507-portfolio:ci
+      - name: Upload Docker rendering reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: docker-verification
+          path: scripts/site_doctor/reports/docker/
+          if-no-files-found: warn
+          retention-days: 14
+
+  deploy:
+    needs: [source, verify, docker]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v6
+      - name: Deploy verified artifact
+        id: deployment
+        uses: actions/deploy-pages@v5
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - name: Confirm public routes after deployment
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          VERIFIED_SHA: ${{ needs.source.outputs.sha }}
+        run: python scripts/ci/check_http.py "$SITE_URL" --expected-revision "$VERIFIED_SHA"

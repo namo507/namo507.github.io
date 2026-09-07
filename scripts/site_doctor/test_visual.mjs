@@ -1,48 +1,45 @@
-// Browser-free tests for the visual audit: symmetry math + static server.
-import { analyzeSymmetry } from "./symmetry.mjs";
-import { startServer } from "./visual_audit.mjs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+// Browser-free regression tests for geometry and the audit HTTP server.
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, writeFile, symlink, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { analyzeSymmetry } from './symmetry.mjs';
+import { startServer } from './visual_audit.mjs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SITE_DIR = path.resolve(__dirname, "..", "..", "_site");
-
-let failures = 0;
-const ok = (cond, msg) => { console.log(`${cond ? "PASS" : "FAIL"}  ${msg}`); if (!cond) failures++; };
-
-// A perfectly aligned 3-up row: same top, same height, even gaps.
 const aligned = [
-  { sel: ".card", x: 0, y: 100, w: 200, h: 150 },
-  { sel: ".card", x: 220, y: 100, w: 200, h: 150 },
-  { sel: ".card", x: 440, y: 100, w: 200, h: 150 },
+  { x:0,y:100,w:200,h:150 }, { x:220,y:100,w:200,h:150 }, { x:440,y:100,w:200,h:150 },
 ];
-ok(analyzeSymmetry(aligned).length === 0, "aligned row yields no issues");
-
-// One tile pushed down and shorter, with an uneven gap.
-const skewed = [
-  { sel: ".card", x: 0, y: 100, w: 200, h: 150 },
-  { sel: ".card", x: 220, y: 118, w: 200, h: 120 },
-  { sel: ".card", x: 470, y: 100, w: 200, h: 150 },
-];
-const issues = analyzeSymmetry(skewed);
-ok(issues.some((i) => i.kind === "row-top-misalign"), "detects top misalignment");
-ok(issues.some((i) => i.kind === "row-height-mismatch"), "detects height mismatch");
-ok(issues.some((i) => i.kind === "uneven-gaps"), "detects uneven gaps");
-
-// Static server should serve the built homepage if present.
-if (path.basename(SITE_DIR) === "_site") {
-  try {
-    const server = await startServer(SITE_DIR);
-    const port = server.address().port;
-    const res = await fetch(`http://127.0.0.1:${port}/`);
-    const body = await res.text();
-    ok(res.status === 200, "static server returns 200 for /");
-    ok(/<div id="app">|<html|<!doctype/i.test(body), "served homepage looks like HTML");
-    server.close();
-  } catch (e) {
-    ok(false, "static server smoke test threw: " + e.message);
-  }
+assert.equal(analyzeSymmetry(aligned).length, 0);
+const issues = analyzeSymmetry([
+  aligned[0], { x:220,y:118,w:200,h:120 }, { x:470,y:100,w:200,h:150 },
+]);
+for (const kind of ['row-top-misalign','row-height-mismatch','uneven-gaps']) {
+  assert.ok(issues.some(issue => issue.kind === kind), kind);
 }
-
-console.log(failures === 0 ? "\nAll visual unit tests passed." : `\n${failures} test(s) failed.`);
-process.exit(failures === 0 ? 0 : 1);
+const root = await mkdtemp(path.join(tmpdir(), 'site-doctor-'));
+let server;
+try {
+  const site = path.join(root, 'site');
+  await mkdir(path.join(site, 'cv'), { recursive:true });
+  await writeFile(path.join(site, 'index.html'), '<h1>Home</h1>');
+  await writeFile(path.join(site, 'cv/index.html'), '<h1>CV</h1>');
+  await writeFile(path.join(site, '404.html'), '<h1>Missing</h1>');
+  await writeFile(path.join(root, 'private.txt'), 'outside build');
+  await symlink(path.join(root, 'private.txt'), path.join(site, 'escape.txt'));
+  server = await startServer(site);
+  const base = `http://127.0.0.1:${server.address().port}`;
+  for (const route of ['/', '/cv/', '/cv', '/404']) {
+    const response = await fetch(base + route);
+    assert.equal(response.status, 200, route);
+    assert.match(response.headers.get('content-type'), /text\/html/);
+  }
+  assert.equal((await fetch(base + '/missing/')).status, 404);
+  assert.equal((await fetch(base + '/escape.txt')).status, 403);
+  assert.equal((await fetch(base + '/%2e%2e%2fprivate.txt')).status, 403);
+  assert.equal((await fetch(base + '/%ZZ')).status, 400);
+  await assert.rejects(startServer(path.join(root, 'missing')));
+  console.log('Passed geometry, route, missing build, traversal and symlink checks.');
+} finally {
+  if (server) await new Promise(resolve => server.close(resolve));
+  await rm(root, { recursive:true, force:true });
+}

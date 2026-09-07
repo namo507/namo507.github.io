@@ -201,12 +201,12 @@
 }
 
 .archive__item-action--primary {
-  color: #06131d;
+  color: var(--global-accent-ink);
   background: var(--global-accent-color);
   border-color: transparent;
 
   &:hover {
-    color: #06131d;
+    color: var(--global-accent-ink);
     background: var(--global-link-color-hover);
   }
 }

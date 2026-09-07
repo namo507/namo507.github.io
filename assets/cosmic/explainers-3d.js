@@ -11,10 +11,10 @@
  * at that element's current screen rect. Ten mount points would otherwise mean
  * ten WebGL contexts, which browsers cap at roughly sixteen per page.
  *
- * Loaded as a module by index.html after `window.THREE` is set.
+ * Bundled with pinned Three.js and loaded as an optional local module.
  */
 
-const THREE = window.THREE;
+import * as THREE from "three";
 
 const KINDS = ["globe", "helix", "lattice", "stack", "rings", "cubes", "wave"];
 
@@ -26,6 +26,12 @@ const state = {
   renderer: null,
   canvas: null,
   raf: 0,
+  time: 0,
+  renderedFrames: 0,
+  lastFrame: 0,
+  contextLost: false,
+  themeObserver: null,
+  motionMq: null,
   accent: new THREE.Color(0x8b93ff),
 };
 
@@ -235,6 +241,7 @@ function ensureRenderer() {
 
   const canvas = document.createElement("canvas");
   canvas.id = "explainer-canvas";
+  canvas.setAttribute("aria-hidden", "true");
   Object.assign(canvas.style, {
     position: "fixed",
     inset: "0",
@@ -263,13 +270,54 @@ function ensureRenderer() {
   state.renderer = renderer;
 
   window.addEventListener("resize", onResize, { passive: true });
+  window.addEventListener("scroll", requestFrame, { passive: true });
+  document.addEventListener("visibilitychange", onVisibilityChange);
+  canvas.addEventListener("webglcontextlost", onContextLost);
+  canvas.addEventListener("webglcontextrestored", onContextRestored);
   return true;
 }
 
 function onResize() {
-  if (!state.renderer) return;
+  if (!state.renderer || state.contextLost) return;
   state.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   state.renderer.setSize(window.innerWidth, window.innerHeight, false);
+  requestFrame();
+}
+
+function requestFrame() {
+  if (state.raf || !state.renderer || state.contextLost || document.hidden) return;
+  state.raf = requestAnimationFrame(frame);
+}
+
+function pauseFrames() {
+  if (state.raf) cancelAnimationFrame(state.raf);
+  state.raf = 0;
+  state.lastFrame = 0;
+}
+
+function onVisibilityChange() {
+  if (document.hidden) pauseFrames();
+  else requestFrame();
+}
+
+function onContextLost(event) {
+  // Opt into restoration; Three rebuilds its GPU resources when it returns.
+  event.preventDefault();
+  state.contextLost = true;
+  state.canvas.style.visibility = "hidden";
+  pauseFrames();
+}
+
+function onContextRestored() {
+  state.contextLost = false;
+  state.canvas.style.visibility = "visible";
+  onResize();
+}
+
+function onMotionChange(event) {
+  state.reduced = event.matches;
+  pauseFrames();
+  requestFrame();
 }
 
 function register(el) {
@@ -290,15 +338,21 @@ function register(el) {
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
   camera.position.set(0, 0, 4.2 / zoom);
 
-  const entry = { el, scene, camera, group, update, visible: false };
+  // Give reduced-motion visitors a composed still, including the wave surface.
+  update(0);
+  const entry = { el, scene, camera, group, update, visible: false, observer: null };
   state.entries.push(entry);
 
   // Only animate what is actually on screen.
   if (window.IntersectionObserver) {
-    const io = new IntersectionObserver((es) => es.forEach((e) => { entry.visible = e.isIntersecting; }), {
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => { entry.visible = e.isIntersecting; });
+      requestFrame();
+    }, {
       rootMargin: "10% 0px",
     });
     io.observe(el);
+    entry.observer = io;
   } else {
     entry.visible = true;
   }
@@ -307,21 +361,30 @@ function register(el) {
 }
 
 function frame(nowMs) {
-  state.raf = requestAnimationFrame(frame);
+  state.raf = 0;
   const renderer = state.renderer;
-  if (!renderer) return;
+  if (!renderer || state.contextLost || document.hidden) return;
 
-  const t = (nowMs / 1000) * (state.calm ? 0.35 : 1);
+  const delta = state.lastFrame ? Math.min((nowMs - state.lastFrame) / 1000, 0.1) : 0;
+  state.lastFrame = nowMs;
+  if (!state.reduced) state.time += delta * (state.calm ? 0.35 : 1);
+  const t = state.time;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  renderer.clear();
+  // Clear the whole shared canvas, not only the previous scene's scissor.
+  // Otherwise scrolling leaves old geometry painted outside its current box.
+  renderer.setScissorTest(false);
+  renderer.clear(true, true, true);
+  renderer.setScissorTest(true);
 
+  let visible = false;
   for (const entry of state.entries) {
     if (!entry.visible || !entry.el.isConnected) continue;
     const r = entry.el.getBoundingClientRect();
     if (r.width < 2 || r.height < 2) continue;
     if (r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) continue;
+    visible = true;
 
     if (!state.reduced) entry.update(t);
 
@@ -333,6 +396,9 @@ function frame(nowMs) {
     entry.camera.updateProjectionMatrix();
     renderer.render(entry.scene, entry.camera);
   }
+  state.renderedFrames += 1;
+  if (visible && !state.reduced) requestFrame();
+  else state.lastFrame = 0;
 }
 
 function applyAccent() {
@@ -342,13 +408,13 @@ function applyAccent() {
       if (obj.material && obj.material.color) obj.material.color.copy(state.accent);
     });
   });
+  requestFrame();
 }
 
 // ── public API ──────────────────────────────────────────────────────────────
 const Explainers3D = {
   mount() {
     if (!THREE) return;
-    state.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!ensureRenderer()) return;
 
     readAccent();
@@ -356,29 +422,68 @@ const Explainers3D = {
 
     if (!state.ready) {
       state.ready = true;
+      state.motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      state.reduced = state.motionMq.matches;
+      state.motionMq.addEventListener("change", onMotionChange);
       // Re-tint when the visitor flips the theme toggle.
-      new MutationObserver(applyAccent).observe(document.documentElement, {
+      state.themeObserver = new MutationObserver(applyAccent);
+      state.themeObserver.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ["data-theme"],
       });
-      state.raf = requestAnimationFrame(frame);
     }
+    requestFrame();
   },
 
   setCalm(calm) {
     state.calm = !!calm;
+    requestFrame();
+  },
+
+  diagnostics() {
+    return Object.freeze({
+      ready: state.ready,
+      sceneCount: state.entries.length,
+      renderedFrames: state.renderedFrames,
+      reduced: state.reduced,
+      contextLost: state.contextLost,
+      rafActive: Boolean(state.raf),
+    });
   },
 
   dispose() {
-    if (state.raf) cancelAnimationFrame(state.raf);
-    state.raf = 0;
+    pauseFrames();
     window.removeEventListener("resize", onResize);
+    window.removeEventListener("scroll", requestFrame);
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+    if (state.themeObserver) state.themeObserver.disconnect();
+    if (state.motionMq) state.motionMq.removeEventListener("change", onMotionChange);
+    state.entries.forEach((entry) => {
+      if (entry.observer) entry.observer.disconnect();
+      entry.el.removeAttribute("data-scene-mounted");
+      entry.group.traverse((obj) => {
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) {
+          const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+          materials.forEach((mat) => mat.dispose());
+        }
+      });
+    });
+    if (state.canvas) {
+      state.canvas.removeEventListener("webglcontextlost", onContextLost);
+      state.canvas.removeEventListener("webglcontextrestored", onContextRestored);
+    }
     if (state.renderer) state.renderer.dispose();
     if (state.canvas && state.canvas.parentNode) state.canvas.parentNode.removeChild(state.canvas);
     state.renderer = null;
     state.canvas = null;
     state.entries = [];
     state.ready = false;
+    state.contextLost = false;
+    state.themeObserver = null;
+    state.motionMq = null;
+    state.time = 0;
+    state.renderedFrames = 0;
   },
 };
 

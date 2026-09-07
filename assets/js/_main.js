@@ -5,7 +5,8 @@
 // Determine the expected state of the theme toggle, which can be "dark", "light", or
 // "system". Default is "system".
 let determineThemeSetting = () => {
-  let themeSetting = localStorage.getItem("theme");
+  let themeSetting = null;
+  try { themeSetting = localStorage.getItem("theme"); } catch (error) { /* Storage is optional. */ }
   return (themeSetting != "dark" && themeSetting != "light" && themeSetting != "system") ? "system" : themeSetting;
 };
 
@@ -24,11 +25,7 @@ const browserPref = window.matchMedia && window.matchMedia('(prefers-color-schem
 
 // Set the theme on page load or when explicitly called
 let setTheme = (theme) => {
-  const use_theme =
-    theme ||
-    localStorage.getItem("theme") ||
-    $("html").attr("data-theme") ||
-    browserPref;
+  const use_theme = theme === "dark" || theme === "light" ? theme : determineComputedTheme();
 
   if (use_theme === "dark") {
     $("html").attr("data-theme", "dark");
@@ -37,13 +34,17 @@ let setTheme = (theme) => {
     $("html").removeAttr("data-theme");
     $("#theme-icon").removeClass("fa-moon").addClass("fa-sun");
   }
+  document.documentElement.style.colorScheme = use_theme;
+  document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+    meta.content = use_theme === "dark" ? "#09101d" : "#f4f7fb";
+  });
 };
 
 // Toggle the theme manually
 var toggleTheme = () => {
   const current_theme = $("html").attr("data-theme");
   const new_theme = current_theme === "dark" ? "light" : "dark";
-  localStorage.setItem("theme", new_theme);
+  try { localStorage.setItem("theme", new_theme); } catch (error) { /* Apply even when storage is blocked. */ }
   setTheme(new_theme);
 };
 
@@ -95,7 +96,7 @@ $(document).ready(function () {
   setTheme();
   window.matchMedia('(prefers-color-scheme: dark)')
         .addEventListener("change", (e) => {
-          if (!localStorage.getItem("theme")) {
+          if (determineThemeSetting() === "system") {
             setTheme(e.matches ? "dark" : "light");
           }
         });
@@ -167,7 +168,23 @@ $(document).ready(function () {
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
+    document.documentElement.setAttribute('data-reveals-ready', '1');
     revealTargets.forEach((element) => revealObserver.observe(element));
+    let revealFrame = 0;
+    const sweepReveals = () => {
+      revealFrame = 0;
+      revealTargets.forEach((element) => {
+        if (!element.classList.contains('is-visible') && element.getBoundingClientRect().top < window.innerHeight) {
+          element.classList.add('is-visible');
+          revealObserver.unobserve(element);
+        }
+      });
+    };
+    window.addEventListener('scroll', () => {
+      if (!revealFrame) revealFrame = requestAnimationFrame(sweepReveals);
+    }, { passive: true });
+    window.addEventListener('resize', sweepReveals, { passive: true });
+    requestAnimationFrame(sweepReveals);
   }
 
   if (!window.__homepageEffectsInitialized) {
@@ -201,6 +218,10 @@ $(document).ready(function () {
         let isDeleting = false;
 
         const step = () => {
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            element.textContent = words[0];
+            return;
+          }
           const activeWord = words[wordIndex];
           const nextCount = isDeleting ? characterCount - 1 : characterCount + 1;
           const safeCount = Math.max(0, Math.min(activeWord.length, nextCount));

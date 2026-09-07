@@ -23,14 +23,16 @@
   --line-2: rgba(255, 255, 255, .2);
   --ink: #f2f1ec;
   --ink-soft: #bdbcb4;
-  /* Same story as the light theme: 4.36:1 on the raised card surface, under
-     AA. #94938b clears 4.5 everywhere in this theme (worst case 4.96). */
-  --ink-mute: #94938b;
+  /* Keep a contrast margin for raised, tinted and nested card surfaces. */
+  --ink-mute: #a4a39b;
   --accent: #8b93ff;
   --accent-ink: #0b0c11;
   --accent-tint: rgba(139, 147, 255, .12);
   --glow: rgba(139, 147, 255, .35);
   --scrim: rgba(11, 12, 17, .7);
+  --nav-bg: rgba(11, 12, 17, .96);
+  --caption-bg: #10121a;
+  color-scheme: dark;
   /* Content shell. Fluid rather than a fixed cap so wide displays fill out
      instead of sitting in ~260px of dead margin per side, while never
      exceeding 94vw. Prose does not over-stretch with it: .sec__lead and
@@ -65,21 +67,23 @@
   --line-2: rgba(20, 21, 26, .24);
   --ink: #14151a;
   --ink-soft: #44464f;
-  /* 4.39:1 at #6b6d76 on the light card surface -- just under AA, and only
-     visible once the reveal fix stopped leaving these cards at opacity 0.
-     #5c5e67 clears 4.5 on every surface in this theme (worst case 4.89). */
-  --ink-mute: #5c5e67;
+  /* Muted labels must remain readable on nested and tinted light surfaces. */
+  --ink-mute: #51535c;
   --accent: #3f47c9;
   --accent-ink: #ffffff;
   --accent-tint: rgba(63, 71, 201, .1);
   --glow: rgba(63, 71, 201, .25);
   --scrim: rgba(244, 244, 241, .72);
+  --nav-bg: rgba(244, 244, 241, .97);
+  --caption-bg: #f4f4f1;
+  color-scheme: light;
   --aurora-1: rgba(63, 71, 201, .07);
   --aurora-2: rgba(63, 71, 201, .045);
 }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+*, *::before, *::after { box-sizing: border-box; }
 /* Sits above the fixed explainer canvas, which renders at z-index 0. */
 main { position: relative; z-index: 1; overflow-x: clip; overflow-y: visible; }
 
@@ -154,6 +158,10 @@ h1, h2, h3, h4, p, ul, figure { margin: 0; }
 ul { padding: 0; list-style: none; }
 img { display: block; max-width: 100%; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.app-fallback { position: relative; z-index: 1; max-width: 760px; margin: 12vh auto; padding: 28px; }
+.app-fallback h1 { font-family: var(--serif); font-size: clamp(36px, 6vw, 64px); line-height: 1.1; }
+.app-fallback p { margin: 20px 0; color: var(--ink-soft); }
+.app-fallback a { text-decoration: underline; text-underline-offset: 3px; }
 
 .skip-link {
   position: absolute;
@@ -199,12 +207,18 @@ img { display: block; max-width: 100%; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  [data-js] [data-reveal] { transform: none; transition: opacity .3s ease; }
-  * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  [data-js] [data-reveal] { opacity: 1; transform: none; transition: none; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   /* The wildcard above already halts the aurora, but say it outright: the
      ambient layer stays as a still wash rather than a one-frame twitch. */
   body::after, html::before { animation: none; }
   .sec + .sec::after { animation: none; transform: translateX(0); opacity: .35; }
+}
+
+@media (prefers-contrast: more) {
+  :root { --ink-soft: #eeede7; --ink-mute: #d0cfc8; --line: rgba(255, 255, 255, .45); --line-2: rgba(255, 255, 255, .65); }
+  :root[data-theme="light"] { --ink-soft: #24252b; --ink-mute: #30323a; --line: rgba(20, 21, 26, .45); --line-2: rgba(20, 21, 26, .65); }
+  a { text-decoration: underline; text-underline-offset: 3px; }
 }
 
 /* ── Shared atoms ─────────────────────────────────────────────────────────── */
@@ -321,13 +335,14 @@ img { display: block; max-width: 100%; }
   transition: background .45s var(--ease), border-color .45s var(--ease), box-shadow .45s var(--ease);
 }
 .nav[data-scrolled="1"] {
-  background: rgba(16, 18, 26, .72);
+  background: var(--nav-bg);
   border-color: var(--line);
   box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
 }
-:root[data-theme="light"] .nav[data-scrolled="1"] { background: rgba(244, 244, 241, .78); }
+:root[data-theme="light"] .nav[data-scrolled="1"] { background: var(--nav-bg); }
 
 .nav__brand {
+  color: var(--ink);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -654,7 +669,7 @@ img { display: block; max-width: 100%; }
   bottom: 12px;
   padding: 10px 14px;
   border-radius: 16px;
-  background: var(--scrim);
+  background: var(--caption-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--line);
@@ -1412,6 +1427,7 @@ a.card--talk:hover { transform: scale(1.01); }
   font-family: var(--sans);
   font-size: 13.5px;
 }
+.buddy__input::placeholder { color: var(--ink-mute); opacity: 1; }
 .buddy__send {
   width: 38px;
   height: 38px;

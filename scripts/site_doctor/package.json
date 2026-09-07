@@ -5,10 +5,14 @@
   "type": "module",
   "description": "Headless visual + accessibility audit (Playwright + axe-core) for the namo507.github.io portfolio.",
   "scripts": {
-    "audit": "node visual_audit.mjs"
+    "audit": "node visual_audit.mjs",
+    "test": "node test_visual.mjs"
   },
   "dependencies": {
     "axe-core": "^4.10.2",
     "playwright": "^1.49.1"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

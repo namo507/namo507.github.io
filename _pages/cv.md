@@ -16,7 +16,7 @@ redirect_from:
   <div class="cv-hero page__panel page__panel--highlight" data-reveal>
     <div class="cv-hero__content">
       <p class="page__eyebrow">Curriculum Vitae</p>
-      <h2 class="cv-hero__name">{{ site.data.cv_site.profile.name }}</h2>
+      <h1 class="cv-hero__name">{{ site.data.cv_site.profile.name }}</h1>
       <p class="cv-hero__headline">{{ site.data.cv_site.profile.headline }}</p>
       <p class="cv-hero__summary">{{ site.data.cv_site.profile.summary }}</p>
 

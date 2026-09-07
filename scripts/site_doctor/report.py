@@ -119,6 +119,6 @@ class DoctorReport:
             lines.append("")
         else:
             lines.append("### Needs attention")
-            lines.append("Nothing outstanding. The site is healthy. 🎉")
+            lines.append("No blocking findings in the checks performed. Consult the JSON report for skipped or unverified checks.")
             lines.append("")
         return "\n".join(lines)

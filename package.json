@@ -21,20 +21,25 @@
   },
   "homepage": "https://github.com/academicpages/academicpages.github.io",
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">=20"
   },
   "dependencies": {
     "fitvids": "^2.1.1",
     "jquery": "^3.7.1",
     "jquery-smooth-scroll": "^2.2.0",
-    "plotly.js-dist-min": "^3.3.0"
+    "plotly.js-dist-min": "^3.3.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "three": "0.160.0"
   },
   "devDependencies": {
+    "esbuild": "0.25.9",
     "onchange": "^7.1.0",
     "uglify-js": "^3.17.4"
   },
   "scripts": {
-    "uglify": "uglifyjs node_modules/jquery/dist/jquery.min.js node_modules/fitvids/dist/fitvids.min.js node_modules/jquery-smooth-scroll/jquery.smooth-scroll.min.js node_modules/plotly.js-dist-min/plotly.min.js assets/js/plugins/jquery.greedy-navigation.js assets/js/_main.js -c -m -o assets/js/main.min.js",
+    "build:cosmic": "esbuild assets/cosmic/app.jsx --bundle --minify --format=iife --target=es2020 --legal-comments=external --outfile=assets/cosmic/app.min.js && esbuild assets/cosmic/explainers-3d.js --bundle --minify --format=esm --target=es2020 --legal-comments=external --outfile=assets/cosmic/explainers-3d.min.js",
+    "uglify": "node scripts/build-classic.cjs",
     "watch:js": "onchange \"assets/js/**/*.js\" -e \"assets/js/main.min.js\" -- npm run build:js",
     "build:js": "npm run uglify"
   }

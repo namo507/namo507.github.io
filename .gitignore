@@ -7,7 +7,8 @@ local/
 
 # Ignore files created by npm
 node_modules
-package-lock.json
+!package-lock.json
+!scripts/site_doctor/package-lock.json
 
 # Ignore the vendor file at root level and bundle for alternative installation
 /vendor/
@@ -19,6 +20,8 @@ package-lock.json
 # Ignore files created by MacOS
 .DS_Store
 __pycache__/
+.venv/
+scripts/site_doctor/reports/
 
 # Ignore per-run artifacts produced by the portfolio sync (uploaded by CI, never committed)
 scripts/portfolio_sync/last_run_summary.json

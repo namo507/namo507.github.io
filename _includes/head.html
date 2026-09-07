@@ -20,12 +20,13 @@
      Uses the same "theme" localStorage key as assets/js/_main.js and the
      cosmic homepage, so the preference is shared across both views. */
   (function () {
-    try {
-      var t = localStorage.getItem("theme");
-      if (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) t = "light";
-      if (t === "light") document.documentElement.removeAttribute("data-theme");
-      else document.documentElement.setAttribute("data-theme", "dark");
-    } catch (e) { /* storage blocked — keep server-rendered default */ }
+    var t = null;
+    try { t = localStorage.getItem("theme"); } catch (e) { /* Storage is optional. */ }
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (t === "light") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", "dark");
+    document.documentElement.style.colorScheme = t;
+    document.querySelector('meta[name="theme-color"]').content = t === "dark" ? "#09101d" : "#f4f7fb";
   })();
 </script>
 

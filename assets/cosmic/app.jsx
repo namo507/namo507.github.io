@@ -1,4 +1,5 @@
-/* global React, ReactDOM */
+import React from "react";
+import { createRoot } from "react-dom/client";
 /* Cosmic portfolio — implementation of the "Portfolio Redesign" Claude Design
  * canvas. The canvas authored its logic as a `DCLogic` subclass whose
  * `renderVals()` fed `{{ }}` bindings; here that same logic is a React class
@@ -137,19 +138,23 @@ class Portfolio extends React.Component {
 
   // ── lifecycle ─────────────────────────────────────────────────────────────
   componentDidMount() {
-    this.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    this.reduced = this.motionMq.matches;
+    this.motionMq.addEventListener("change", this.onMotionChange);
     this.setState({ theme: document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark" });
 
     this.osMq = window.matchMedia("(prefers-color-scheme: light)");
     this.onOS = (e) => {
       let stored = null;
       try { stored = localStorage.getItem("theme"); } catch (err) { /* storage blocked */ }
-      if (!stored) this.applyTheme(e.matches ? "light" : "dark", false);
+      if (stored !== "light" && stored !== "dark") this.applyTheme(e.matches ? "light" : "dark", false);
     };
     this.osMq.addEventListener("change", this.onOS);
 
     window.addEventListener("scroll", this.onScroll, { passive: true });
     window.addEventListener("resize", this.measureNav, { passive: true });
+    window.addEventListener("hashchange", this.onHashChange);
+    document.addEventListener("visibilitychange", this.onVisibilityChange);
     this.onScroll();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.onScroll());
 
@@ -159,10 +164,10 @@ class Portfolio extends React.Component {
       this.ro.observe(mainEl);
     }
 
-    this.io = new IntersectionObserver((entries) => entries.forEach((entry) => {
+    this.io = window.IntersectionObserver ? new IntersectionObserver((entries) => entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
       this.reveal(entry.target);
-    }), { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    }), { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }) : null;
     this.observeAll();
     this.mo = new MutationObserver(() => this.observeAll());
     this.mo.observe(document.body, { childList: true, subtree: true });
@@ -175,6 +180,7 @@ class Portfolio extends React.Component {
     this.mountScenes(0);
     this.timers.push(setTimeout(this.measureNav, 60));
     this.timers.push(setTimeout(this.sweepReveals, 900));
+    this.timers.push(setTimeout(this.onHashChange, 0));
   }
 
   componentDidUpdate() {
@@ -189,16 +195,22 @@ class Portfolio extends React.Component {
     this.dead = true;
     window.removeEventListener("scroll", this.onScroll);
     window.removeEventListener("resize", this.measureNav);
+    window.removeEventListener("hashchange", this.onHashChange);
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
     window.removeEventListener("keydown", this.onKey);
     document.removeEventListener("click", this.onDocClick);
     if (this.osMq) this.osMq.removeEventListener("change", this.onOS);
+    if (this.motionMq) this.motionMq.removeEventListener("change", this.onMotionChange);
     this.timers.forEach(clearTimeout);
     this.timers = [];
     clearTimeout(this._sweepT);
+    clearTimeout(this._typeT);
     if (this.raf) cancelAnimationFrame(this.raf);
     if (this.io) this.io.disconnect();
     if (this.mo) this.mo.disconnect();
     if (this.ro) this.ro.disconnect();
+    if (this.state.expanded) document.body.style.overflow = this.bodyOverflow || "";
+    if (window.Explainers3D) window.Explainers3D.dispose();
   }
 
   // ── 3D explainer scenes ───────────────────────────────────────────────────
@@ -277,7 +289,7 @@ class Portfolio extends React.Component {
     if (!el || el.getAttribute("data-in") === "1") return;
     el.setAttribute("data-in", "1");
     if (el.id === "skills-grid" && !this.state.skillsIn) this.setState({ skillsIn: true });
-    this.io.unobserve(el);
+    if (this.io) this.io.unobserve(el);
   }
 
   /* IntersectionObserver only reports threshold *crossings*, and it samples at
@@ -301,20 +313,44 @@ class Portfolio extends React.Component {
   observeAll() {
     document.querySelectorAll("[data-reveal]:not([data-in]):not([data-obs])").forEach((el) => {
       el.setAttribute("data-obs", "1");
-      this.io.observe(el);
+      if (!this.io || this.reduced) this.reveal(el);
+      else this.io.observe(el);
     });
   }
 
   go(id) {
-    return this.goCache[id] || (this.goCache[id] = () => {
+    return this.goCache[id] || (this.goCache[id] = (event) => {
+      if (event && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
       const el = document.getElementById(id);
       if (!el) return;
+      if (event) event.preventDefault();
+      if (window.location.hash !== "#" + id) window.history.pushState(null, "", "#" + id);
       const top = el.getBoundingClientRect().top + window.scrollY - 84;
       window.scrollTo({ top, behavior: this.reduced ? "auto" : "smooth" });
     });
   }
 
+  onHashChange = () => {
+    if (this.dead || !window.location.hash) return;
+    let id;
+    try { id = decodeURIComponent(window.location.hash.slice(1)); } catch (e) { return; }
+    const target = document.getElementById(id);
+    if (!target) return;
+    window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 84, behavior: "auto" });
+    this.sweepReveals();
+  };
+
   onKey = (e) => {
+    if (e.key === "Tab" && this.state.expanded) {
+      const dialog = document.querySelector(".overlay__dialog");
+      const items = dialog ? Array.from(dialog.querySelectorAll("a[href], button:not([disabled]), input:not([disabled]), [tabindex='0']")) : [];
+      const first = items[0], last = items[items.length - 1];
+      if (first && ((e.shiftKey && document.activeElement === first) || (!e.shiftKey && document.activeElement === last) || !dialog.contains(document.activeElement))) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      }
+      return;
+    }
     if (e.key !== "Escape") return;
     if (this.state.expanded) this.closeExpanded();
     else if (this.state.menuOpen) this.setState({ menuOpen: false });
@@ -330,6 +366,8 @@ class Portfolio extends React.Component {
   // ── theme ─────────────────────────────────────────────────────────────────
   applyTheme(next, persist) {
     document.documentElement.setAttribute("data-theme", next);
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.setAttribute("content", next === "light" ? "#f4f4f1" : "#0b0c11");
     if (persist) {
       try { localStorage.setItem("theme", next); } catch (e) { /* storage blocked */ }
     }
@@ -337,10 +375,31 @@ class Portfolio extends React.Component {
   }
 
   // ── hero animations ───────────────────────────────────────────────────────
+  onMotionChange = (event) => {
+    this.reduced = event.matches;
+    clearTimeout(this._typeT);
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.reduced) {
+      document.querySelectorAll("[data-reveal]").forEach((el) => this.reveal(el));
+      this.setState({ metricP: 1, skillsIn: true });
+    }
+    this.startTyper();
+  };
+
+  onVisibilityChange = () => {
+    clearTimeout(this._typeT);
+    if (document.hidden) {
+      if (this.raf) cancelAnimationFrame(this.raf);
+      this.setState({ metricP: 1 });
+    } else this.startTyper();
+  };
+
   startTyper() {
+    clearTimeout(this._typeT);
     const words = (this.props.data.profile && this.props.data.profile.typingWords) || [];
     if (!words.length) return;
     if (this.reduced) { this.setState({ typed: words[0] }); return; }
+    if (document.hidden) return;
 
     let idx = 0;
     let len = 0;
@@ -361,7 +420,7 @@ class Portfolio extends React.Component {
         if (len <= 0) { phase = "type"; idx = (idx + 1) % words.length; delay = 300; }
       }
       this.setState({ typed: word.slice(0, Math.max(0, len)) });
-      this.timers.push(setTimeout(step, delay));
+      this._typeT = setTimeout(step, delay);
     };
     step();
   }
@@ -403,6 +462,8 @@ class Portfolio extends React.Component {
   openExpanded(payload, ev) {
     const el = ev && ev.currentTarget;
     this.lastTrigger = el;
+    this.bodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     this.setState({ expanded: payload, ovFrom: this.flipTransform(el), ovClosing: false });
     this.timers.push(setTimeout(() => {
       if (this.closeRef.current) this.closeRef.current.focus();
@@ -410,12 +471,15 @@ class Portfolio extends React.Component {
   }
 
   closeExpanded = () => {
+    if (!this.state.expanded || this.state.ovClosing) return;
     const el = this.lastTrigger;
     this.setState({ ovFrom: this.flipTransform(el), ovClosing: true });
     this.timers.push(setTimeout(() => {
-      this.setState({ expanded: null, ovClosing: false });
-      if (el && el.focus) el.focus();
-    }, this.reduced ? 0 : 380));
+      document.body.style.overflow = this.bodyOverflow || "";
+      this.setState({ expanded: null, ovClosing: false }, () => {
+        if (el && el.focus) el.focus({ preventScroll: true });
+      });
+    }, this.reduced ? 0 : 420));
   };
 
   // ── research assistant ────────────────────────────────────────────────────
@@ -474,11 +538,12 @@ class Portfolio extends React.Component {
       : "none";
 
     return (
-      <header className="nav-wrap">
+      <header className="nav-wrap" inert={this.state.expanded ? "" : undefined} aria-hidden={this.state.expanded ? "true" : undefined}>
         <nav className="nav" aria-label="Primary" data-scrolled={scrolled ? "1" : undefined}>
-          <button
+          <a
             className="nav__brand"
-            onClick={() => window.scrollTo({ top: 0, behavior: this.reduced ? "auto" : "smooth" })}
+            href="#home"
+            onClick={this.go("home")}
             aria-label="Back to top"
           >
             <img
@@ -494,31 +559,31 @@ class Portfolio extends React.Component {
               fetchpriority="high"
             />
             <span className="nav__name" data-hide-mobile="1">{profile.name}</span>
-          </button>
+          </a>
 
           <div className="nav__menu">
             <button
               className="nav__menu-btn"
               onClick={(e) => { e.stopPropagation(); this.setState({ menuOpen: !menuOpen }); }}
               aria-expanded={menuOpen ? "true" : "false"}
-              aria-haspopup="menu"
+              aria-controls="section-menu"
             >
               <span>{active === "home" ? "Sections" : activeLabel}</span>
               <span className="nav__caret" aria-hidden="true" style={{ transform: "rotate(" + (menuOpen ? 180 : 0) + "deg)" }}>▼</span>
             </button>
             {menuOpen ? (
-              <div className="nav__menu-pop" role="menu" aria-label="Sections">
+              <div className="nav__menu-pop" id="section-menu">
                 {this.sections.map(([id, label], i) => (
-                  <button
+                  <a
                     key={id}
                     className="nav__menu-item"
-                    role="menuitem"
+                    href={"#" + id}
                     aria-current={active === id ? "true" : undefined}
-                    onClick={() => { this.setState({ menuOpen: false }); this.go(id)(); }}
+                    onClick={(event) => { this.setState({ menuOpen: false }); this.go(id)(event); }}
                   >
                     <span>{label}</span>
                     <span className="nav__menu-num" aria-hidden="true">{"0" + (i + 1)}</span>
-                  </button>
+                  </a>
                 ))}
               </div>
             ) : null}
@@ -540,13 +605,14 @@ class Portfolio extends React.Component {
               }}
             />
             {this.sections.map(([id, label]) => (
-              <button
+              <a
                 key={id}
                 className="nav__link"
                 ref={this.navRef(id)}
+                href={"#" + id}
                 onClick={this.go(id)}
                 aria-current={active === id ? "true" : undefined}
-              >{label}</button>
+              >{label}</a>
             ))}
           </div>
 
@@ -597,28 +663,28 @@ class Portfolio extends React.Component {
       <React.Fragment>
         {this.renderNav(P)}
 
-        <main id="content">
+        <main id="content" tabIndex="-1" inert={ov ? "" : undefined} aria-hidden={ov ? "true" : undefined}>
           {/* ── Home ───────────────────────────────────────────────────── */}
           <section id="home" className="sec sec--home">
             <div className="hero">
               <div data-reveal="1" data-in="1">
                 <p className="eyebrow">{P.eyebrow}</p>
-                <p className="hero__typed" aria-live="polite">
-                  Currently building <b>{s.typed}</b>
+                <p className="hero__typed" role="status" aria-live="polite" aria-label={"Currently building " + P.typingWords.join(", ") + "."}>
+                  <span aria-hidden="true">Currently building <b>{s.typed}</b></span>
                   <span className="caret" aria-hidden="true" />
                 </p>
                 <h1 className="hero__title">{P.headline}</h1>
                 <p className="hero__summary">{P.summary}</p>
                 <div className="btn-row hero__actions">
-                  <button className="btn btn--primary" onClick={this.go("experience")}>View experience →</button>
-                  <button className="btn" onClick={this.go("publications")}>Publications</button>
-                  <button className="btn" onClick={this.go("projects")}>Projects</button>
+                  <a className="btn btn--primary" href="#experience" onClick={this.go("experience")}>View experience →</a>
+                  <a className="btn" href="#publications" onClick={this.go("publications")}>Publications</a>
+                  <a className="btn" href="#projects" onClick={this.go("projects")}>Projects</a>
                   <a className="btn" href={D.github.profileUrl} target="_blank" rel="noopener">GitHub ↗</a>
                 </div>
                 <div className="hero__metrics">
                   {D.metrics.map((m) => (
                     <div key={m.label}>
-                      <div className="metric__v">{this.fmtMetric(m.value, s.metricP)}</div>
+                      <div className="metric__v" role="img" aria-label={m.value}><span aria-hidden="true">{this.fmtMetric(m.value, s.metricP)}</span></div>
                       <div className="metric__k">{m.label}</div>
                     </div>
                   ))}
@@ -1119,7 +1185,7 @@ class Portfolio extends React.Component {
         ) : null}
 
         {/* ── Research assistant ───────────────────────────────────────── */}
-        <div className="buddy">
+        <div className="buddy" inert={ov ? "" : undefined} aria-hidden={ov ? "true" : undefined}>
           {s.buddyOpen ? (
             <div className="buddy__panel" role="dialog" aria-label="Research assistant">
               <div className="buddy__head">
@@ -1133,7 +1199,7 @@ class Portfolio extends React.Component {
                 <span className="buddy__fact-label">Research fact · tap to rotate</span>
                 <span className="buddy__fact-text">{FACTS[s.factIdx % FACTS.length]}</span>
               </button>
-              <div className="buddy__msgs" ref={this.msgsRef}>
+              <div className="buddy__msgs" ref={this.msgsRef} role="log" aria-live="polite" aria-label="Conversation">
                 {(s.buddyMsgs.length ? s.buddyMsgs : [{
                   role: "assistant",
                   content: "Ask about the research, the projects, or the skills here. Answers come only from this page.",
@@ -1174,16 +1240,31 @@ function App() {
   return <Portfolio data={data} />;
 }
 
+class AppBoundary extends React.Component {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return <main id="content" className="app-fallback">
+      <h1>Namit Shrivastava</h1>
+      <p>Survey methodology, data science, and responsible AI.</p>
+      <p>The interactive portfolio is temporarily unavailable. Explore the full portfolio or download the CV below.</p>
+      <div className="btn-row"><a href="/about/">Full portfolio</a><a href="/files/namit-shrivastava-cv.pdf">Download CV</a><a href="mailto:namit507@gmail.com">Email</a></div>
+    </main>;
+  }
+}
+
 const mountApp = () => {
-  const root = ReactDOM.createRoot(document.getElementById("app"));
-  root.render(<App />);
+  const root = createRoot(document.getElementById("app"));
+  root.render(<AppBoundary><App /></AppBoundary>);
 };
 
 const syncLoads = [window.PORTFOLIO_SYNC_READY, window.LINKEDIN_SYNC_READY].filter(
   (promiseLike) => promiseLike && typeof promiseLike.then === "function"
 );
 if (syncLoads.length > 0) {
-  Promise.allSettled(syncLoads).finally(mountApp);
+  // Optional feeds must never keep the entire portfolio waiting indefinitely.
+  Promise.race([Promise.allSettled(syncLoads), new Promise((resolve) => setTimeout(resolve, 2500))]).finally(mountApp);
 } else {
   mountApp();
 }

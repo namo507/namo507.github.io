@@ -1,58 +1,34 @@
 name: Scrape Talk Locations
 
 on:
+  workflow_dispatch:
   push:
+    branches: [main]
     paths:
-      - 'talks/**'
       - '_talks/**'
-      - 'talkmap.ipynb'
+      - 'scripts/scrape_talks.py'
+      - '.github/workflows/scrape_talks.yml'
 
-# Serialize with the other auto-committing workflows so two bots never push to
-# master concurrently.
 concurrency:
   group: repo-autocommit
   cancel-in-progress: false
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  sync:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write           # This workflow pushes to the repository
-
+    timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v7
-
-    - name: Set up Python
-      uses: actions/setup-python@v7
-      with:
-        python-version: '3.11'
-
-    - name: Install dependencies
-      run: |
-        pip install jupyter pandas requests beautifulsoup4 geopy  # Add other dependencies as needed
-        pip install getorg --upgrade
-
-    - name: Run Jupyter Notebook
-      run: |
-        jupyter nbconvert --to notebook --execute talkmap.ipynb --output talkmap_out.ipynb
-
-    - name: Commit changes
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add .
-        if git diff --cached --quiet; then
-          echo "No changes to commit"
-          exit 0
-        fi
-        git commit -m "Automated update of talk locations"
-        # Rebase-and-retry push so a concurrent bot push cannot reject this one.
-        for attempt in 1 2 3 4 5; do
-          if git push origin HEAD:"${GITHUB_REF_NAME:-master}"; then
-            exit 0
-          fi
-          echo "Push rejected (attempt $attempt); rebasing."
-          git pull --rebase origin "${GITHUB_REF_NAME:-master}" || true
-          sleep $((attempt * 3))
-        done
-        echo "::warning::Could not push talk-location update after 5 attempts."
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-site
+      - name: Generate deterministic talk locations
+        run: python scripts/scrape_talks.py
+      - name: Validate and commit map data
+        run: |
+          bash scripts/ci/commit-generated.sh 'chore: refresh talk locations' talkmap/org-locations.js talkmap/org-locations.json

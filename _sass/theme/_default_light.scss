@@ -6,11 +6,13 @@
 $gray                       : #60708a;
 $dark-gray                  : #243145;
 $darker-gray                : #16202f;
-// #8d98aa rendered muted text at 2.87:1 on the footer surface and 2.59:1 on
-// --global-surface-color, well under WCAG AA. #636e87 clears 4.5:1 on every
-// light surface in this theme (worst case 4.54 on #edf2f8) while staying far
-// lighter than body text at #243145, so the hierarchy is unchanged.
-$light-gray                 : #636e87;
+// .page__footer is frosted glass -- rgba(255,255,255,.78) over backdrop-filter --
+// so its effective contrast depends on whatever sits behind it. On /portfolio/ at
+// 390px that composites to mint #c9e0dc, where #636e87 fell to 3.69:1 against the
+// 4.5 needed for 12px footer text. #555f78 clears 4.5 on every composite this
+// token lands on (worst case 4.61 on the mint) and stays far lighter than body
+// text at #243145, so the hierarchy is unchanged.
+$light-gray                 : #555f78;
 $lighter-gray               : #dde4ef;
 
 /* Color codes used for the site */
@@ -44,19 +46,20 @@ $sidebar-screen-min-width   : 1024px;
     --global-code-background-color      : #f8fafc;
     --global-code-text-color            : #{$darker-gray};
     --global-fig-caption-color          : #{$light-gray};
-    --global-link-color                 : #0e9f84;
-    --global-link-color-hover           : #0a7662;
-    --global-link-color-visited         : #2f7f93;
+    --global-link-color                 : #08745f;
+    --global-link-color-hover           : #065b4b;
+    --global-link-color-visited         : #286b7c;
     --global-masthead-link-color        : #{$dark-gray};
-    --global-masthead-link-color-hover  : #0e9f84;
+    --global-masthead-link-color-hover  : #08745f;
     --global-text-color                 : #{$dark-gray};
     --global-text-color-light           : #{$light-gray};
     --global-muted-color                : #{$light-gray};
     --global-thead-color                : #{$lighter-gray};
-    --global-accent-color               : #0e9f84;
+    --global-accent-color               : #08745f;
+    --global-accent-ink                 : #ffffff;
     --global-accent-color-rgb           : 14, 159, 132;
     --global-accent-strong-color        : #076b59;
-    --global-highlight-color            : #7d9fff;
+    --global-highlight-color            : #375aac;
     --global-shadow-color               : rgba(16, 24, 40, 0.08);
     --global-bg-grid-color              : rgba(96, 112, 138, 0.12);
 }

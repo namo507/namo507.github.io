@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -105,6 +106,15 @@ def load_curated_seed(seed_path: Path, profile_url: str, *, verbose: bool) -> tu
     return payload, effective_profile_url, checked_at, warning
 
 
+def report_status(status: str, message: str) -> None:
+    print(message)
+    if os.getenv("GITHUB_ACTIONS") and status != "ok":
+        print("::warning::LinkedIn live data unavailable; retained content is not a fresh public scrape.")
+    if os.getenv("GITHUB_OUTPUT"):
+        with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+            handle.write(f"sync_status={status}\n")
+
+
 def main() -> int:
     args = parse_args()
     write_enabled = not (args.dry_run or args.no_write)
@@ -145,51 +155,19 @@ def main() -> int:
             raise LinkedInUnavailableError("Public LinkedIn response did not expose enough profile fields to trust.")
         if is_suspiciously_empty(payload, previous_snapshot):
             raise LinkedInUnavailableError("Parsed LinkedIn content looked suspiciously empty compared with the previous validated snapshot.")
-    except LinkedInUnavailableError as error:
-        if not args.source_file and seed_path and should_use_seed_fallback(previous_snapshot):
-            print(str(error))
-            print(f"Falling back to curated LinkedIn seed: {seed_path}")
-            payload, effective_profile_url, checked_at, sync_warning = load_curated_seed(seed_path, profile_url, verbose=args.verbose)
-            sync_source = CURATED_SEED_SOURCE
-        else:
-            print(str(error))
-            if previous_snapshot:
-                print("Keeping existing generated LinkedIn data unchanged.")
-            else:
-                print("No generated LinkedIn data was changed.")
-            return 0
-    except LinkedInSyncError as error:
+    except (LinkedInSyncError, json.JSONDecodeError) as error:
         if args.source_file:
             print(str(error), file=sys.stderr)
             return 1
         if seed_path and should_use_seed_fallback(previous_snapshot):
-            print(str(error))
-            print(f"Falling back to curated LinkedIn seed: {seed_path}")
+            report_status("curated", f"{error} Using curated LinkedIn seed: {seed_path}")
             payload, effective_profile_url, checked_at, sync_warning = load_curated_seed(seed_path, profile_url, verbose=args.verbose)
             sync_source = CURATED_SEED_SOURCE
         else:
-            print(str(error))
-            if previous_snapshot:
-                print("Keeping existing generated LinkedIn data unchanged.")
-            else:
-                print("No generated LinkedIn data was changed.")
-            return 0
-    except json.JSONDecodeError as error:
-        if args.source_file:
-            print(f"LinkedIn source input was not valid JSON: {error}", file=sys.stderr)
-            return 1
-        if seed_path and should_use_seed_fallback(previous_snapshot):
-            print(f"LinkedIn source input was not valid JSON: {error}")
-            print(f"Falling back to curated LinkedIn seed: {seed_path}")
-            payload, effective_profile_url, checked_at, sync_warning = load_curated_seed(seed_path, profile_url, verbose=args.verbose)
-            sync_source = CURATED_SEED_SOURCE
-        else:
-            print(f"LinkedIn source input was not valid JSON: {error}")
-            if previous_snapshot:
-                print("Keeping existing generated LinkedIn data unchanged.")
-            else:
-                print("No generated LinkedIn data was changed.")
-            return 0
+            report_status("stale", f"{error} Keeping existing generated LinkedIn data unchanged.")
+            # A trusted snapshot can still serve visitors during an authwall.
+            # Malformed parsing or having no usable fallback must fail visibly.
+            return 0 if isinstance(error, LinkedInUnavailableError) and has_successful_snapshot(previous_snapshot) else 1
 
     if payload is None:
         raise LinkedInSyncError("LinkedIn sync did not produce a payload.")
@@ -197,8 +175,11 @@ def main() -> int:
     diff_fields = summarize_diff(previous_snapshot, payload)
     print_summary(payload, diff_fields, source=sync_source)
 
-    if previous_snapshot and content_hash(previous_snapshot) == content_hash(payload):
+    unchanged = previous_snapshot and content_hash(previous_snapshot) == content_hash(payload)
+    if unchanged and current_sync_meta(previous_snapshot).get("source") == sync_source:
         print("No meaningful LinkedIn content changes detected.")
+        if sync_source == PUBLIC_SYNC_SOURCE:
+            report_status("ok", "Public profile checked; stored content and change date retained.")
         return 0
 
     sync_meta = build_sync_meta(
@@ -208,6 +189,8 @@ def main() -> int:
         source=sync_source,
         warning=sync_warning,
     )
+    if unchanged:
+        sync_meta["last_meaningful_change_at"] = current_sync_meta(previous_snapshot).get("last_meaningful_change_at", checked_at)
     bundle = build_bundle(payload, sync_meta)
 
     if not write_enabled:

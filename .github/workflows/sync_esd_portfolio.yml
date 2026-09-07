@@ -5,62 +5,52 @@ on:
   schedule:
     - cron: '15 8 * * 1'
   pull_request:
-    branches: [master]
+    branches: [main]
     paths:
-      - '_data/cv.json'
-      - '_data/cv.yml'
-      - '_data/cv_site.yml'
-      - 'assets/cosmic/app.jsx'
-      - 'assets/cosmic/portfolio-sync.generated.js'
-      - 'index.html'
+      - '_data/cv*'
+      - 'assets/cosmic/**'
       - 'scripts/portfolio_sync/**'
-      - 'scripts/sync_esd_portfolio.py'
-      - 'scripts/validate_esd_portfolio_sync.py'
-      - 'scripts/requirements-portfolio-sync.txt'
+      - 'scripts/*esd*'
       - '.github/workflows/sync_esd_portfolio.yml'
 
+permissions:
+  contents: read
+
 concurrency:
-  group: portfolio-sync
+  group: portfolio-sync-${{ github.event.pull_request.number || 'main' }}
   cancel-in-progress: false
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
-  sync:
-    if: github.event_name != 'pull_request'
+  validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-site
+      - name: Validate generated content and production build
+        env:
+          JEKYLL_ENV: production
+        run: python scripts/validate_esd_portfolio_sync.py --run-site-build
+      - name: Explain optional private-source configuration
+        if: github.event_name != 'pull_request' && vars.ESD_PORTFOLIO_ENABLED != 'true'
+        run: echo 'Private evidence sync is disabled. Existing content passed validation. Set ESD_PORTFOLIO_ENABLED=true after configuring the documented read-only GitHub and Slack credentials.' >> "$GITHUB_STEP_SUMMARY"
+
+  sync:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.ESD_PORTFOLIO_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
           fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.11'
-
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: '20'
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3'
-          bundler-cache: true
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r scripts/requirements-portfolio-sync.txt
-
-      - name: Install Node dependencies
-        run: npm install --no-audit --no-fund
-
+      - uses: ./.github/actions/setup-site
       - name: Run weekly agenda sync
         id: sync
         env:
@@ -73,115 +63,57 @@ jobs:
           SLACK_MCP_TOOL_ARGS_JSON: ${{ vars.ESD_LAB_SLACK_MCP_TOOL_ARGS_JSON }}
           SLACK_AGENDA_CANVAS_ID: ${{ vars.ESD_LAB_SLACK_CANVAS_ID }}
           PORTFOLIO_SYNC_LOOKBACK_DAYS: '21'
-        run: python scripts/sync_esd_portfolio.py --verbose
-
-      - name: Upload sync summary
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: esd-portfolio-sync-summary
-          path: scripts/portfolio_sync/last_run_summary.json
-          if-no-files-found: warn
-
+        run: |
+          if [[ -z "$EVIDENCE_GITHUB_TOKEN" || -z "$SLACK_BOT_TOKEN" || ( -z "$SLACK_MCP_COMMAND" && -z "$SLACK_MCP_URL" ) ]]; then
+            echo '::error::ESD sync is enabled but its private-source credentials or Slack transport are not configured.'
+            exit 1
+          fi
+          python scripts/sync_esd_portfolio.py --verbose
       - name: Validate generated content and site build
         if: steps.sync.outputs.changed == 'true'
-        run: python scripts/validate_esd_portfolio_sync.py --run-js-build --run-site-build
-
-      - name: Commit and push sync branch
+        run: python scripts/validate_esd_portfolio_sync.py --run-site-build
+      - name: Publish validated review branch
         if: steps.sync.outputs.changed == 'true'
         env:
           BRANCH_NAME: ${{ steps.sync.outputs.branch_name }}
-          PR_TITLE: ${{ steps.sync.outputs.pr_title }}
-          LATEST_LABEL: ${{ steps.sync.outputs.latest_label }}
         run: |
           git checkout -B "$BRANCH_NAME"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add \
-            _data/cv.json \
-            _data/cv.yml \
-            _data/cv_site.yml \
-            assets/cosmic/portfolio-sync.generated.js \
-            scripts/portfolio_sync/state_manifest.json
-
-          if git diff --cached --quiet; then
-            echo "No validated content changes to commit."
-            exit 0
-          fi
-
-          git commit -m "chore(portfolio): sync ESD Lab agenda ${LATEST_LABEL}"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add _data/cv.json _data/cv.yml _data/cv_site.yml assets/cosmic/portfolio-sync.generated.js scripts/portfolio_sync/state_manifest.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'chore(portfolio): refresh validated ESD lab activity'
           git push --force-with-lease --set-upstream origin "$BRANCH_NAME"
-
-      - name: Open or refresh pull request
-        if: steps.sync.outputs.changed == 'true'
+          echo "Validated updates are available on the $BRANCH_NAME review branch." >> "$GITHUB_STEP_SUMMARY"
+      - name: Open or refresh a review request when enabled
+        if: steps.sync.outputs.changed == 'true' && vars.ESD_PORTFOLIO_CREATE_PR == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: ${{ steps.sync.outputs.branch_name }}
           PR_TITLE: ${{ steps.sync.outputs.pr_title }}
         run: |
-          python - <<'PY' > /tmp/esd-pr-body.md
+          python - <<'PY'
           import json
           from pathlib import Path
-
-          summary = json.loads(Path("scripts/portfolio_sync/last_run_summary.json").read_text(encoding="utf-8"))
-          lines = [
-              "## Weekly automation summary",
-              "",
-              f"- Slack rows read: {summary['rows_read']}",
-              f"- Agenda items parsed: {summary['tasks_read']}",
-              f"- Sensitivity-filtered items: {summary['filtered_count']}",
-              f"- Matched activity items: {summary['matched_count']}",
-              "",
-              "## Matched activity by source",
-              "",
-          ]
-          for alias, count in summary["matched_by_repo"].items():
-              lines.append(f"- {alias}: {count}")
-          lines.extend(["", "## Public bullets", ""])
-          for bullet in summary["final_bullets"]:
-              lines.append(f"- {bullet}")
-          Path("/tmp/esd-pr-body.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+          summary = json.loads(Path('scripts/portfolio_sync/last_run_summary.json').read_text())
+          body = 'Validated weekly ESD portfolio updates.\n\n'
+          body += '\n'.join('- ' + bullet for bullet in summary.get('final_bullets', []))
+          body += '\n\nValidation: content safety and Jekyll build passed.\n'
+          Path('/tmp/esd-pr-body.md').write_text(body)
           PY
-
-          existing_url="$(gh pr list --head "$BRANCH_NAME" --json url --jq '.[0].url')"
-          if [ -n "$existing_url" ]; then
+          existing_url=$(gh pr list --base main --head "$BRANCH_NAME" --json url --jq '.[0].url')
+          if [[ -n "$existing_url" ]]; then
             gh pr edit "$existing_url" --title "$PR_TITLE" --body-file /tmp/esd-pr-body.md
-            pr_url="$existing_url"
           else
-            pr_url="$(gh pr create --base master --head "$BRANCH_NAME" --title "$PR_TITLE" --body-file /tmp/esd-pr-body.md)"
+            gh pr create --base main --head "$BRANCH_NAME" --title "$PR_TITLE" --body-file /tmp/esd-pr-body.md
           fi
-          gh pr merge --auto --squash "$pr_url"
-
-  validate-pr:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Upload sync summary
+        if: always()
+        uses: actions/upload-artifact@v7
         with:
-          python-version: '3.11'
-
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: '20'
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3'
-          bundler-cache: true
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r scripts/requirements-portfolio-sync.txt
-
-      - name: Install Node dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Validate generated content and site build
-        run: python scripts/validate_esd_portfolio_sync.py --run-js-build --run-site-build
+          name: esd-portfolio-sync-summary
+          path: |
+            scripts/portfolio_sync/last_run_summary.json
+            scripts/portfolio_sync/last_workflow_summary.md
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,8 +1,9 @@
 
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
-    	<title>Leaflet debug page</title>
+      <meta charset="utf-8">
+    	<title>Namit Shrivastava — Talk locations</title>
 
     	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.css" />
     	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.js"></script>
@@ -17,10 +18,12 @@
     </head>
     <body>
 
-    	<div id="map"></div>
-    	<span>Mouse over a cluster to see the bounds of its children and click a cluster to zoom to those bounds</span>
+    	<div id="map" role="region" aria-label="Map of talk locations"></div>
+    	<p id="map-help">Select a marker to read about a talk, or a cluster to zoom in. <a href="/talks/" target="_top">View all talks as a list</a>.</p>
+      <noscript><p>The map needs JavaScript. Use the talks list to explore each presentation.</p></noscript>
     	<script type="text/javascript">
-    		var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        if (window.L && L.markerClusterGroup && Array.isArray(window.addressPoints)) {
+    		var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
               maxZoom: 18,
               attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
                     }),
@@ -33,12 +36,15 @@
     		for (var i = 0; i < addressPoints.length; i++) {
     			var a = addressPoints[i];
     			var title = a[0];
-    			var marker = L.marker(new L.LatLng(a[1], a[2]), { title: title });
+    			var marker = L.marker(new L.LatLng(a[1], a[2]), { title: 'Talk location', alt: 'Talk location — select for presentation details' });
     			marker.bindPopup(title);
     			markers.addLayer(marker);
     		}
     		map.addLayer(markers);
     		map.zoomIn();
+        } else {
+          document.getElementById('map').textContent = 'The interactive map is temporarily unavailable. All presentations are available in the talks list below.';
+        }
     	</script>
     </body>
     </html>

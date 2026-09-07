@@ -44,6 +44,10 @@ def parse_color(text: str) -> Color | None:
     if text is None:
         return None
     s = text.strip()
+    named = {"black": Color(0, 0, 0), "white": Color(255, 255, 255),
+             "transparent": Color(0, 0, 0, 0)}
+    if s.lower() in named:
+        return named[s.lower()]
     m = _HEX_RE.match(s)
     if m:
         h = m.group(1)
@@ -58,7 +62,7 @@ def parse_color(text: str) -> Color | None:
         if len(h) == 8:
             return Color(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16), int(h[6:8], 16) / 255)
         return None
-    m = _RGB_RE.search(s)
+    m = _RGB_RE.fullmatch(s)
     if m:
         r, g, b = (int(round(float(m.group(i)))) for i in (1, 2, 3))
         a = float(m.group(4)) if m.group(4) is not None else 1.0
@@ -109,33 +113,33 @@ def adjust_to_contrast(fg: Color, bg: Color, target: float, *, max_steps: int = 
     If ``fg`` already meets the target it is returned unchanged, which keeps the
     auto-fix idempotent.
     """
-    if contrast_ratio(fg, bg) >= target:
+    if contrast_ratio(composite_over(fg, bg), bg) >= target:
         return fg
 
     h, l, s = colorsys.rgb_to_hls(fg.r / 255, fg.g / 255, fg.b / 255)
-    bg_lum = relative_luminance(bg)
-    # On a dark surface we lighten the text (move L toward 1), else darken it.
-    lo, hi = (l, 1.0) if bg_lum < 0.5 else (0.0, l)
-
-    best = fg
-    for _ in range(max_steps):
-        mid = (lo + hi) / 2
-        r, g, b = colorsys.hls_to_rgb(h, mid, s)
-        cand = Color(_clamp8(round(r * 255)), _clamp8(round(g * 255)), _clamp8(round(b * 255)))
-        if contrast_ratio(cand, bg) >= target:
-            best = cand
-            # Tighten toward the original lightness to stay minimal.
-            if bg_lum < 0.5:
-                hi = mid
-            else:
+    candidates = []
+    # Mid-tone backgrounds can need darker text even below luminance 0.5.
+    # Search both directions instead of incorrectly assuming white will pass.
+    for lighter in (False, True):
+        lo, hi = (l, 1.0) if lighter else (0.0, l)
+        best = Color(255, 255, 255) if lighter else Color(0, 0, 0)
+        if contrast_ratio(best, bg) < target:
+            continue
+        for _ in range(max_steps):
+            mid = (lo + hi) / 2
+            rgb = colorsys.hls_to_rgb(h, mid, s)
+            candidate = Color(*(_clamp8(round(channel * 255)) for channel in rgb))
+            if contrast_ratio(candidate, bg) >= target:
+                best = candidate
+                if lighter:
+                    hi = mid
+                else:
+                    lo = mid
+            elif lighter:
                 lo = mid
-        else:
-            if bg_lum < 0.5:
-                lo = mid
             else:
                 hi = mid
-    # Guarantee the result actually clears the bar even at the search extreme.
-    if contrast_ratio(best, bg) < target:
-        extreme = "#ffffff" if bg_lum < 0.5 else "#000000"
-        best = parse_color(extreme)  # type: ignore[assignment]
-    return best
+        candidates.append(best)
+    if candidates:
+        return min(candidates, key=lambda color: sum((a - b) ** 2 for a, b in zip(color.rgb, fg.rgb)))
+    return max((Color(0, 0, 0), Color(255, 255, 255)), key=lambda color: contrast_ratio(color, bg))

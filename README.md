@@ -1,6 +1,6 @@
 # Namit Shrivastava - Academic Personal Website
 
-[![Pages Build Deployment](https://github.com/namo507/namo507.github.io/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/namo507/namo507.github.io/actions/workflows/pages/pages-build-deployment)
+[![Pages Build Deployment](https://github.com/namo507/namo507.github.io/actions/workflows/pages.yml/badge.svg)](https://github.com/namo507/namo507.github.io/actions/workflows/pages.yml)
 
 Welcome to my academic personal website repository! This website showcases my research, publications, projects, and professional activities.
 
@@ -89,7 +89,7 @@ choice carries across the whole site.
 
 | File | Role |
 | --- | --- |
-| `assets/cosmic/app.jsx` | The React app. Compiled in the browser by Babel standalone. |
+| `assets/cosmic/app.jsx` | The React app. Compiled with pinned esbuild and bundled with React into the committed `app.min.js`. Run `npm ci && npm run build:cosmic` after editing. |
 | `assets/cosmic/styles.css` | Design tokens and every component class. `scripts/site_doctor` parses this file directly, so its token names and tile selectors are mirrored in `scripts/site_doctor/config.py`. |
 | `assets/cosmic/explainers-3d.js` | Per-section Three.js scenes, mounted onto `[data-scene]` elements. One WebGL context renders every scene through scissored viewports, so adding sections does not add contexts. |
 | `assets/cosmic/data.js` | Hand-authored site content (`window.SITE`). |
@@ -121,9 +121,9 @@ a smaller page rather than a broken one.
 To preview the website locally:
 
 ### Prerequisites
-- Ruby (2.7+)
-- Bundler
-- Node.js
+- Ruby 3.3 (matches Docker and CI)
+- Bundler 2.4.19
+- Node.js 24
 
 ### Installation
 
@@ -136,6 +136,8 @@ cd namo507.github.io
 2. Install dependencies:
 ```bash
 bundle install
+npm ci
+npm run build:cosmic
 ```
 
 3. Run the local server:
@@ -149,9 +151,50 @@ bundle exec jekyll serve -l -H localhost
 
 Alternatively, use Docker:
 ```bash
-chmod -R 777 .
-docker compose up
+npm ci && npm run build:cosmic
+docker compose up --build -d --wait
 ```
+
+## Build, deployment, and health checks
+
+`main` is the publishing branch. GitHub Pages serves the static Jekyll output;
+there is no continuously running backend on Pages. Python scripts fetch and
+validate source data in scheduled Actions jobs. Docker runs the same site for
+local development and CI verification; Actions runners stop after each job.
+
+The Pages workflow builds the bundled frontend and Jekyll site, runs Python and
+browser regression checks, tests a standalone Docker image and its restart,
+then deploys the tested artifact. Successful data-sync runs trigger a new build
+because commits made with `GITHUB_TOKEN` do not trigger push workflows. A failed
+validation leaves the previous published site available.
+
+The daily Site Health workflow rechecks links, themes, mobile layouts, keyboard
+controls, and motion. Safe source repairs must pass a fresh build and audit
+before being committed. Scrapers use bounded network requests and preserve the
+last validated content when an upstream source is unavailable. Health reports
+separate broken links from sites that require login or block automated checks.
+
+Docker Compose binds the preview to `http://localhost:4000`, checks HTTP health,
+and restarts an exited container unless it was deliberately stopped. A Docker
+health status alone does not restart a hung process. The live Pages site is
+independent of this local container and does not require the computer to stay on.
+
+Run deterministic checks locally:
+
+```bash
+python -m pip install -r scripts/site_doctor/requirements.txt -r scripts/requirements-linkedin-sync.txt
+npm ci --prefix scripts/site_doctor
+node scripts/site_doctor/test_visual.mjs
+bundle exec jekyll build
+python scripts/site_doctor/doctor.py --check --strict --only data contrast alignment asset --no-visual
+```
+
+The rendered CI audit runs against desktop and mobile sizes in both light and
+dark themes, checks real motion before stabilizing screenshots, exercises
+filters and dialogs, and checks reduced-motion behavior. Reports and screenshots
+are retained in Actions artifacts. Scraping cannot guarantee that third-party
+sites will remain available or permit anonymous access; blocked responses are
+reported without replacing known-good data with empty results.
 
 ## GitHub Showcase Automation
 
@@ -282,7 +325,6 @@ python3 scripts/validate_esd_portfolio_sync.py
 - 🔬 **ORCID**: [0009-0005-7920-8350](https://orcid.org/0009-0005-7920-8350)
 - 💼 **LinkedIn**: [namit-shrivastava-baab47204](https://www.linkedin.com/in/namit-shrivastava-baab47204)
 - 🐙 **GitHub**: [@namo507](https://github.com/namo507)
-- 🦋 **Bluesky**: [Profile](https://bsky.app/profile/bsky.app)
 - 🐦 **X (Twitter)**: [@Namit507](https://twitter.com/Namit507)
 
 ## License

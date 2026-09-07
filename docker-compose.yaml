@@ -1,11 +1,19 @@
 services:
   jekyll-site:
-    image: jekyll-site
+    image: namo507-portfolio:local
     build: .
+    init: true
+    restart: unless-stopped
     volumes:
       - .:/usr/src/app
-      - /usr/src/app/.venv
-    ports: [ 4000:4000 ]
-    user: 1000:1000
-    environment: [ JEKYLL_ENV=docker ]
-    command: jekyll serve -H 0.0.0.0 -w --config _config.yml,_config_docker.yml
+      - site-build:/usr/src/app/_site
+      - sass-cache:/usr/src/app/.sass-cache
+    ports:
+      - "127.0.0.1:4000:4000"
+    environment:
+      JEKYLL_ENV: development
+    stop_grace_period: 20s
+
+volumes:
+  site-build:
+  sass-cache:

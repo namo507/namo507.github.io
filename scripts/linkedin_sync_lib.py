@@ -13,9 +13,13 @@ from typing import Any
 from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import yaml
 from bs4 import BeautifulSoup, FeatureNotFound
 from jsonschema import Draft202012Validator
+
+from sync_utils import write_text_if_changed
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -427,8 +431,16 @@ def detect_unavailable(status_code: int, final_url: str, html: str) -> str | Non
 
 
 def fetch_public_profile_html(profile_url: str, *, timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS, verbose: bool = False) -> FetchResult:
-    session = requests.Session()
-    response = session.get(profile_url, headers=PUBLIC_FETCH_HEADERS, timeout=timeout_seconds, allow_redirects=True)
+    try:
+        with requests.Session() as session:
+            # Authwalls and explicit blocking are not transient: do not retry them.
+            retry = Retry(total=2, backoff_factor=1, status_forcelist=(500, 502, 503, 504),
+                          allowed_methods=("GET",), respect_retry_after_header=False)
+            session.mount("https://", HTTPAdapter(max_retries=retry))
+            response = session.get(profile_url, headers=PUBLIC_FETCH_HEADERS,
+                                   timeout=timeout_seconds, allow_redirects=True)
+    except requests.RequestException as error:
+        raise LinkedInUnavailableError(f"LinkedIn public fetch unavailable ({type(error).__name__}).") from error
     html = response.text
 
     if verbose:
@@ -1044,7 +1056,10 @@ def validate_payload(payload: dict[str, Any]) -> None:
 
 
 def canonical_content(payload: dict[str, Any]) -> dict[str, Any]:
-    canonical = copy.deepcopy(payload)
+    # Snapshots also contain generated metadata. Including it here makes every
+    # unchanged live/seed payload compare differently and refreshes stale dates.
+    canonical = {key: copy.deepcopy(payload.get(key)) for key in
+                 ("linkedin_profile", "linkedin_experience", "linkedin_featured", "linkedin_updates")}
     profile = canonical.get("linkedin_profile") or {}
     profile.pop("last_synced_at", None)
     for key in ("linkedin_experience", "linkedin_featured", "linkedin_updates"):
@@ -1212,9 +1227,8 @@ def write_bundle(bundle: dict[str, Any]) -> list[Path]:
 
     written_paths: list[Path] = []
     for path, content in writes:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content, encoding="utf-8")
-        written_paths.append(path)
+        if write_text_if_changed(path, content):
+            written_paths.append(path)
     return written_paths
 
 
