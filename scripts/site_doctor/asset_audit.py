@@ -115,7 +115,19 @@ def run(report: DoctorReport, apply: bool = True) -> None:
         refs = []
         for tag, attr in (("a", "href"), ("img", "src"), ("link", "href"), ("script", "src"),
                           ("source", "src"), ("video", "src"), ("video", "poster"), ("audio", "src"), ("iframe", "src")):
-            refs.extend((tag, str(el[attr]).strip()) for el in soup.find_all(tag) if el.get(attr))
+            for el in soup.find_all(tag):
+                if not el.get(attr):
+                    continue
+                # preconnect and dns-prefetch name an *origin* to warm a
+                # connection to; the browser never requests that bare URL. Both
+                # Google Fonts origins answer 404 at the root while the
+                # stylesheet path beneath them is fine, so checking them as
+                # links failed the nightly run on a pair of healthy hints.
+                if tag == "link":
+                    rels = {r.lower() for r in (el.get("rel") or [])}
+                    if rels & {"preconnect", "dns-prefetch"}:
+                        continue
+                refs.append((tag, str(el[attr]).strip()))
         for element in soup.find_all(["img", "source"]):
             srcset = element.get("srcset", "")
             if srcset and not srcset.startswith("data:"):

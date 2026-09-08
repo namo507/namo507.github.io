@@ -64,9 +64,19 @@ jobs:
           SLACK_AGENDA_CANVAS_ID: ${{ vars.ESD_LAB_SLACK_CANVAS_ID }}
           PORTFOLIO_SYNC_LOOKBACK_DAYS: '21'
         run: |
+          # These credentials have never been set, so the weekly cron failed every
+          # Monday on "SLACK_MCP_COMMAND must be set for stdio transport". A job
+          # that cannot succeed without optional secrets should not report a
+          # break -- a permanently red workflow is indistinguishable from a real
+          # one, and teaches you to ignore it. Skip cleanly instead, and leave
+          # `changed` unset so the validate and publish steps below skip too.
+          #
+          # This only softens the *absent credentials* case. If they are present
+          # and the sync then fails, that is a genuine fault and still exits
+          # non-zero via the python call underneath.
           if [[ -z "$EVIDENCE_GITHUB_TOKEN" || -z "$SLACK_BOT_TOKEN" || ( -z "$SLACK_MCP_COMMAND" && -z "$SLACK_MCP_URL" ) ]]; then
-            echo '::error::ESD sync is enabled but its private-source credentials or Slack transport are not configured.'
-            exit 1
+            echo '::notice::ESD sync skipped: private-source credentials or Slack transport are not configured. Set ESD_PORTFOLIO_GITHUB_TOKEN, ESD_LAB_SLACK_BOT_TOKEN and one of ESD_LAB_SLACK_MCP_COMMAND / ESD_LAB_SLACK_MCP_URL to enable it.'
+            exit 0
           fi
           python scripts/sync_esd_portfolio.py --verbose
       - name: Validate generated content and site build
