@@ -1123,6 +1123,7 @@ class Portfolio extends React.Component {
             <footer className="site-foot">
               <span>© 2026 {P.name}</span>
               <span className="site-foot__links">
+                <a href="/terms/">Terms &amp; Privacy</a>
                 <a href={P.siteUrl} target="_blank" rel="noopener">Live site</a>
                 <a href="https://github.com/namo507/namo507.github.io" target="_blank" rel="noopener">Source ↗</a>
               </span>
