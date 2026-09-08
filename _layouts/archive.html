@@ -16,9 +16,14 @@ layout: default
   {% include sidebar.html %}
 
   <div class="archive">
+    {%comment%} hide_title lets a page supply its own <h1> from its content, the
+    way single.html already does. /cv-json/ includes cv-template.html, which
+    renders <h1>{{ cv.basics.name }}</h1>, so the layout title gave that page a
+    second <h1>; two per page is invalid and ambiguous for assistive tech and
+    search. Only pages that opt in are affected. {%endcomment%}
     {% unless page.header.overlay_color or page.header.overlay_image %}
       <header class="page__header-block" data-reveal>
-        <h1 class="page__title">{{ page.title }}</h1>
+        {% if page.title and page.hide_title != true %}<h1 class="page__title">{{ page.title }}</h1>{% endif %}
         {% if page.excerpt %}<p class="page__lead">{{ page.excerpt | markdownify | remove: "<p>" | remove: "</p>" }}</p>{% endif %}
       </header>
     {% endunless %}

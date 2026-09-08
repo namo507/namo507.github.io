@@ -6,7 +6,8 @@
   "description": "Headless visual + accessibility audit (Playwright + axe-core) for the namo507.github.io portfolio.",
   "scripts": {
     "audit": "node visual_audit.mjs",
-    "test": "node test_visual.mjs"
+    "test": "node test_visual.mjs",
+    "audit:ui": "node ui_audit.mjs"
   },
   "dependencies": {
     "axe-core": "^4.10.2",
