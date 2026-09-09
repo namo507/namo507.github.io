@@ -161,5 +161,6 @@ MONITORED_WORKFLOWS = (
     "sync_github_showcase.yml",
     "sync_linkedin_profile.yml",
     "scrape_talks.yml",
+    "sync_esd_portfolio.yml",
 )
 REPO_SLUG = os.environ.get("GITHUB_REPOSITORY", "namo507/namo507.github.io")
