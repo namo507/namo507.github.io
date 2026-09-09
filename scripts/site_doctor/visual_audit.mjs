@@ -100,7 +100,6 @@ async function revealPage(page) {
       window.scrollTo({ top, behavior: 'instant' });
       await new Promise(resolve => setTimeout(resolve, 120));
     }
-    window.scrollTo({ top: 0, behavior: 'instant' });
   });
   // 10s was too tight: the reveal itself is fine -- three consecutive probes
   // found 0 of 63 elements unrevealed -- but on a loaded machine the 63
@@ -109,6 +108,13 @@ async function revealPage(page) {
   // passes, since waitForFunction returns as soon as the condition holds.
   await page.waitForFunction(() => [...document.querySelectorAll('[data-reveal]')].every(
     el => Number(getComputedStyle(el).opacity) > .99), null, { timeout: 25000 });
+  // Only now return to the top. The app reveals on IntersectionObserver and
+  // backstops it with a sweep covering whatever is above the fold when
+  // scrolling stops -- parked at y=0 that backstop only reaches the hero, so
+  // anything the observer missed on the way down stayed hidden with nothing
+  // left to trigger it. Asserting at the bottom tests the reveal instead of
+  // whether one debounce landed luckily.
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
 }
 
 async function checkMotion(page, label, out, reduced = false) {
