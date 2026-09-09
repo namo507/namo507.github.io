@@ -68,6 +68,24 @@ def ingest_visual_report(report: DoctorReport, report_dir: Path | None = None) -
     except (json.JSONDecodeError, OSError) as exc:
         report.add(Finding("visual", "error", "Could not read visual_report.json", detail=str(exc)))
         return
+    # This pass ingests a report rather than producing one, so a stale file is
+    # silently reported as today's verdict. That is exactly what happened while
+    # auditing the container build: visual_audit had run against an empty _site,
+    # and doctor then reported its 45 failures as current even though the site
+    # had since been rebuilt and was fine. CI happens to run the audit
+    # immediately beforehand, but nothing enforces that ordering.
+    # Anchor on the newest file in _site rather than index.html: Jekyll copies
+    # static files with their *source* mtime, so _site/index.html can be days
+    # older than the build that produced it, while rendered output like
+    # feed.xml and cv/index.html carries the real build time.
+    built_at = max((f.stat().st_mtime for f in config.SITE_DIR.rglob("*") if f.is_file()), default=0)
+    if built_at and path.stat().st_mtime < built_at:
+        report.add(Finding(
+            "visual", "error", "visual_report.json is older than the built site",
+            str(path.name),
+            detail="The report predates the current _site, so it describes an earlier build. "
+                   "Re-run `node visual_audit.mjs` against this build."))
+        return
     report.passes_run.append("visual")
     if not isinstance(data, dict) or not isinstance(data.get("findings"), list):
         report.add(Finding("visual", "error", "Visual report has an invalid shape"))

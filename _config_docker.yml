@@ -1,1 +1,9 @@
-url: ""
+# Local container overrides.
+#
+# `url` must match the address docker-compose publishes (127.0.0.1:4000). When
+# it is blank, `jekyll serve` fills it in from --host, giving absolute asset
+# URLs on http://0.0.0.0:4000 while the only published binding is 127.0.0.1 --
+# so every script and stylesheet was cross-origin and blocked, and anything
+# main.min.js powers (the theme toggle among them) silently did nothing in
+# local development. Production is unaffected: it uses _config.yml's real url.
+url: "http://127.0.0.1:4000"

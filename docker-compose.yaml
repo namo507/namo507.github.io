@@ -11,7 +11,15 @@ services:
     ports:
       - "127.0.0.1:4000:4000"
     environment:
-      JEKYLL_ENV: development
+      # `jekyll serve` in development overwrites `url` with whatever --host it
+      # binds to, which is 0.0.0.0 so the container is reachable. Every asset
+      # URL then pointed at http://0.0.0.0:4000 while compose only publishes
+      # 127.0.0.1:4000, so scripts were cross-origin and blocked -- main.min.js
+      # never ran and the theme toggle silently did nothing in local dev.
+      # Production honours the configured url instead. Nothing else is gated on
+      # this: analytics.provider is "false" and the only other use is HTML
+      # compression, which is what CI builds with anyway.
+      JEKYLL_ENV: production
     stop_grace_period: 20s
 
 volumes:
