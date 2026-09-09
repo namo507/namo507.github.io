@@ -102,8 +102,13 @@ async function revealPage(page) {
     }
     window.scrollTo({ top: 0, behavior: 'instant' });
   });
+  // 10s was too tight: the reveal itself is fine -- three consecutive probes
+  // found 0 of 63 elements unrevealed -- but on a loaded machine the 63
+  // transitions do not all finish inside it, and this ran two homepage cases
+  // deep into a 20-case sweep. A generous ceiling costs nothing when it
+  // passes, since waitForFunction returns as soon as the condition holds.
   await page.waitForFunction(() => [...document.querySelectorAll('[data-reveal]')].every(
-    el => Number(getComputedStyle(el).opacity) > .99), null, { timeout: 10000 });
+    el => Number(getComputedStyle(el).opacity) > .99), null, { timeout: 25000 });
 }
 
 async function checkMotion(page, label, out, reduced = false) {

@@ -1,7 +1,9 @@
 services:
   jekyll-site:
     image: namo507-portfolio:local
-    build: .
+    build:
+      context: .
+      target: dev
     init: true
     restart: unless-stopped
     volumes:

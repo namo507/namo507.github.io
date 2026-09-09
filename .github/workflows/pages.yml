@@ -105,10 +105,19 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Validate Compose configuration
         run: docker compose config --quiet
-      - name: Build the standalone Docker image
+      - name: Build the runtime image
+        # No --target: `runtime` is the last stage, so this is the nginx image
+        # that serves the built site rather than a Jekyll dev server.
         env:
           VERIFIED_SHA: ${{ needs.source.outputs.sha }}
         run: docker build --build-arg SITE_REVISION="$VERIFIED_SHA" --tag namo507-portfolio:ci .
+      - name: Build the dev image
+        # The devcontainer and docker-compose both use this target. Nothing
+        # else in CI touches it, so without this a break would only surface
+        # when someone next tried to work on the site locally.
+        env:
+          VERIFIED_SHA: ${{ needs.source.outputs.sha }}
+        run: docker build --target dev --build-arg SITE_REVISION="$VERIFIED_SHA" --tag namo507-portfolio:dev .
       - name: Verify container health, routes, and restart recovery
         env:
           DOCKER_VISUAL_AUDIT: '1'
