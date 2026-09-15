@@ -110,12 +110,9 @@ class Portfolio extends React.Component {
       theme: "dark",
       scrolled: false,
       active: "home",
-      typed: "",
       ind: { x: 0, w: 0, ready: false },
-      metricP: 0,
       filter: "All",
       expanded: null,
-      expProgress: 0,
       menuOpen: false,
       fadeL: false,
       fadeR: false,
@@ -133,6 +130,10 @@ class Portfolio extends React.Component {
     this.scrollerRef = React.createRef();
     this.closeRef = React.createRef();
     this.msgsRef = React.createRef();
+    this.fillRef = React.createRef();
+    this.typedRef = React.createRef();
+    this.metricRefs = [];
+    this._ep = -1;
     this.reduced = false;
   }
 
@@ -169,7 +170,12 @@ class Portfolio extends React.Component {
       this.reveal(entry.target);
     }), { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }) : null;
     this.observeAll();
-    this.mo = new MutationObserver(() => this.observeAll());
+    // Any DOM change at all re-runs observeAll, which walks the document. Wait
+    // for the frame to settle so one render is one walk, not one per mutation.
+    this.mo = new MutationObserver(() => {
+      if (this._obsRaf) return;
+      this._obsRaf = requestAnimationFrame(() => { this._obsRaf = 0; if (!this.dead) this.observeAll(); });
+    });
     this.mo.observe(document.body, { childList: true, subtree: true });
 
     window.addEventListener("keydown", this.onKey);
@@ -206,6 +212,8 @@ class Portfolio extends React.Component {
     clearTimeout(this._sweepT);
     clearTimeout(this._typeT);
     if (this.raf) cancelAnimationFrame(this.raf);
+    if (this._scrollRaf) cancelAnimationFrame(this._scrollRaf);
+    if (this._obsRaf) cancelAnimationFrame(this._obsRaf);
     if (this.io) this.io.disconnect();
     if (this.mo) this.mo.disconnect();
     if (this.ro) this.ro.disconnect();
@@ -224,7 +232,18 @@ class Portfolio extends React.Component {
   }
 
   // ── scroll / nav ──────────────────────────────────────────────────────────
+  // Scroll events outrun frames on a high-refresh trackpad, and this handler
+  // reads ten rects. Doing that per event -- with a setState in between to
+  // invalidate layout -- makes every read a fresh forced reflow. Coalescing
+  // onto one rAF caps it at one measurement per frame and puts the reads
+  // before any write, so the browser answers them from a layout it already has.
   onScroll = () => {
+    if (this.dead || this._scrollRaf) return;
+    this._scrollRaf = requestAnimationFrame(this.readScroll);
+  };
+
+  readScroll = () => {
+    this._scrollRaf = 0;
     if (this.dead) return;
     clearTimeout(this._sweepT);
     this._sweepT = setTimeout(this.sweepReveals, 140);
@@ -234,22 +253,30 @@ class Portfolio extends React.Component {
       const el = document.getElementById(id);
       if (!el) continue;
       const r = el.getBoundingClientRect();
-      // height > 1 rejects sections that have not been laid out yet: on the
-      // synchronous mount probe every rect is 0-high at top 0, which would
-      // otherwise match all nine and latch the last one.
+      // height > 1 rejects sections that have not been laid out yet: before
+      // first layout every rect is 0-high at top 0, which would otherwise
+      // match all nine and latch the last one.
       if (r.height > 1 && r.top <= probe) cur = id;
     }
     const scrolled = window.scrollY > 40;
 
-    let ep = this.state.expProgress;
+    // The rail fill only ever feeds one custom property on one node. Routing
+    // it through state re-rendered the whole app for each 0.4% of travel --
+    // a few hundred renders per pass down the timeline. Writing the variable
+    // directly keeps the fill smooth and costs no React work at all.
     const tl = document.getElementById("exp-timeline");
-    if (tl) {
+    const fill = this.fillRef.current;
+    if (tl && fill) {
       const r = tl.getBoundingClientRect();
-      ep = Math.min(1, Math.max(0, (window.innerHeight * 0.62 - r.top) / Math.max(1, r.height)));
+      const ep = Math.min(1, Math.max(0, (window.innerHeight * 0.62 - r.top) / Math.max(1, r.height)));
+      if (Math.abs(ep - this._ep) > 0.002) {
+        this._ep = ep;
+        fill.style.setProperty("--fill", String(ep));
+      }
     }
 
-    if (cur !== this.state.active || scrolled !== this.state.scrolled || Math.abs(ep - this.state.expProgress) > 0.004) {
-      this.setState({ active: cur, scrolled, expProgress: ep });
+    if (cur !== this.state.active || scrolled !== this.state.scrolled) {
+      this.setState({ active: cur, scrolled });
     }
   };
 
@@ -305,9 +332,15 @@ class Portfolio extends React.Component {
   sweepReveals = () => {
     if (this.dead) return;
     const cutoff = window.innerHeight;
+    // Measure every candidate before revealing any of them. reveal() sets an
+    // attribute the reveal transition keys off, so a read/write/read/write walk
+    // made the browser re-lay-out the page between each element -- worst on
+    // first load, when the whole page is still waiting to come in.
+    const pending = [];
     document.querySelectorAll("[data-reveal]:not([data-in])").forEach((el) => {
-      if (el.getBoundingClientRect().top < cutoff) this.reveal(el);
+      if (el.getBoundingClientRect().top < cutoff) pending.push(el);
     });
+    pending.forEach((el) => this.reveal(el));
   };
 
   observeAll() {
@@ -381,7 +414,8 @@ class Portfolio extends React.Component {
     if (this.raf) cancelAnimationFrame(this.raf);
     if (this.reduced) {
       document.querySelectorAll("[data-reveal]").forEach((el) => this.reveal(el));
-      this.setState({ metricP: 1, skillsIn: true });
+      this.writeMetrics(1);
+      this.setState({ skillsIn: true });
     }
     this.startTyper();
   };
@@ -390,7 +424,7 @@ class Portfolio extends React.Component {
     clearTimeout(this._typeT);
     if (document.hidden) {
       if (this.raf) cancelAnimationFrame(this.raf);
-      this.setState({ metricP: 1 });
+      this.writeMetrics(1);
     } else this.startTyper();
   };
 
@@ -398,7 +432,7 @@ class Portfolio extends React.Component {
     clearTimeout(this._typeT);
     const words = (this.props.data.profile && this.props.data.profile.typingWords) || [];
     if (!words.length) return;
-    if (this.reduced) { this.setState({ typed: words[0] }); return; }
+    if (this.reduced) { this.writeTyped(words[0]); return; }
     if (document.hidden) return;
 
     let idx = 0;
@@ -419,20 +453,37 @@ class Portfolio extends React.Component {
         delay = 35;
         if (len <= 0) { phase = "type"; idx = (idx + 1) % words.length; delay = 300; }
       }
-      this.setState({ typed: word.slice(0, Math.max(0, len)) });
+      this.writeTyped(word.slice(0, Math.max(0, len)));
       this._typeT = setTimeout(step, delay);
     };
     step();
   }
 
+  // The typewriter ticks every 35-70ms for as long as the page is open. Held
+  // in state that was a full re-render of all nine sections about twenty-five
+  // times a second, forever, competing with scrolling for the same frames.
+  // It is one text node; write it.
+  writeTyped(text) {
+    const el = this.typedRef.current;
+    if (el) el.textContent = text;
+  }
+
+  writeMetrics(p) {
+    const metrics = this.props.data.metrics || [];
+    this.metricRefs.forEach((ref, i) => {
+      const el = ref && ref.current;
+      if (el && metrics[i]) el.textContent = this.fmtMetric(metrics[i].value, p);
+    });
+  }
+
   countUp() {
-    if (this.reduced) { this.setState({ metricP: 1 }); return; }
+    if (this.reduced) { this.writeMetrics(1); return; }
     const t0 = performance.now() + 350;
     const dur = 1400;
     const tick = (now) => {
       if (this.dead) return;
       const p = Math.min(1, Math.max(0, (now - t0) / dur));
-      this.setState({ metricP: 1 - Math.pow(1 - p, 3) });
+      this.writeMetrics(1 - Math.pow(1 - p, 3));
       if (p < 1) this.raf = requestAnimationFrame(tick);
     };
     this.raf = requestAnimationFrame(tick);
@@ -670,7 +721,7 @@ class Portfolio extends React.Component {
               <div data-reveal="1" data-in="1">
                 <p className="eyebrow">{P.eyebrow}</p>
                 <p className="hero__typed" role="status" aria-live="polite" aria-label={"Currently building " + P.typingWords.join(", ") + "."}>
-                  <span aria-hidden="true">Currently building <b>{s.typed}</b></span>
+                  <span aria-hidden="true">Currently building <b ref={this.typedRef} /></span>
                   <span className="caret" aria-hidden="true" />
                 </p>
                 <h1 className="hero__title">{P.headline}</h1>
@@ -682,9 +733,9 @@ class Portfolio extends React.Component {
                   <a className="btn" href={D.github.profileUrl} target="_blank" rel="noopener">GitHub ↗</a>
                 </div>
                 <div className="hero__metrics">
-                  {D.metrics.map((m) => (
+                  {D.metrics.map((m, i) => (
                     <div key={m.label}>
-                      <div className="metric__v" role="img" aria-label={m.value}><span aria-hidden="true">{this.fmtMetric(m.value, s.metricP)}</span></div>
+                      <div className="metric__v" role="img" aria-label={m.value}><span aria-hidden="true" ref={this.metricRefs[i] || (this.metricRefs[i] = React.createRef())}>{this.fmtMetric(m.value, 0)}</span></div>
                       <div className="metric__k">{m.label}</div>
                     </div>
                   ))}
@@ -715,7 +766,7 @@ class Portfolio extends React.Component {
               "helix")}
             <div id="exp-timeline" className="exp">
               <div className="exp__rail" aria-hidden="true" />
-              <div className="exp__rail exp__rail--fill" aria-hidden="true" style={{ "--fill": Math.min(1, Math.max(0, s.expProgress)) }} />
+              <div className="exp__rail exp__rail--fill" ref={this.fillRef} aria-hidden="true" style={{ "--fill": 0 }} />
               {D.experience.map((r) => (
                 <div className="exp__row" data-reveal="1" key={r.org + r.role}>
                   <div className="exp__aside">
