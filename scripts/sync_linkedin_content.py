@@ -99,7 +99,7 @@ def should_use_seed_fallback(previous_snapshot: dict | None) -> bool:
 
 
 def load_curated_seed(seed_path: Path, profile_url: str, *, verbose: bool) -> tuple[dict, str, str, str]:
-    checked_at = dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat()
+    checked_at = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
     payload = load_seed_payload(seed_path, profile_url, checked_at, verbose=verbose)
     effective_profile_url = payload["linkedin_profile"].get("profile_url") or profile_url
     warning = "Curated snapshot, verified by hand. Live sync resumes when LinkedIn allows it."

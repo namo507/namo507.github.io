@@ -454,7 +454,7 @@ def fetch_public_profile_html(profile_url: str, *, timeout_seconds: int = DEFAUL
         url=profile_url,
         final_url=response.url,
         status_code=response.status_code,
-        fetched_at=dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat(),
+        fetched_at=dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
         html=html,
     )
 
@@ -1271,7 +1271,7 @@ def build_placeholder_bundle(profile_url: str) -> dict[str, Any]:
 
 def read_source_payload(path: Path) -> FetchResult:
     raw_text = path.read_text(encoding="utf-8")
-    fetched_at = dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat()
+    fetched_at = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
 
     if path.suffix.lower() == ".json":
         raw_data = json.loads(raw_text)
