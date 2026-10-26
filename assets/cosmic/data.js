@@ -2,7 +2,7 @@
 window.SITE = {
   profile: {
     name: "Namit Shrivastava",
-    avatarUrl: "/images/IMG_4444.jpg",
+    avatarUrl: "/images/IMG_6432.jpg?v=20261026",
     pronouns: "he/him",
     headline: "Designing rigorous measurement systems for AI-enabled research.",
     eyebrow: "Survey Methodology · Data Science · Responsible AI",
