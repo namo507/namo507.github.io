@@ -165,17 +165,32 @@ docker compose up --build -d --wait
 Cloudflare Workers serves the production Jekyll output. The site keeps running
 after the local preview or Docker container stops.
 
-Install the [Cloudflare CLI](https://developers.cloudflare.com/cf/) and run
-`cf auth login` once. From the repository root, build and publish an update.
+Deploys use the [Cloudflare CLI](https://developers.cloudflare.com/cf/)
+(`cf`, pinned to `1.0.0-rc.1`). It supports Node 22, 24 and 26 only, so the
+commands below run it under Node 24 through `npx` whatever Node is installed.
+The Jekyll build needs Ruby 3.x (on macOS, put Homebrew's Ruby first on `PATH`;
+the system Ruby 2.6 cannot build the site).
+
+Sign in once. This opens a browser page to approve a device code:
+
+```bash
+npx -y -p node@24 -p cf@1.0.0-rc.1 cf auth login
+```
+
+Then, from the repository root, build and publish an update:
 
 ```bash
 npm ci
-npm run build:cosmic
 bundle install
-JEKYLL_ENV=production bundle exec jekyll build
-cf deploy ./_site
+npm run deploy
 python3 scripts/ci/check_http.py https://portfolio.namit507.workers.dev
 ```
+
+`npm run deploy` rebuilds the homepage bundle, runs the production Jekyll build
+and uploads `_site` to the `portfolio` Worker described in
+`cloudflare.config.ts`. Add `--dry-run` to the final `cf deploy` command to
+check a build without uploading it. When the homepage CSS or JS changes, bump
+the `?v=` query on those files in `index.html` so caches fetch the new ones.
 
 The existing GitHub Pages workflow builds and verifies the static site and the
 Docker image. Its deploy step targets GitHub Pages. The Cloudflare site updates
