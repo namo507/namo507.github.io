@@ -45,8 +45,8 @@ function mergePortfolioSyncIntoSite(baseData, sync) {
   return { ...baseData, experience, portfolioSync };
 }
 
-// The LinkedIn card renders only when the sync validated; a failed or stale
-// fetch leaves `sync_status !== "ok"` and the section falls away entirely.
+// LinkedIn data is only trusted when the sync validated; a failed or stale
+// fetch leaves `sync_status !== "ok"` and the hand-authored link stands.
 function normalizeLinkedInSync(sync) {
   if (!sync || !sync.meta || sync.meta.sync_status !== "ok") return null;
   if (!sync.profile || (!sync.profile.headline_short && !sync.profile.about_short)) return null;
@@ -67,22 +67,37 @@ function buildData() {
   return { ...base, links, linkedin };
 }
 
+// Seven sections, each answering one question. Talks and teaching share a
+// section (three tiles between them), and the LinkedIn snapshot is no longer
+// a section of its own: it repeated the hero and the experience bullets. The
+// sync still feeds the canonical LinkedIn URL in buildData().
 const ALL_SECTIONS = [
   ["experience", "Experience"],
   ["projects", "Projects"],
   ["publications", "Publications"],
   ["skills", "Skills"],
   ["code", "Code"],
-  ["signals", "Signals"],
-  ["talks", "Talks"],
-  ["teaching", "Teaching"],
+  ["talks", "Talks & Teaching"],
   ["contact", "Contact"],
 ];
 
-// #signals only renders when the LinkedIn sync validated, so drop it from the
-// nav too — otherwise a failed sync leaves a link that scrolls nowhere.
-function sectionsFor(data) {
-  return data.linkedin ? ALL_SECTIONS : ALL_SECTIONS.filter(([id]) => id !== "signals");
+// ── Progressive disclosure ──────────────────────────────────────────────────
+// Every section shows a first layer that reads in a few seconds; the rest is
+// one deliberate click away (a card's overlay, or a "show more" toggle).
+// Project index filters, in display order. Every project carries at least one
+// theme (see `themes` in data.js), so each chip returns a real subset.
+const THEMES = ["Survey & public data", "Machine learning", "Stats & forecasting", "Environment & civil", "Sports"];
+// Tools a skill tile lists before "+N"; the lead tile always shows its full set.
+const TOOL_PEEK = 5;
+// Repositories shown before "Show more".
+const REPO_PEEK = 4;
+
+// Hyphenated compounds ("AI-enabled") must not break at the hyphen: a balanced
+// display headline otherwise strands "AI-" at the end of one line. Wrapping
+// the whole word in a no-wrap span keeps the text selectable and searchable.
+function keepHyphenated(text) {
+  return String(text || "").split(/(\S+-\S+)/).map((part, i) =>
+    i % 2 ? <span className="nowrap" key={i}>{part}</span> : part);
 }
 
 const FACTS = [
@@ -94,13 +109,6 @@ const FACTS = [
   "A two-day blood drive: 60+ volunteers, 1,000+ donor records, 844 successful donations.",
   "+0.57 systematic positive bias found in LLM sentiment vs Reddit data, F(2,549)=28.43, p<0.001.",
 ];
-
-function formatSyncDate(value) {
-  if (!value) return "";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return "";
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(parsed);
-}
 
 // ── App ─────────────────────────────────────────────────────────────────────
 class Portfolio extends React.Component {
@@ -123,6 +131,9 @@ class Portfolio extends React.Component {
       buddyMsgs: [],
       factIdx: 0,
       skillsIn: false,
+      indexOpen: false,
+      toolsOpen: false,
+      reposOpen: false,
     };
     this.navRefs = {};
     this.timers = [];
@@ -538,10 +549,10 @@ class Portfolio extends React.Component {
     const D = this.props.data;
     const t = q.toLowerCase();
     const rules = [
-      [/talk|present|aapor|keynote/, "One so far \u2014 AAPOR\u2019s 80th, St. Louis, May 2025. I took the EV sentiment work there: 1.1M+ posts, DistilBERT at 91.6%, and the part people asked about most, where the LLMs were quietly biased. Full details in Talks."],
+      [/talk|present|aapor|keynote/, "One so far \u2014 AAPOR\u2019s 80th, St. Louis, May 2025. I took the EV sentiment work there: 1.1M+ posts, DistilBERT at 91.6%, and the part people asked about most, where the LLMs were quietly biased. Full details under Talks & Teaching."],
       [/publicat|publish|paper|article|journal|conference|scholar|orcid/, "Two so far. A Springer article on keeping supply chains sustainable through disruption \u2014 fuzzy-AHP over 200+ experts, 2024 \u2014 and the AAPOR 2025 paper on EV sentiment, DistilBERT at 91.6% across 1.1M+ posts. Five more are working their way through the 2026 pipeline; ORCID has them."],
       [/skill|technolog|program|python|stack|pytorch/, "Strongest ground is survey and research methods (98%), then AI/ML (95%), core AI systems (91%) and programming (84%). Day to day that means Python and R, PyTorch and TensorFlow, Hugging Face and LangChain, on whichever of AWS, Azure or GCP the project lives."],
-      [/educat|degree|university|gpa|bits|umd/, "An M.S. in Survey & Data Science from Maryland \u2014 3.817/4.0, and a JPSM Dean's Fellow in 2025\u201326. Before that, civil engineering at BITS Pilani with a data science minor, 3.327/4.0. The route here was not a straight line."],
+      [/educat|degree|university|gpa|bits|umd/, "An M.S. in Survey & Data Science from Maryland \u2014 3.814/4.0, and a JPSM Dean's Fellow in 2025\u201326. Before that, civil engineering at BITS Pilani with a data science minor, 3.327/4.0. The route here was not a straight line."],
       [/project|build|portfolio/, "Twenty of them. The ones I get asked about most: EV sentiment across 1.1M+ posts at 91.6%, football market value over 7,023 player-seasons, LEXNet squeezing a CNN down by 97%, and the broadband pipeline covering 129K census tracts. Open any card for how it actually went."],
       [/contact|email|reach|connect|phone/, "Email " + D.profile.email + " · LinkedIn, GitHub, Scholar and ORCID links are all in the Contact section. Based in " + D.profile.location + "."],
       [/github|repo|code|commit/, "44 public repositories, all at github.com/namo507. The ones worth starting with: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, and career-ops."],
@@ -576,7 +587,31 @@ class Portfolio extends React.Component {
   }
 
   get sections() {
-    return sectionsFor(this.props.data);
+    return ALL_SECTIONS;
+  }
+
+  toggle(key) {
+    return this.goCache["toggle:" + key] || (this.goCache["toggle:" + key] = () => {
+      this.setState((st) => ({ [key]: !st[key] }));
+    });
+  }
+
+  // One overlay payload for a project, whether it was opened from a finding,
+  // a featured tile, or a row of the full index. A finding adds its headline
+  // number to the record so the overlay keeps the hook that was clicked.
+  openProject(p, ev, finding) {
+    this.openExpanded({
+      kicker: "Project " + p.id + " · " + p.type,
+      title: p.title,
+      subtitle: p.date + " · " + p.venue,
+      body: p.excerpt,
+      stats: finding ? [{ v: finding.value, k: finding.label }] : [],
+      hasStats: !!finding,
+      tags: p.tags,
+      hasTags: true,
+      url: p.url,
+      urlLabel: p.url.includes("github.com") ? "Open repository ↗" : "Open writeup ↗",
+    }, ev);
   }
 
   renderNav(profile) {
@@ -689,7 +724,7 @@ class Portfolio extends React.Component {
         <div>
           <p className="eyebrow">{num} — {eyebrow}</p>
           <h2 className="sec__title">{title}</h2>
-          <p className="sec__lead">{lead}</p>
+          {lead ? <p className="sec__lead">{lead}</p> : null}
         </div>
         <div className="scene" data-scene={scene} aria-hidden="true" />
       </div>
@@ -700,12 +735,15 @@ class Portfolio extends React.Component {
     const D = this.props.data;
     const P = D.profile;
     const s = this.state;
-    const li = D.linkedin;
-    const seeded = li && li.meta.source === "linkedin-curated-seed";
-    const validated = li ? formatSyncDate(li.meta.last_successful_sync_at) : "";
 
-    const tags = ["All"].concat(Array.from(new Set(D.projects.flatMap((p) => p.tags))).slice(0, 9));
-    const visible = s.filter === "All" ? D.projects : D.projects.filter((p) => p.tags.includes(s.filter));
+    const findings = (D.findings || [])
+      .map((f) => ({ f, p: D.projects.find((x) => x.id === f.project) }))
+      .filter((x) => x.p);
+    const featured = D.projects.filter((p) => p.featured).sort((a, b) => a.featured - b.featured);
+    const themes = ["All"].concat(THEMES);
+    const visible = s.filter === "All" ? D.projects : D.projects.filter((p) => (p.themes || []).includes(s.filter));
+    const repos = s.reposOpen ? D.github.featured : D.github.featured.slice(0, REPO_PEEK);
+    const hiddenTools = D.skills.slice(1).reduce((n, k) => n + Math.max(0, k.tools.length - TOOL_PEEK), 0);
     const langTotal = D.github.languageMix.reduce((a, l) => a + l.count, 0);
     const langFill = s.active === "code" || s.skillsIn ? 1 : 0;
     const ov = s.expanded;
@@ -724,12 +762,11 @@ class Portfolio extends React.Component {
                   <span aria-hidden="true">Currently building <b ref={this.typedRef} /></span>
                   <span className="caret" aria-hidden="true" />
                 </p>
-                <h1 className="hero__title">{P.headline}</h1>
+                <h1 className="hero__title">{keepHyphenated(P.headline)}</h1>
                 <p className="hero__summary">{P.summary}</p>
                 <div className="btn-row hero__actions">
                   <a className="btn btn--primary" href="#experience" onClick={this.go("experience")}>View experience →</a>
-                  <a className="btn" href="#publications" onClick={this.go("publications")}>Publications</a>
-                  <a className="btn" href="#projects" onClick={this.go("projects")}>Projects</a>
+                  <a className="btn" href="#projects" onClick={this.go("projects")}>Selected work</a>
                   <a className="btn" href={D.github.profileUrl} target="_blank" rel="noopener">GitHub ↗</a>
                 </div>
                 <div className="hero__metrics">
@@ -752,17 +789,40 @@ class Portfolio extends React.Component {
                 </figure>
               </div>
             </div>
-            <div className="interests" data-reveal="1">
-              <span className="interests__label">Research interests</span>
-              {D.interests.map((i) => <span className="pill" key={i}>{i}</span>)}
-            </div>
+            {/* Signature findings: the hook layer. One result per domain, each
+                opening the full project record. Replaces the interests pill row,
+                which restated the eyebrow and the skills section. */}
+            {findings.length ? (
+              <div className="findings" data-reveal="1">
+                <div className="findings__head">
+                  <p className="mono-meta">Signature findings</p>
+                  <p className="findings__hint">Tap any to open</p>
+                </div>
+                <div className="findings__grid">
+                  {findings.map(({ f, p }) => (
+                    <button
+                      key={f.project}
+                      className="card finding"
+                      aria-haspopup="dialog"
+                      onClick={(ev) => this.openProject(p, ev, f)}
+                    >
+                      <span className="finding__src">{f.source}</span>
+                      <span className="finding__v">{f.value}</span>
+                      <span className="finding__k">{f.label}</span>
+                      <span className="finding__hook">{f.hook}</span>
+                      <span className="card__go" aria-hidden="true">→</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </section>
 
           {/* ── Experience ─────────────────────────────────────────────── */}
           <section id="experience" className="sec">
             {this.renderHead("01", "Experience",
               "From a volunteer registry to an NIH infant cohort.",
-              "Seven roles, two countries, and domains that kept changing \u2014 disaster relief, legal tech, public health, survey methodology. The job underneath stayed the same: take data somebody has to trust, and make it worth trusting. Open any role for the full record.",
+              "Seven roles, two countries, one job underneath: make data somebody has to trust worth trusting.",
               "helix")}
             <div id="exp-timeline" className="exp">
               <div className="exp__rail" aria-hidden="true" />
@@ -771,7 +831,7 @@ class Portfolio extends React.Component {
                 <div className="exp__row" data-reveal="1" key={r.org + r.role}>
                   <div className="exp__aside">
                     <span className={"exp__dot" + (r.current ? " exp__dot--current" : "")} aria-hidden="true" />
-                    <div className="exp__meta" data-hide-mobile="1">{r.dates}<br />{r.location}</div>
+                    <div className="exp__meta" data-hide-mobile="1">{r.dates}<br /><span className="exp__loc">{r.location}</span></div>
                   </div>
                   <button
                     className="card card--exp"
@@ -785,72 +845,111 @@ class Portfolio extends React.Component {
                       hasBullets: r.bullets.length > 1,
                     }, ev)}
                   >
-                    <div className="card__meta-row">
-                      <span className="card__meta">{r.dates} · {r.location}</span>
-                      {r.current ? <span className="badge">Current</span> : null}
+                    {/* Dates live in the timeline gutter on desktop; this copy
+                        only shows on phones, where the gutter is hidden. */}
+                    <p className="exp__when">{r.dates} · {r.location}</p>
+                    <div className="exp__who">
+                      <div className="exp__title-row">
+                        <h3 className="card__title">{r.role}</h3>
+                        {r.current ? <span className="badge">Current</span> : null}
+                      </div>
+                      <p className="card__org">{r.org}</p>
                     </div>
-                    <h3 className="card__title">{r.role}</h3>
-                    <p className="card__org">{r.org}</p>
-                    <p className="card__body">{r.bullets[0]}</p>
-                    <p className="card__more">
-                      {r.bullets.length > 1 ? "+" + (r.bullets.length - 1) + " more — open full record" : "Open full record"}
-                    </p>
+                    <p className="exp__hook">{r.hook || r.bullets[0]}</p>
+                    <span className="card__go" aria-hidden="true">→</span>
                   </button>
                 </div>
               ))}
             </div>
+
+            {D.education && D.education.length ? (
+              <div className="edu" data-reveal="1">
+                <p className="mono-meta">Education</p>
+                <div className="edu__grid">
+                  {D.education.map((e) => (
+                    <div className="card card--edu" key={e.institution}>
+                      <p className="card__meta">{e.dates} · {e.location}</p>
+                      <h3 className="card__title">{e.degree}</h3>
+                      <p className="card__org">{e.institution}</p>
+                      <div className="card__foot">
+                        {(e.highlights || []).map((h) => <span className="tag" key={h}>{h}</span>)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </section>
 
           {/* ── Projects ───────────────────────────────────────────────── */}
           <section id="projects" className="sec">
             {this.renderHead("02", "Selected work",
               "Twenty projects, and what each one actually took.",
-              "Football transfer markets, air pollution, electric vehicles, forest cover \u2014 different subjects, consistent method. Filter by approach, or open any card for the full case study.",
+              "Six to open first. The full index, filterable by theme, sits underneath.",
               "lattice")}
-            <div className="filters" role="group" aria-label="Filter projects" data-reveal="1">
-              {tags.map((t) => (
-                <button
-                  key={t}
-                  className="filter"
-                  aria-pressed={s.filter === t ? "true" : "false"}
-                  onClick={() => this.setState({ filter: t })}
-                >{t}</button>
-              ))}
-            </div>
-            <p className="filter-count" aria-live="polite">
-              {visible.length} {visible.length === 1 ? "project" : "projects"}{s.filter === "All" ? "" : " · " + s.filter}
-            </p>
-            <div className="project-grid" data-cardgrid="1">
-              {visible.map((p, i) => (
+            {/* Layer 1: six featured tiles — a count that divides evenly into
+                3, 2 and 1 columns, so no breakpoint leaves an orphan tile. */}
+            <div className="project-grid">
+              {featured.map((p) => (
                 <button
                   key={p.id}
                   className="card card--project"
-                  data-span={i % 7 === 0 ? 2 : 1}
                   data-reveal="1"
                   aria-haspopup="dialog"
-                  onClick={(ev) => this.openExpanded({
-                    kicker: "Project " + p.id + " · " + p.type,
-                    title: p.title,
-                    subtitle: p.date + " · " + p.venue,
-                    body: p.excerpt,
-                    tags: p.tags,
-                    hasTags: true,
-                    url: p.url,
-                    urlLabel: p.url.includes("github.com") ? "Open repository ↗" : "Open writeup ↗",
-                  }, ev)}
+                  onClick={(ev) => this.openProject(p, ev)}
                 >
                   <div className="card__head">
-                    <span>Project · {p.id}</span>
                     <span className="card__type">{p.type}</span>
+                    <span>{p.date}</span>
                   </div>
                   <h3 className="card__title">{p.title}</h3>
-                  <p className="card__excerpt" style={{ WebkitLineClamp: i % 7 === 0 ? 5 : 4 }}>{p.excerpt}</p>
+                  <p className="card__excerpt">{p.hook || p.excerpt}</p>
                   <div className="card__foot">
-                    {p.tags.map((tg) => <span className="tag" key={tg}>{tg}</span>)}
-                    <span className="card__date">{p.date}</span>
+                    {p.tags.slice(0, 2).map((tg) => <span className="tag" key={tg}>{tg}</span>)}
+                    <span className="card__go" aria-hidden="true">→</span>
                   </div>
                 </button>
               ))}
+            </div>
+
+            {/* Layer 2: the complete index — compact rows instead of twenty
+                tiles, collapsed until asked for. */}
+            <div className="disclose-row" data-reveal="1">
+              <button
+                className="disclose"
+                aria-expanded={s.indexOpen ? "true" : "false"}
+                aria-controls="project-index"
+                onClick={this.toggle("indexOpen")}
+              >
+                {s.indexOpen ? "Close the index" : "Browse all " + D.projects.length + " projects"}
+                <span className="disclose__chev" aria-hidden="true">▾</span>
+              </button>
+            </div>
+            <div id="project-index" className="proj-index" hidden={!s.indexOpen}>
+              <div className="filters" role="group" aria-label="Filter projects">
+                {themes.map((t) => (
+                  <button
+                    key={t}
+                    className="filter"
+                    aria-pressed={s.filter === t ? "true" : "false"}
+                    onClick={() => this.setState({ filter: t })}
+                  >{t}</button>
+                ))}
+              </div>
+              <p className="filter-count" aria-live="polite">
+                {visible.length} {visible.length === 1 ? "project" : "projects"}{s.filter === "All" ? "" : " · " + s.filter}
+              </p>
+              <ul className="proj-index__list">
+                {visible.map((p) => (
+                  <li key={p.id}>
+                    <button className="proj-row" aria-haspopup="dialog" onClick={(ev) => this.openProject(p, ev)}>
+                      <span className="proj-row__num">{p.id}</span>
+                      <span className="proj-row__title">{p.title}</span>
+                      <span className="proj-row__meta">{p.type} · {p.date}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
           </section>
 
@@ -858,7 +957,7 @@ class Portfolio extends React.Component {
           <section id="publications" className="sec">
             {this.renderHead("03", "Research output",
               "Two published papers, five more in the pipeline.",
-              "A Springer article on supply-chain sustainability under disruption, and an AAPOR paper on electric-vehicle sentiment across 1.1 million social posts. Five more are working through the 2026 pipeline.",
+              null,
               "stack")}
             <div className="pub-grid">
               {D.publications.map((p) => (
@@ -883,7 +982,7 @@ class Portfolio extends React.Component {
                   <div className="mono-meta">{p.category} · {p.date}</div>
                   <h3 className="card__title">{p.title}</h3>
                   <p className="card__venue">{p.venue}</p>
-                  <p className="card__body">{p.excerpt}</p>
+                  <p className="card__body">{p.hook || p.excerpt}</p>
                   <div className="stat-row">
                     {p.stats.map((st) => (
                       <div className="stat" key={st.k}>
@@ -894,18 +993,18 @@ class Portfolio extends React.Component {
                   </div>
                   <div className="card__cite">
                     <span>{p.citation}</span>
-                    <span className="card__cite-cta">Read paper ↗</span>
+                    <span className="card__go" aria-hidden="true">→</span>
                   </div>
                 </button>
               ))}
             </div>
 
-            <div className="wip" data-reveal="1">
-              <div className="wip__head">
-                <p className="mono-meta">2026 research pipeline · via ORCID</p>
-                <a href="https://orcid.org/0009-0005-7920-8350" target="_blank" rel="noopener"
-                   style={{ fontFamily: "var(--mono)", fontSize: "11.5px" }}>0009-0005-7920-8350 ↗</a>
-              </div>
+            {/* The 2026 pipeline is real but secondary: one line until opened. */}
+            <details className="fold wip" data-reveal="1">
+              <summary>
+                <span className="mono-meta">2026 pipeline · {D.worksInProgress.length} works in progress</span>
+                <span className="fold__chev" aria-hidden="true">▾</span>
+              </summary>
               <ul className="wip__list">
                 {D.worksInProgress.map((w) => (
                   <li className="wip__row" key={w.title}>
@@ -914,9 +1013,9 @@ class Portfolio extends React.Component {
                   </li>
                 ))}
               </ul>
-            </div>
+            </details>
 
-            <div className="btn-row" style={{ marginTop: "28px" }} data-reveal="1">
+            <div className="btn-row pub-links" data-reveal="1">
               <a className="btn btn--primary" href="https://scholar.google.com/citations?user=7bvTB-sAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar ↗</a>
               <a className="btn" href="https://orcid.org/0009-0005-7920-8350" target="_blank" rel="noopener">ORCID ↗</a>
             </div>
@@ -926,46 +1025,72 @@ class Portfolio extends React.Component {
           <section id="skills" className="sec">
             {this.renderHead("04", "Technical skills",
               "Methods first. The stack is just how they ship.",
-              "Seven groups, scored by depth of real use rather than familiarity. Survey methodology leads because everything else supports it.",
+              "Scored by depth of real use, not familiarity.",
               "rings")}
-            <div id="skills-grid" className="skill-grid" data-cardgrid="1" data-reveal="1">
-              {D.skills.map((k, i) => (
-                <div className="skill" data-span={i === 0 ? 2 : 1} key={k.name}>
-                  <div className="skill__head">
-                    <div>
-                      <div className="mono-meta">{k.tier}</div>
-                      <h3 className="skill__name">{k.name}</h3>
+            {/* The lead group spans the full row; the six behind it divide
+                evenly into 3, 2 and 1 columns. Each tile shows its first few
+                tools, and one toggle opens the full toolkit everywhere. */}
+            <div id="skills-grid" className="skill-grid" data-reveal="1">
+              {D.skills.map((k, i) => {
+                const lead = i === 0;
+                const tools = lead || s.toolsOpen ? k.tools : k.tools.slice(0, TOOL_PEEK);
+                const more = k.tools.length - tools.length;
+                return (
+                  <div className={"skill" + (lead ? " skill--lead" : "")} key={k.name}>
+                    <div className="skill__info">
+                      <div className="skill__head">
+                        <div>
+                          <div className="mono-meta">{k.tier}</div>
+                          <h3 className="skill__name">{k.name}</h3>
+                        </div>
+                        <div className={"skill__score" + (k.featured ? " skill__score--featured" : "")}>{k.score}%</div>
+                      </div>
+                      <p className="skill__summary">{k.summary}</p>
+                      <div className="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={k.score} aria-label={k.name}>
+                        <div className="meter__fill" style={{ "--fill": s.skillsIn || this.reduced ? k.score / 100 : 0, "--delay": (i * 70) + "ms" }} />
+                      </div>
                     </div>
-                    <div className={"skill__score" + (k.featured ? " skill__score--featured" : "")}>{k.score}%</div>
+                    <div className="skill__tools">
+                      {tools.map((t) => <span className="tag" key={t}>{t}</span>)}
+                      {more > 0 ? <span className="tag tag--more">+{more}</span> : null}
+                    </div>
                   </div>
-                  <p className="skill__summary">{k.summary}</p>
-                  <div className="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={k.score} aria-label={k.name}>
-                    <div className="meter__fill" style={{ "--fill": s.skillsIn || this.reduced ? k.score / 100 : 0, "--delay": (i * 70) + "ms" }} />
-                  </div>
-                  <div className="skill__tools">
-                    {k.tools.map((t) => <span className="tag" key={t}>{t}</span>)}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+            {hiddenTools > 0 ? (
+              <div className="disclose-row">
+                <button
+                  className="disclose"
+                  aria-expanded={s.toolsOpen ? "true" : "false"}
+                  aria-controls="skills-grid"
+                  onClick={this.toggle("toolsOpen")}
+                >
+                  {s.toolsOpen ? "Show fewer tools" : "Show the full toolkit (+" + hiddenTools + ")"}
+                  <span className="disclose__chev" aria-hidden="true">▾</span>
+                </button>
+              </div>
+            ) : null}
           </section>
 
           {/* ── Code ───────────────────────────────────────────────────── */}
           <section id="code" className="sec">
             {this.renderHead("05", "Code portfolio",
               "Open code, from research pipelines to production tools.",
-              "Research pipelines, NLP experiments, automation tools, and the source for this site. Counts and language mix update automatically from the GitHub API.",
+              null,
               "cubes")}
-            <div className="gh-stats" data-reveal="1">
-              {D.github.stats.map((g) => (
-                <div className="gh-stat" key={g.k}>
-                  <div className="metric__v">{g.v}</div>
-                  <div className="metric__k">{g.k}</div>
-                </div>
-              ))}
-            </div>
-
             <div className="gh-panels" data-reveal="1">
+              <div className="panel">
+                <p className="mono-meta">GitHub · namo507</p>
+                <div className="gh-stats">
+                  {D.github.stats.slice(0, 2).map((g) => (
+                    <div className="gh-stat" key={g.k}>
+                      <div className="metric__v">{g.v}</div>
+                      <div className="metric__k">{g.k}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="panel">
                 <p className="mono-meta">Language mix · {langTotal} tagged repos</p>
                 <div className="langbar" aria-hidden="true">
@@ -991,19 +1116,10 @@ class Portfolio extends React.Component {
                   ))}
                 </ul>
               </div>
-              <div className="panel">
-                <p className="mono-meta">What this code covers</p>
-                <ul className="dot-list" style={{ marginTop: "14px" }}>
-                  <li><span className="dot-list__dot" aria-hidden="true" />Research code — survey methodology, NLP, multilevel models, and public opinion.</li>
-                  <li><span className="dot-list__dot" aria-hidden="true" />Prototypes that went to production — Office add-ins, n8n workflows, simulations.</li>
-                  <li><span className="dot-list__dot" aria-hidden="true" />Docs that tie each repository back to the work it came from.</li>
-                </ul>
-              </div>
             </div>
 
-            <h3 className="repos-title" data-reveal="1">Featured repositories</h3>
-            <div className="repo-grid">
-              {D.github.featured.map((r) => (
+            <div id="repo-grid" className="repo-grid">
+              {repos.map((r) => (
                 <button
                   key={r.name}
                   className="card repo"
@@ -1020,16 +1136,35 @@ class Portfolio extends React.Component {
                 >
                   <div className="repo__head">
                     <span className="repo__lang">{r.lang}</span>
-                    <span className="repo__metric">{r.metric} <span>{r.metricLabel}</span></span>
                   </div>
-                  <h4 className="repo__name">{r.name}</h4>
+                  <h3 className="repo__name">{r.name}</h3>
                   <p className="repo__desc">{r.desc}</p>
-                  <span className="repo__cta">Open repo ↗</span>
+                  <div className="card__foot">
+                    <span className="repo__metric">{r.metric} <span>{r.metricLabel}</span></span>
+                    <span className="card__go" aria-hidden="true">→</span>
+                  </div>
                 </button>
               ))}
             </div>
+            {D.github.featured.length > REPO_PEEK ? (
+              <div className="disclose-row">
+                <button
+                  className="disclose"
+                  aria-expanded={s.reposOpen ? "true" : "false"}
+                  aria-controls="repo-grid"
+                  onClick={this.toggle("reposOpen")}
+                >
+                  {s.reposOpen ? "Show fewer repositories" : "Show " + (D.github.featured.length - REPO_PEEK) + " more repositories"}
+                  <span className="disclose__chev" aria-hidden="true">▾</span>
+                </button>
+              </div>
+            ) : null}
 
-            <div className="recent" data-reveal="1">
+            <details className="fold recent" data-reveal="1">
+              <summary>
+                <span className="mono-meta">Recently pushed · {D.github.recent.length} repositories</span>
+                <span className="fold__chev" aria-hidden="true">▾</span>
+              </summary>
               <ul>
                 {D.github.recent.map((r) => (
                   <li key={r.name}>
@@ -1041,111 +1176,38 @@ class Portfolio extends React.Component {
                   </li>
                 ))}
               </ul>
-            </div>
+            </details>
           </section>
 
-          {/* ── LinkedIn signals ───────────────────────────────────────── */}
-          {li ? (
-            <section id="signals" className="sec">
-              {this.renderHead("06",
-                seeded ? "LinkedIn snapshot" : "LinkedIn signals",
-                seeded
-                  ? "Recent activity on LinkedIn."
-                  : "Recent activity on LinkedIn.",
-                seeded
-                  ? "A verified snapshot of my profile and recent posts, refreshed whenever live sync is available."
-                  : "Profile updates and recent posts, synced from my public LinkedIn.",
-                "wave")}
-              <div className="li-grid">
-                <div className="li-card" data-reveal="1">
-                  <div className="li-card__head">
-                    <span>{seeded ? "Profile snapshot" : "Current public snapshot"}</span>
-                    <span className="badge li-card__badge">{seeded ? "Curated snapshot" : "Public sync"}</span>
-                  </div>
-                  <h3 className="li-card__headline">{li.profile.headline_short}</h3>
-                  <p className="li-card__about">{li.profile.about_short}</p>
-                  <div className="li-card__skills">
-                    {(li.profile.top_skills || []).slice(0, 6).map((k) => <span className="tag" key={k}>{k}</span>)}
-                  </div>
-                  <p className="li-card__meta">
-                    {[li.profile.current_role, li.profile.organization, li.profile.location].filter(Boolean).join(" · ")}
-                  </p>
-                  <p className="li-card__meta">{validated ? "Last validated snapshot · " + validated : "Validated snapshot"}</p>
-                  <div className="li-card__cta">
-                    <a className="btn btn--primary btn--sm" href={li.profile.profile_url} target="_blank" rel="noopener">Open LinkedIn ↗</a>
-                  </div>
-                </div>
-                <div className="li-card" data-reveal="1">
-                  <div className="mono-meta">{seeded ? "Recent highlights" : "Latest public updates"}</div>
-                  <ul className="li-updates">
-                    {(li.updates || []).slice(0, 3).map((u) => (
-                      <li key={u.title}>
-                        <a
-                          href={u.canonical_url && u.canonical_url.startsWith("http") ? u.canonical_url : li.profile.profile_url}
-                          target="_blank"
-                          rel="noopener"
-                        >
-                          <span className="li-updates__kind">{u.posted_relative || u.kind}</span>
-                          <strong className="li-updates__title">{u.title}</strong>
-                          <p className="li-updates__summary">{u.summary_short}</p>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <p className="li-note" data-reveal="1">
-                {li.meta.warning || "These cards are running on live LinkedIn data right now."}
-              </p>
-            </section>
-          ) : null}
-
-          {/* ── Talks ──────────────────────────────────────────────────── */}
+          {/* ── Talks & teaching ───────────────────────────────────────── */}
+          {/* One section, three equal tiles. The first teaching tile keeps the
+              old #teaching anchor so existing deep links still land. */}
           <section id="talks" className="sec">
-            {this.renderHead("07", "Talks & presentations",
+            {this.renderHead("06", "Talks & teaching",
               "Explaining the method, not just the result.",
-              "AAPOR 2025, on what transformer models can and can\u2019t tell you about public opinion, and where a confident sentiment score goes wrong.",
-              "rings")}
+              null,
+              "wave")}
             <div className="card-grid-340">
               {D.talks.map((t) => (
                 <a className="card card--talk" href={t.url} target="_blank" rel="noopener" data-reveal="1" key={t.title}>
-                  <div className="mono-meta">{t.type} · {t.date} · {t.location}</div>
+                  <div className="mono-meta">Talk · {t.date}</div>
                   <h3 className="card__title">{t.title}</h3>
-                  <p className="card__venue">{t.venue}</p>
+                  <p className="card__venue">{t.venue} · {t.location}</p>
                   <p className="card__body">{t.excerpt}</p>
-                  <span className="card__cta">Conference page ↗</span>
+                  <div className="card__foot">
+                    <span className="card__cta">Conference page ↗</span>
+                  </div>
                 </a>
               ))}
-              <div className="snapshot" data-reveal="1">
-                <p className="mono-meta">Snapshot</p>
-                <h3 className="snapshot__title">
-                  {D.talks.length} {D.talks.length === 1 ? "talk" : "talks"} · 1 distinct venue · 2025
-                </h3>
-                <p className="snapshot__body">
-                  Most recent presentation: AAPOR 2025, St. Louis, MO. Looking ahead to AAPOR 2026 and methods workshops in 2026.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* ── Teaching ───────────────────────────────────────────────── */}
-          <section id="teaching" className="sec">
-            {this.renderHead("08", "Teaching practice",
-              "Teaching the part everyone would rather skip.",
-              "Two years at Maryland\u2019s Joint Program in Survey Methodology \u2014 a graduate course on privacy and confidentiality for 23 students, plus the Canvas infrastructure keeping 10+ instructors and 125+ of their students unblocked.",
-              "wave")}
-            <div className="card-grid-340">
-              {D.teaching.map((t) => (
-                <div className="card card--teach" data-reveal="1" key={t.title}>
+              {D.teaching.map((t, i) => (
+                <div className="card card--teach" id={i === 0 ? "teaching" : undefined} data-reveal="1" key={t.title}>
                   <div className="mono-meta">{t.type} · {t.date}</div>
                   <h3 className="card__title">{t.title}</h3>
                   <p className="card__venue">{t.venue}</p>
                   <p className="card__body">{t.excerpt}</p>
-                  <ul className="dot-list">
-                    {t.bullets.map((b) => (
-                      <li key={b}><span className="dot-list__dot" aria-hidden="true" />{b}</li>
-                    ))}
-                  </ul>
+                  <div className="card__foot">
+                    {t.bullets.map((b) => <span className="tag" key={b}>{b}</span>)}
+                  </div>
                 </div>
               ))}
             </div>
@@ -1156,7 +1218,7 @@ class Portfolio extends React.Component {
             <div className="contact" data-reveal="1">
               <div className="scene contact__scene" data-scene="globe" aria-hidden="true" />
               <div className="contact__inner">
-                <p className="eyebrow">09 — Get in touch</p>
+                <p className="eyebrow">07 — Get in touch</p>
                 <h2 className="contact__title">
                   Bring survey puzzles, ML tangles, geospatial detours, or just a well-aimed note.
                 </h2>

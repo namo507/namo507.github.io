@@ -13,7 +13,7 @@ title                    : "Namit Shrivastava"
 title_separator          : "-"
 name                     : &name "Namit Shrivastava"
 description              : &description "Data Scientist II | Survey Methodology & Data Science | Institute for Mind and Brain, USC"
-url                      : https://namo507.github.io
+url                      : https://portfolio.namit507.workers.dev
 baseurl                  : ""
 repository               : "namo507/namo507.github.io"
 portfolio_archive_url    : "https://www.linkedin.com/in/namit-shrivastava-baab47204/details/projects/"
@@ -30,7 +30,7 @@ author:
   employer         : "Institute for Mind and Brain, University of South Carolina"
   location         : "San Diego, CA, USA"
   email            : "namit507@gmail.com"
-  uri              : "https://namo507.github.io"
+  uri              : "https://portfolio.namit507.workers.dev"
 
   # Academic websites
   academia         : # URL
@@ -170,6 +170,7 @@ exclude:
   - "*.sublime-workspace"
   - .asset-cache
   - .bundle
+  - .cloudflare
   - .venv
   - .github
   - .jekyll-assets-cache
@@ -179,7 +180,9 @@ exclude:
   - assets/js/vendor
   - CHANGELOG
   - Capfile
+  - cloudflare.config.ts
   - config
+  - docker
   - Dockerfile
   - Gemfile
   - Gruntfile.js

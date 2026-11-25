@@ -4,7 +4,7 @@
 
 Welcome to my academic personal website repository! This website showcases my research, publications, projects, and professional activities.
 
-🔗 **Live Website**: [https://namo507.github.io](https://namo507.github.io)
+🔗 [Live portfolio on Cloudflare](https://portfolio.namit507.workers.dev/)
 
 ## About Me
 
@@ -14,42 +14,42 @@ Currently, I serve as a **Research Assistant** at the **University of Michigan's
 
 ## Website Sections
 
-### 🏠 [Home](https://namo507.github.io)
+### 🏠 [Home](https://portfolio.namit507.workers.dev/)
 Welcome page with an overview of my background, current work, and research metrics including:
 - 129K+ Census Tracts Analyzed
 - 1.1M+ Social Posts Processed
 - 2.4M Images in ML Pipeline
 - 91.6% Model Accuracy
 
-### 📄 [CV](https://namo507.github.io/cv/)
+### 📄 [CV](https://portfolio.namit507.workers.dev/cv/)
 Comprehensive curriculum vitae featuring:
 - Education: M.S. in Survey & Data Science (UMD), B.E. in Civil Engineering (BITS Pilani)
 - Professional Experience
 - Research Summary
 - Awards and Honors
 
-### 📚 [Publications](https://namo507.github.io/publications/)
+### 📚 [Publications](https://portfolio.namit507.workers.dev/publications/)
 Scholarly work including:
 - **Journal Articles**: Research on supply chain sustainability (Springer, 2024)
 - **Conference Papers**: EV sentiment analysis presented at AAPOR 2025
 
-### 💼 [Projects](https://namo507.github.io/portfolio/)
+### 💼 [Projects](https://portfolio.namit507.workers.dev/portfolio/)
 Showcase of technical projects:
 - Performance Based Seismic Design
 - Voice Gender Recognition (96% accuracy)
 - Website Development - Indian Red Cross Society
 
-### 🧑‍💻 [GitHub](https://namo507.github.io/github/)
+### 🧑‍💻 [GitHub](https://portfolio.namit507.workers.dev/github/)
 Repository showcase featuring research repositories, starred spotlights, and linked project mappings.
 
-### 🧠 [Copilot Prompts](https://namo507.github.io/copilot-prompts/)
+### 🧠 [Copilot Prompts](https://portfolio.namit507.workers.dev/copilot-prompts/)
 Prompt library mapping GitHub repositories to portfolio and LinkedIn project context for GitHub Copilot Chat.
 
-### 🎤 [Talks](https://namo507.github.io/talks/)
+### 🎤 [Talks](https://portfolio.namit507.workers.dev/talks/)
 Conference presentations and talks:
 - AAPOR 2025: Electric Vehicles sentiment analysis
 
-### 👨‍🏫 [Teaching](https://namo507.github.io/teaching/)
+### 👨‍🏫 [Teaching](https://portfolio.namit507.workers.dev/teaching/)
 Teaching experience:
 - SURV735: Data Privacy and Confidentiality (Teaching Assistant)
 - Canvas LMS Infrastructure & Course Administration (Graduate Assistant)
@@ -92,9 +92,14 @@ choice carries across the whole site.
 | `assets/cosmic/app.jsx` | The React app. Compiled with pinned esbuild and bundled with React into the committed `app.min.js`. Run `npm ci && npm run build:cosmic` after editing. |
 | `assets/cosmic/styles.css` | Design tokens and every component class. `scripts/site_doctor` parses this file directly, so its token names and tile selectors are mirrored in `scripts/site_doctor/config.py`. |
 | `assets/cosmic/explainers-3d.js` | Per-section Three.js scenes, mounted onto `[data-scene]` elements. One WebGL context renders every scene through scissored viewports, so adding sections does not add contexts. |
-| `assets/cosmic/data.js` | Hand-authored site content (`window.SITE`). |
+| `assets/cosmic/data.js` | Hand-authored site content (`window.SITE`). Cards show a one-line `hook`; the full text opens in an overlay. `findings`, `projects[].featured` and `projects[].themes` drive the hero findings strip, the six featured project tiles and the project-index filters. |
 | `assets/cosmic/portfolio-sync.generated.js` | Machine-managed overlay from the weekly ESD sync. |
-| `assets/cosmic/linkedin.generated.js` | Machine-managed LinkedIn snapshot. |
+| `assets/cosmic/linkedin.generated.js` | Machine-managed LinkedIn snapshot. The homepage only takes the validated profile URL from it; the snapshot itself renders on the classic pages. |
+
+The homepage uses progressive disclosure: each section shows a short first
+layer, and detail is one click away (a card overlay, the collapsed project
+index, or a "show more" toggle). Tile grids use fixed column counts matched to
+their item counts, so no breakpoint leaves a half-empty row.
 
 Both generated files are optional at runtime: the loader resolves on error and
 the app renders from `window.SITE` alone, so a failed or stale sync degrades to
@@ -157,16 +162,24 @@ docker compose up --build -d --wait
 
 ## Build, deployment, and health checks
 
-`main` is the publishing branch. GitHub Pages serves the static Jekyll output;
-there is no continuously running backend on Pages. Python scripts fetch and
-validate source data in scheduled Actions jobs. Docker runs the same site for
-local development and CI verification; Actions runners stop after each job.
+Cloudflare Workers serves the production Jekyll output. The site keeps running
+after the local preview or Docker container stops.
 
-The Pages workflow builds the bundled frontend and Jekyll site, runs Python and
-browser regression checks, tests a standalone Docker image and its restart,
-then deploys the tested artifact. Successful data-sync runs trigger a new build
-because commits made with `GITHUB_TOKEN` do not trigger push workflows. A failed
-validation leaves the previous published site available.
+Install the [Cloudflare CLI](https://developers.cloudflare.com/cf/) and run
+`cf auth login` once. From the repository root, build and publish an update.
+
+```bash
+npm ci
+npm run build:cosmic
+bundle install
+JEKYLL_ENV=production bundle exec jekyll build
+cf deploy ./_site
+python3 scripts/ci/check_http.py https://portfolio.namit507.workers.dev
+```
+
+The existing GitHub Pages workflow builds and verifies the static site and the
+Docker image. Its deploy step targets GitHub Pages. The Cloudflare site updates
+when you publish a new build with the command above.
 
 The daily Site Health workflow rechecks links, themes, mobile layouts, keyboard
 controls, and motion. Safe source repairs must pass a fresh build and audit
@@ -176,8 +189,7 @@ separate broken links from sites that require login or block automated checks.
 
 Docker Compose binds the preview to `http://localhost:4000`, checks HTTP health,
 and restarts an exited container unless it was deliberately stopped. A Docker
-health status alone does not restart a hung process. The live Pages site is
-independent of this local container and does not require the computer to stay on.
+health status alone does not restart a hung process.
 
 Run deterministic checks locally:
 
@@ -213,7 +225,7 @@ The LinkedIn integration is machine-managed and intentionally conservative.
 - Public-profile fetch, parse, and schema validation run through `scripts/sync_linkedin_content.py`.
 - If `scripts/linkedin_seed.yml` is present, the sync command can promote that curated seed into the first successful validated snapshot when live public fetches are blocked.
 - Generated site data is written to `_data/linkedin_profile.yml`, `_data/linkedin_experience.yml`, `_data/linkedin_featured.yml`, `_data/linkedin_updates.yml`, `_data/linkedin_sync_meta.yml`, and `_data/linkedin_snapshot.json`.
-- The animated homepage consumes `assets/cosmic/linkedin.generated.js`, which is generated from the same validated snapshot and loaded through a no-cache script loader before the React app mounts.
+- The animated homepage consumes `assets/cosmic/linkedin.generated.js` (for the canonical profile link), which is generated from the same validated snapshot and loaded through a no-cache script loader before the React app mounts.
 - Existing generated data is preserved when LinkedIn returns a blocked or unavailable response such as HTTP `999`, an auth wall, a short response, or suspiciously empty content.
 - Once a real public snapshot succeeds, blocked fetches stop overwriting it with the curated seed; the seed is only there to establish and maintain the first validated fallback path.
 

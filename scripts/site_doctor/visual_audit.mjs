@@ -197,14 +197,19 @@ async function checkHomepageControls(page, label, out) {
   await page.getByRole('button', {name: `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}).click();
   if (await page.locator('html').getAttribute('data-theme') === theme) throw new Error('Theme switch did not change theme');
   await page.getByRole('button', {name: `Switch to ${theme} theme`}).click();
-  const allCount = await page.locator('.card--project').count();
+  // The full project index (with its theme filters) is a disclosure: open it
+  // first, then check a filter narrows its rows and "All" restores them.
+  const rows = '#project-index [aria-haspopup="dialog"]';
+  await page.locator('[aria-controls="project-index"]').first().click();
+  await page.waitForFunction(() => document.getElementById('project-index')?.hidden === false);
+  const allCount = await page.locator(rows).count();
   const filters = page.getByRole('group', { name: 'Filter projects' });
   const specific = filters.getByRole('button').nth(1);
   await specific.click();
-  await page.waitForFunction(count => document.querySelectorAll('.card--project').length < count, allCount);
+  await page.waitForFunction(([sel, count]) => document.querySelectorAll(sel).length < count, [rows, allCount]);
   if (await specific.getAttribute('aria-pressed') !== 'true') throw new Error('Project filter is not selected');
   await filters.getByRole('button', { name: 'All', exact: true }).click();
-  await page.waitForFunction(count => document.querySelectorAll('.card--project').length === count, allCount);
+  await page.waitForFunction(([sel, count]) => document.querySelectorAll(sel).length === count, [rows, allCount]);
   await page.locator('.card--project').first().click();
   const dialog = page.getByRole('dialog');
   await dialog.waitFor({ state: 'visible' });
@@ -274,7 +279,8 @@ export async function run() {
           await checkHomepageControls(page, label, out);
           // Only compare siblings in the same actual CSS grid; unrelated cards
           // can intentionally have different sizes or occupy a spanning column.
-          const grids = await page.evaluate(() => [...document.querySelectorAll('.skill-grid,.repo-grid,.gh-stats')].map(grid =>
+          const grids = await page.evaluate(() => [...document.querySelectorAll(
+            '.findings__grid,.project-grid,.pub-grid,.skill-grid,.gh-panels,.gh-stats,.repo-grid,.card-grid-340,.edu__grid')].map(grid =>
             [...grid.children].map(el => { const r = el.getBoundingClientRect(); return { x:r.x,y:r.y,w:r.width,h:r.height }; })));
           for (const rects of grids) for (const issue of analyzeSymmetry(rects)) {
             out.summary.symmetry_issues++;

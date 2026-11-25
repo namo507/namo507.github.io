@@ -13,7 +13,7 @@
  */
 import { chromium } from "playwright";
 
-const BASE = process.env.SITE_BASE_URL || "https://namo507.github.io";
+const BASE = process.env.SITE_BASE_URL || "https://portfolio.namit507.workers.dev";
 const results = [], errors = [];
 const ok = (name, pass, detail = "") => results.push({ name, pass: !!pass, detail });
 
@@ -29,8 +29,10 @@ async function settle(page, fn, arg = null, timeout = 5000) {
 }
 
 const NAV = [["Experience", "experience"], ["Projects", "projects"], ["Publications", "publications"],
-  ["Skills", "skills"], ["Code", "code"], ["Signals", "signals"], ["Talks", "talks"],
-  ["Teaching", "teaching"], ["Contact", "contact"]];
+  ["Skills", "skills"], ["Code", "code"], ["Talks & Teaching", "talks"], ["Contact", "contact"]];
+// The full project index (and its filters) sits behind a disclosure toggle;
+// these rows are what the theme filters narrow.
+const INDEX_ROWS = '#project-index button[aria-haspopup="dialog"]';
 const inView = id => {
   const el = document.getElementById(id);
   if (!el) return false;
@@ -71,20 +73,25 @@ async function homepage() {
     window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 90, behavior: "instant" });
   });
   await page.waitForTimeout(900);
+  const indexToggle = page.locator('[aria-controls="project-index"]').first();
+  ok("project index starts collapsed", await indexToggle.getAttribute("aria-expanded") === "false");
+  await indexToggle.click();
+  ok("project index opens", await settle(page, () => document.getElementById("project-index")?.hidden === false));
   const chips = (await page.locator(".filters button").allTextContents()).filter(c => c !== "All");
-  const all = await page.locator('#projects button[aria-haspopup="dialog"]').count();
+  const all = await page.locator(INDEX_ROWS).count();
+  ok("index lists every project", all === await page.evaluate(() => window.SITE.projects.length), `${all}`);
   const empty = [];
   for (const chip of chips) {
     await page.locator(".filters button")
       .filter({ hasText: new RegExp(`^${chip.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`) }).first().click();
     await page.waitForTimeout(350);
-    const shown = await page.locator('#projects button[aria-haspopup="dialog"]').count();
-    if (shown === 0 || shown > all) empty.push(`${chip}=${shown}`);
+    const shown = await page.locator(INDEX_ROWS).count();
+    if (shown === 0 || shown >= all) empty.push(`${chip}=${shown}`);
   }
   ok("every filter returns a usable subset", empty.length === 0, empty.join(" "));
   await page.locator(".filters button").filter({ hasText: /^All$/ }).first().click();
   await page.waitForTimeout(400);
-  ok("All restores the full set", await page.locator('#projects button[aria-haspopup="dialog"]').count() === all, `${all}`);
+  ok("All restores the full set", await page.locator(INDEX_ROWS).count() === all, `${all}`);
 
   for (const section of ["projects", "experience", "publications", "code"]) {
     const card = page.locator(`#${section} button[aria-haspopup="dialog"]`).first();
@@ -146,7 +153,7 @@ async function mobile() {
   await menu.click();
   await page.waitForTimeout(500);
   const items = await page.locator(".nav__menu-item").count();
-  ok("Sections menu lists every section", items >= 9, `${items} items`);
+  ok("Sections menu lists every section", items >= NAV.length, `${items} items`);
   if (items) {
     await page.locator(".nav__menu-item").filter({ hasText: /Skills/ }).first().click();
     ok("Sections menu link scrolls", await settle(page, inView, "skills"));
