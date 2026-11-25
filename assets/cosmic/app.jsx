@@ -547,6 +547,8 @@ class Portfolio extends React.Component {
   // ── research assistant ────────────────────────────────────────────────────
   answer(q) {
     const D = this.props.data;
+    // Same number the Code section shows, so the two never disagree.
+    const repoCount = (D.github.stats[0] || {}).v || "40+";
     const t = q.toLowerCase();
     const rules = [
       [/talk|present|aapor|keynote/, "One so far \u2014 AAPOR\u2019s 80th, St. Louis, May 2025. I took the EV sentiment work there: 1.1M+ posts, DistilBERT at 91.6%, and the part people asked about most, where the LLMs were quietly biased. Full details under Talks & Teaching."],
@@ -555,7 +557,7 @@ class Portfolio extends React.Component {
       [/educat|degree|university|gpa|bits|umd/, "An M.S. in Survey & Data Science from Maryland \u2014 3.814/4.0, and a JPSM Dean's Fellow in 2025\u201326. Before that, civil engineering at BITS Pilani with a data science minor, 3.327/4.0. The route here was not a straight line."],
       [/project|build|portfolio/, "Twenty of them. The ones I get asked about most: EV sentiment across 1.1M+ posts at 91.6%, football market value over 7,023 player-seasons, LEXNet squeezing a CNN down by 97%, and the broadband pipeline covering 129K census tracts. Open any card for how it actually went."],
       [/contact|email|reach|connect|phone/, "Email " + D.profile.email + " · LinkedIn, GitHub, Scholar and ORCID links are all in the Contact section. Based in " + D.profile.location + "."],
-      [/github|repo|code|commit/, "44 public repositories, all at github.com/namo507. The ones worth starting with: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, and career-ops."],
+      [/github|repo|code|commit/, repoCount + " public repositories, all at github.com/namo507. The ones worth starting with: AAPOR EV Sentiment, Project_Moneyball_FC, office-doc-redactor, live-meeting-copilot, and career-ops."],
       [/geospatial|census|broadband|michigan|epidemiol/, "That was Michigan\u2019s Institute for Social Research \u2014 a geospatial pipeline over 129,572 census tracts and 3 RUCA strata. It closed the broadband gaps completely, cut baseline missingness by 28.6%, and turned up rural inflection points that held at p < 0.01."],
       [/teach|course|student|surv735/, "I TA\u2019d SURV735, data privacy and confidentiality, for 23 graduate students at JPSM. Alongside it I rebuilt the Canvas setup 10+ instructors and 125+ students depend on \u2014 satisfaction up 30%, setup time down 40%."],
       [/award|fellow|achiev|honor/, "A JPSM Dean's Fellowship for 2025\u201326, first out of 180 in HRD at BITS Pilani, a top-ten finish in Water & Wastewater Treatment, and Microsoft\u2019s Azure AI Fundamentals along the way."],
@@ -564,7 +566,7 @@ class Portfolio extends React.Component {
       [/hello|hi\b|hey|who are you|what can you do/, "Hello. Ask me about the papers, the projects, the skills, where I\u2019ve worked, what I\u2019ve taught, or how to reach me. I only answer from what\u2019s already on this page \u2014 nothing invented."],
     ];
     for (const [re, out] of rules) if (re.test(t)) return out;
-    return "Not sure I follow \u2014 try me on the papers, the projects, the skills, the roles, the teaching, or how to get in touch. Short version: Namit is a Data Scientist II at the Institute for Mind and Brain in South Carolina, with a survey and data science master's from Maryland. Twenty projects, two papers, 44 repositories.";
+    return "Not sure I follow \u2014 try me on the papers, the projects, the skills, the roles, the teaching, or how to get in touch. Short version: Namit is a Data Scientist II at the Institute for Mind and Brain in South Carolina, with a survey and data science master's from Maryland. Twenty projects, two papers, " + repoCount + " repositories.";
   }
 
   sendBuddy = () => {
@@ -1081,7 +1083,10 @@ class Portfolio extends React.Component {
               "cubes")}
             <div className="gh-panels" data-reveal="1">
               <div className="panel">
-                <p className="mono-meta">GitHub · namo507</p>
+                <div className="panel__head">
+                  <p className="mono-meta">GitHub · namo507</p>
+                  <a className="panel__link" href={D.github.profileUrl} target="_blank" rel="noopener">Open profile ↗</a>
+                </div>
                 <div className="gh-stats">
                   {D.github.stats.slice(0, 2).map((g) => (
                     <div className="gh-stat" key={g.k}>

@@ -42,7 +42,7 @@ layout: none
       document.documentElement.setAttribute("data-js", "1");
     })();
   </script>
-  <link rel="stylesheet" href="/assets/cosmic/styles.css?v=20261118a" />
+  <link rel="stylesheet" href="/assets/cosmic/styles.css?v=20261125a" />
 </head>
 <body data-screen-label="portfolio">
   <a class="skip-link" href="#content">Skip to content</a>
@@ -62,7 +62,7 @@ layout: none
     </main>
   </div>
 
-  <script src="/assets/cosmic/data.js?v=20261118a"></script>
+  <script src="/assets/cosmic/data.js?v=20261125a"></script>
   <script>
     /* Both generated files are machine-managed and may be absent or stale; the
        app renders from window.SITE alone if either fetch fails, so resolve on
@@ -96,7 +96,7 @@ layout: none
   </script>
 
   <!-- React and JSX are compiled into a local production bundle in CI. -->
-  <script defer src="/assets/cosmic/app.min.js?v=20261118a"></script>
+  <script defer src="/assets/cosmic/app.min.js?v=20261125a"></script>
 
   <script type="module">
     /* Section explainer scenes. Loaded after the app so the mount points exist;
@@ -104,7 +104,7 @@ layout: none
        whichever finishes first wins. Any failure here (missing module, no WebGL)
        leaves the page fully readable — the scenes are decorative. */
     try {
-      await import("/assets/cosmic/explainers-3d.min.js?v=20261118a");
+      await import("/assets/cosmic/explainers-3d.min.js?v=20261125a");
       if (window.Explainers3D) window.Explainers3D.mount();
     } catch (e) {
       /* decorative only */

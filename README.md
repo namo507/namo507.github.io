@@ -4,7 +4,7 @@
 
 Welcome to my academic personal website repository! This website showcases my research, publications, projects, and professional activities.
 
-🔗 [Live portfolio on Cloudflare](https://portfolio.namit507.workers.dev/)
+🔗 **Live Website**: [https://namo507.github.io](https://namo507.github.io) · mirror on [Cloudflare Workers](https://portfolio.namit507.workers.dev/)
 
 ## About Me
 
@@ -14,42 +14,42 @@ Currently, I serve as a **Research Assistant** at the **University of Michigan's
 
 ## Website Sections
 
-### 🏠 [Home](https://portfolio.namit507.workers.dev/)
+### 🏠 [Home](https://namo507.github.io)
 Welcome page with an overview of my background, current work, and research metrics including:
 - 129K+ Census Tracts Analyzed
 - 1.1M+ Social Posts Processed
 - 2.4M Images in ML Pipeline
 - 91.6% Model Accuracy
 
-### 📄 [CV](https://portfolio.namit507.workers.dev/cv/)
+### 📄 [CV](https://namo507.github.io/cv/)
 Comprehensive curriculum vitae featuring:
 - Education: M.S. in Survey & Data Science (UMD), B.E. in Civil Engineering (BITS Pilani)
 - Professional Experience
 - Research Summary
 - Awards and Honors
 
-### 📚 [Publications](https://portfolio.namit507.workers.dev/publications/)
+### 📚 [Publications](https://namo507.github.io/publications/)
 Scholarly work including:
 - **Journal Articles**: Research on supply chain sustainability (Springer, 2024)
 - **Conference Papers**: EV sentiment analysis presented at AAPOR 2025
 
-### 💼 [Projects](https://portfolio.namit507.workers.dev/portfolio/)
+### 💼 [Projects](https://namo507.github.io/portfolio/)
 Showcase of technical projects:
 - Performance Based Seismic Design
 - Voice Gender Recognition (96% accuracy)
 - Website Development - Indian Red Cross Society
 
-### 🧑‍💻 [GitHub](https://portfolio.namit507.workers.dev/github/)
+### 🧑‍💻 [GitHub](https://namo507.github.io/github/)
 Repository showcase featuring research repositories, starred spotlights, and linked project mappings.
 
-### 🧠 [Copilot Prompts](https://portfolio.namit507.workers.dev/copilot-prompts/)
+### 🧠 [Copilot Prompts](https://namo507.github.io/copilot-prompts/)
 Prompt library mapping GitHub repositories to portfolio and LinkedIn project context for GitHub Copilot Chat.
 
-### 🎤 [Talks](https://portfolio.namit507.workers.dev/talks/)
+### 🎤 [Talks](https://namo507.github.io/talks/)
 Conference presentations and talks:
 - AAPOR 2025: Electric Vehicles sentiment analysis
 
-### 👨‍🏫 [Teaching](https://portfolio.namit507.workers.dev/teaching/)
+### 👨‍🏫 [Teaching](https://namo507.github.io/teaching/)
 Teaching experience:
 - SURV735: Data Privacy and Confidentiality (Teaching Assistant)
 - Canvas LMS Infrastructure & Course Administration (Graduate Assistant)
@@ -162,10 +162,19 @@ docker compose up --build -d --wait
 
 ## Build, deployment, and health checks
 
-Cloudflare Workers serves the production Jekyll output. The site keeps running
-after the local preview or Docker container stops.
+The same production Jekyll output is served from two places:
 
-Deploys use the [Cloudflare CLI](https://developers.cloudflare.com/cf/)
+- **GitHub Pages** (primary): <https://namo507.github.io>. Every push to `main`
+  runs the Pages workflow, which builds, verifies and deploys the site.
+- **Cloudflare Workers** (mirror): <https://portfolio.namit507.workers.dev>,
+  published by hand with `npm run deploy`.
+
+Jekyll writes absolute asset URLs from `url`, so each host gets its own build:
+GitHub Pages builds with `_config.yml` alone, and the Cloudflare build layers
+`_config.cloudflare.yml` on top to point `url` at the Workers domain. Both keep
+running after the local preview or Docker container stops.
+
+Cloudflare deploys use the [Cloudflare CLI](https://developers.cloudflare.com/cf/)
 (`cf`, pinned to `1.0.0-rc.1`). It supports Node 22, 24 and 26 only, so the
 commands below run it under Node 24 through `npx` whatever Node is installed.
 The Jekyll build needs Ruby 3.x (on macOS, put Homebrew's Ruby first on `PATH`;
@@ -187,14 +196,15 @@ python3 scripts/ci/check_http.py https://portfolio.namit507.workers.dev
 ```
 
 `npm run deploy` rebuilds the homepage bundle, runs the production Jekyll build
-and uploads `_site` to the `portfolio` Worker described in
-`cloudflare.config.ts`. Add `--dry-run` to the final `cf deploy` command to
-check a build without uploading it. When the homepage CSS or JS changes, bump
-the `?v=` query on those files in `index.html` so caches fetch the new ones.
+with the Cloudflare config and uploads `_site` to the `portfolio` Worker
+described in `cloudflare.config.ts`. Add `--dry-run` to the final `cf deploy`
+command to check a build without uploading it. When the homepage CSS or JS
+changes, bump the `?v=` query on those files in `index.html` so caches fetch
+the new ones.
 
-The existing GitHub Pages workflow builds and verifies the static site and the
-Docker image. Its deploy step targets GitHub Pages. The Cloudflare site updates
-when you publish a new build with the command above.
+The GitHub Pages workflow also builds the Docker image and checks the deployed
+routes. The Cloudflare mirror only changes when you run `npm run deploy`, so
+run it after pushing a change you want on both hosts.
 
 The daily Site Health workflow rechecks links, themes, mobile layouts, keyboard
 controls, and motion. Safe source repairs must pass a fresh build and audit

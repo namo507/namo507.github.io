@@ -1185,6 +1185,9 @@ button.card--pub:hover, a.card--pub:hover { transform: scale(1.01); }
 
 .gh-stat { padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); }
 
+.panel__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px; }
+.panel__link { font-family: var(--mono); font-size: 12.5px; white-space: nowrap; }
+
 .panel { padding: 22px 24px; border-radius: 20px; border: 1px solid var(--line); background: var(--surface); }
 
 .langbar { display: flex; gap: 3px; height: 10px; margin-top: 16px; border-radius: 6px; overflow: hidden; }

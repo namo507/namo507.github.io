@@ -11,7 +11,7 @@ window.SITE = {
     email: "namit507@gmail.com",
     phone: "(240) 476-8513",
     pdfUrl: "/files/namit-shrivastava-cv.pdf",
-    siteUrl: "https://portfolio.namit507.workers.dev",
+    siteUrl: "https://namo507.github.io",
     // Hero copy is the first layer of the page: two sentences, no more. The
     // detail lives one click down, in the cards and their overlays.
     summary:
@@ -396,12 +396,12 @@ window.SITE = {
     profileUrl: "https://github.com/namo507",
     reposUrl: "https://github.com/namo507?tab=repositories",
     starredUrl: "https://github.com/namo507?tab=stars",
-    // Counts verified against the live GitHub API (July 2026).
+    // Counts verified against the live GitHub API (November 2026).
     stats: [
-      { v: "44", k: "Public repositories" },
-      { v: "31", k: "Original builds" },
+      { v: "46", k: "Public repositories" },
+      { v: "33", k: "Original builds" },
       { v: "7", k: "Starred spotlight" },
-      { v: "57", k: "Total accessible" },
+      { v: "68", k: "Total accessible" },
     ],
     languageMix: [
       { lang: "Jupyter Notebook", count: 7 },
@@ -432,16 +432,16 @@ window.SITE = {
       { name: "namo507.github.io", lang: "JavaScript", desc: "Source repo for the personal academic site, integrating CV, projects, GitHub showcase.",
         metric: "17", metricLabel: "project writeups", url: "https://github.com/namo507/namo507.github.io" },
     ],
-    // Pulled from the live GitHub API (sorted by last push, July 2026).
+    // Pulled from the live GitHub API (sorted by last push, November 2026).
     recent: [
-      { name: "namo507.github.io", lang: "JavaScript", updated: "Jul 2026", url: "https://github.com/namo507/namo507.github.io" },
-      { name: "esd-redcap-metadata-watcher", lang: "Jupyter", updated: "Jul 2026", url: "https://github.com/namo507/esd-redcap-metadata-watcher" },
-      { name: "ESD-Lab-USC", lang: "Jupyter", updated: "Jul 2026", url: "https://github.com/namo507/ESD-Lab-USC" },
+      { name: "esd-redcap-metadata-watcher", lang: "Python", updated: "Nov 2026", url: "https://github.com/namo507/esd-redcap-metadata-watcher" },
+      { name: "GenAI-SDE-Leetcode", lang: "TypeScript", updated: "Oct 2026", url: "https://github.com/namo507/GenAI-SDE-Leetcode" },
+      { name: "namo507.github.io", lang: "Python", updated: "Oct 2026", url: "https://github.com/namo507/namo507.github.io" },
+      { name: "Trentorch-Practice", lang: "Repo", updated: "Oct 2026", url: "https://github.com/namo507/Trentorch-Practice" },
+      { name: "ESD-Lab-USC", lang: "Python", updated: "Sep 2026", url: "https://github.com/namo507/ESD-Lab-USC" },
       { name: "OBS", lang: "Repo", updated: "Jul 2026", url: "https://github.com/namo507/OBS" },
       { name: "live-meeting-copilot", lang: "TypeScript", updated: "Apr 2026", url: "https://github.com/namo507/live-meeting-copilot" },
       { name: "Team-PSID", lang: "Jupyter", updated: "Apr 2026", url: "https://github.com/namo507/Team-PSID" },
-      { name: "SURV-745_Team-Neyman", lang: "TeX", updated: "Apr 2026", url: "https://github.com/namo507/SURV-745_Team-Neyman" },
-      { name: "office-doc-redactor", lang: "TypeScript", updated: "Jan 2026", url: "https://github.com/namo507/office-doc-redactor" },
     ],
   },
 

@@ -1,0 +1,9 @@
+# Overrides for the Cloudflare Workers mirror, layered on top of _config.yml by
+# `npm run deploy`:
+#   bundle exec jekyll build --config _config.yml,_config.cloudflare.yml
+#
+# Jekyll writes absolute asset and canonical URLs from `url`, so a build for one
+# host loads its scripts, fonts and styles from that host. GitHub Pages
+# (https://namo507.github.io) stays the primary site and builds with
+# _config.yml alone; this file only repoints the mirror at itself.
+url: https://portfolio.namit507.workers.dev

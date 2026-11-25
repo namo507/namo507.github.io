@@ -13,7 +13,7 @@
  */
 import { chromium } from "playwright";
 
-const BASE = process.env.SITE_BASE_URL || "https://portfolio.namit507.workers.dev";
+const BASE = process.env.SITE_BASE_URL || "https://namo507.github.io";
 const results = [], errors = [];
 const ok = (name, pass, detail = "") => results.push({ name, pass: !!pass, detail });
 
